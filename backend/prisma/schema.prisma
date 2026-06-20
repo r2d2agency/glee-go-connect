@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN_MASTER
+  ADMIN_COMPANY
+  MEMBER
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  plan      Plan     @default(FREE)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  cards     Card[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  role         Role     @default(ADMIN_COMPANY)
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Card {
+  id           String   @id @default(uuid())
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  slug         String   @unique
+  fullName     String
+  jobTitle     String?
+  bio          String?
+  phone        String?
+  whatsapp     String?
+  email        String?
+  website      String?
+  avatarUrl    String?
+  coverUrl     String?
+  primaryColor String?
+  accentColor  String?
+  socialLinks  Json?
+  seoTitle     String?
+  seoDescription String?
+  metaPixelId  String?
+  gaId         String?
+  template     String   @default("classic")
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  leads        Lead[]
+  events       AnalyticsEvent[]
+}
+
+model Lead {
+  id        String   @id @default(uuid())
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  phone     String?
+  message   String?
+  utmSource String?
+  utmMedium String?
+  utmCampaign String?
+  createdAt DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  type      String
+  payload   Json?
+  createdAt DateTime @default(now())
+}
