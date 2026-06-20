@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Glee-go ID — Cartões digitais NFC/QR" },
+      { name: "description", content: "Plataforma SaaS de cartões digitais NFC e QR Code com vCard, captura de leads, analytics e SEO." },
+      { name: "author", content: "Glee-go" },
+      { property: "og:title", content: "Glee-go ID — Cartões digitais NFC/QR" },
+      { property: "og:description", content: "Crie, gerencie e distribua cartões digitais com NFC/QR, vCard e captura de leads." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:site", content: "@gleego" },
     ],
     links: [
       {
