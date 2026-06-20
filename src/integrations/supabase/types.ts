@@ -14,16 +14,400 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analytics_events: {
+        Row: {
+          card_id: string
+          company_id: string
+          created_at: string
+          event_label: string | null
+          event_type: string
+          id: string
+          ip: string | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          card_id: string
+          company_id: string
+          created_at?: string
+          event_label?: string | null
+          event_type: string
+          id?: string
+          ip?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          card_id?: string
+          company_id?: string
+          created_at?: string
+          event_label?: string | null
+          event_type?: string
+          id?: string
+          ip?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cards: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          bio: string | null
+          capture_leads: boolean
+          company_id: string
+          company_name: string | null
+          created_at: string
+          custom_buttons: Json
+          default_utm: Json | null
+          email: string | null
+          ga_id: string | null
+          gtm_id: string | null
+          id: string
+          job_title: string | null
+          logo_url: string | null
+          meta_pixel_id: string | null
+          name: string
+          owner_id: string | null
+          phone: string | null
+          primary_color: string | null
+          public_name: string
+          secondary_color: string | null
+          seo_description: string | null
+          seo_image_url: string | null
+          seo_title: string | null
+          slug: string
+          social_links: Json
+          status: string
+          template: string
+          updated_at: string
+          video_url: string | null
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          capture_leads?: boolean
+          company_id: string
+          company_name?: string | null
+          created_at?: string
+          custom_buttons?: Json
+          default_utm?: Json | null
+          email?: string | null
+          ga_id?: string | null
+          gtm_id?: string | null
+          id?: string
+          job_title?: string | null
+          logo_url?: string | null
+          meta_pixel_id?: string | null
+          name: string
+          owner_id?: string | null
+          phone?: string | null
+          primary_color?: string | null
+          public_name: string
+          secondary_color?: string | null
+          seo_description?: string | null
+          seo_image_url?: string | null
+          seo_title?: string | null
+          slug: string
+          social_links?: Json
+          status?: string
+          template?: string
+          updated_at?: string
+          video_url?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          capture_leads?: boolean
+          company_id?: string
+          company_name?: string | null
+          created_at?: string
+          custom_buttons?: Json
+          default_utm?: Json | null
+          email?: string | null
+          ga_id?: string | null
+          gtm_id?: string | null
+          id?: string
+          job_title?: string | null
+          logo_url?: string | null
+          meta_pixel_id?: string | null
+          name?: string
+          owner_id?: string | null
+          phone?: string | null
+          primary_color?: string | null
+          public_name?: string
+          secondary_color?: string | null
+          seo_description?: string | null
+          seo_image_url?: string | null
+          seo_title?: string | null
+          slug?: string
+          social_links?: Json
+          status?: string
+          template?: string
+          updated_at?: string
+          video_url?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies: {
+        Row: {
+          address: string | null
+          cnpj: string | null
+          created_at: string
+          email: string | null
+          id: string
+          legal_name: string | null
+          logo_url: string | null
+          name: string
+          phone: string | null
+          plan: string
+          status: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          legal_name?: string | null
+          logo_url?: string | null
+          name: string
+          phone?: string | null
+          plan?: string
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          legal_name?: string | null
+          logo_url?: string | null
+          name?: string
+          phone?: string | null
+          plan?: string
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          card_id: string
+          company: string | null
+          company_id: string
+          created_at: string
+          email: string | null
+          id: string
+          interest: string | null
+          ip: string | null
+          job_title: string | null
+          message: string | null
+          name: string | null
+          referer: string | null
+          status: string
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          card_id: string
+          company?: string | null
+          company_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          interest?: string | null
+          ip?: string | null
+          job_title?: string | null
+          message?: string | null
+          name?: string | null
+          referer?: string | null
+          status?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          card_id?: string
+          company?: string | null
+          company_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          interest?: string | null
+          ip?: string | null
+          job_title?: string | null
+          message?: string | null
+          name?: string | null
+          referer?: string | null
+          status?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          job_title: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id: string
+          job_title?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          job_title?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_company: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin_master" | "admin_company" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +534,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin_master", "admin_company", "member"],
+    },
   },
 } as const
