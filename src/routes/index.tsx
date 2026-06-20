@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Smartphone, QrCode, Zap, BarChart3, Users, Sparkles } from "lucide-react";
+import { ArrowRight, Smartphone, QrCode, Zap, BarChart3, Users, Sparkles, Download, Share2, MousePointerClick, Building2, Briefcase, Store, Stethoscope } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -104,6 +104,73 @@ function Index() {
         </div>
       </section>
 
+      {/* HOW IT WORKS */}
+      <section className="py-24 px-6 border-t border-border">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <div className="inline-block text-xs font-semibold tracking-widest text-primary uppercase mb-3">Como funciona</div>
+            <h2 className="text-4xl font-bold tracking-tight">Do cadastro ao primeiro lead em 3 passos</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { n: "01", icon: Sparkles, title: "Crie seu cartão", desc: "Escolha um template, preencha seus dados e personalize cores, foto e links em minutos." },
+              { n: "02", icon: Share2, title: "Compartilhe", desc: "Imprima o QR Code, grave no chip NFC ou envie o link direto pelo WhatsApp." },
+              { n: "03", icon: MousePointerClick, title: "Capture leads", desc: "Receba contatos qualificados e acompanhe analytics em tempo real no painel." },
+            ].map((s) => (
+              <div key={s.n} className="relative rounded-2xl border border-border bg-card p-8 shadow-card">
+                <div className="absolute -top-4 left-8 text-xs font-bold tracking-widest text-primary-foreground px-3 py-1.5 rounded-full" style={{ background: "var(--gradient-primary)" }}>
+                  PASSO {s.n}
+                </div>
+                <s.icon className="size-8 text-primary mb-4" />
+                <h3 className="font-semibold text-xl">{s.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* USE CASES */}
+      <section className="py-24 px-6 bg-secondary/40">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <div className="inline-block text-xs font-semibold tracking-widest text-primary uppercase mb-3">Para quem é</div>
+            <h2 className="text-4xl font-bold tracking-tight">Feito para times que vendem com relacionamento</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { icon: Briefcase, title: "Corretores & Consultores", desc: "Cartão único com WhatsApp, agenda e portfólio." },
+              { icon: Building2, title: "Equipes corporativas", desc: "Padronize cartões da empresa inteira em um painel." },
+              { icon: Store, title: "Lojistas & Eventos", desc: "QR no balcão, cupons e captura de leads na hora." },
+              { icon: Stethoscope, title: "Clínicas & Saúde", desc: "Agendamento direto, vCard e endereço no Maps." },
+            ].map((u) => (
+              <div key={u.title} className="rounded-2xl bg-card border border-border p-6 hover:border-primary/40 transition-colors">
+                <u.icon className="size-7 text-accent mb-3" />
+                <h3 className="font-semibold">{u.title}</h3>
+                <p className="mt-1.5 text-sm text-muted-foreground">{u.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* STATS */}
+      <section className="py-20 px-6">
+        <div className="mx-auto max-w-5xl grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {[
+            { k: "10x", v: "Mais contatos salvos vs cartão de papel" },
+            { k: "<2s", v: "Tempo de carregamento da página" },
+            { k: "100%", v: "Mobile-first e responsivo" },
+            { k: "∞", v: "Edições sem reimprimir nada" },
+          ].map((s) => (
+            <div key={s.v}>
+              <div className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent" style={{ backgroundImage: "var(--gradient-primary)" }}>{s.k}</div>
+              <div className="mt-2 text-sm text-muted-foreground">{s.v}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* PLANS */}
       <section className="py-24 px-6 bg-secondary/40">
         <div className="mx-auto max-w-5xl">
@@ -133,6 +200,33 @@ function Index() {
                 ))}
               </ul>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-24 px-6 border-t border-border">
+        <div className="mx-auto max-w-3xl">
+          <div className="text-center mb-12">
+            <div className="inline-block text-xs font-semibold tracking-widest text-primary uppercase mb-3">Dúvidas frequentes</div>
+            <h2 className="text-4xl font-bold tracking-tight">Perguntas que sempre recebemos</h2>
+          </div>
+          <div className="space-y-3">
+            {[
+              { q: "Preciso comprar o cartão NFC pra usar?", a: "Não. Você pode usar só o link e o QR Code. O cartão físico NFC é opcional e pode ser gravado depois com a mesma URL." },
+              { q: "Posso editar o cartão depois de imprimir?", a: "Sim. A URL nunca muda — você atualiza os dados, foto, links e cores quando quiser, sem reimprimir nada." },
+              { q: "Funciona em iPhone e Android?", a: "Sim. A página é 100% responsiva e o botão Salvar contato gera um .vcf compatível com qualquer agenda." },
+              { q: "Os leads ficam onde?", a: "No painel da sua empresa, com UTM, origem e data. No plano Pro você integra com Pixel Meta, GA e em breve com o CRM Gleego." },
+              { q: "Posso ter vários cartões na mesma conta?", a: "Sim. Cada empresa pode ter múltiplos cartões (um por colaborador ou campanha), com permissões por equipe." },
+            ].map((f) => (
+              <details key={f.q} className="group rounded-xl border border-border bg-card p-5 open:shadow-card transition-shadow">
+                <summary className="flex items-center justify-between cursor-pointer list-none font-medium">
+                  {f.q}
+                  <span className="ml-4 size-6 rounded-full bg-secondary grid place-items-center text-primary group-open:rotate-45 transition-transform">+</span>
+                </summary>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>
