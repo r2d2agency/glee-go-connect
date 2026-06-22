@@ -15,7 +15,7 @@ export default function RegisterPage() {
       localStorage.setItem('gleego_token', token);
       router.push('/dashboard');
     } catch (err: any) {
-      setError('Erro ao cadastrar');
+      setError(err?.message || 'Erro ao cadastrar');
     }
   }
 
