@@ -13,7 +13,8 @@ async function bootstrap() {
       if (!origin) return cb(null, true);
       const clean = origin.replace(/\/+$/, '');
       if (!corsEnv || corsEnv.length === 0) return cb(null, true);
-      return cb(null, corsEnv.includes(clean));
+      const allowed = corsEnv.includes(clean) || clean.endsWith('.easypanel.host');
+      return cb(null, allowed);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
