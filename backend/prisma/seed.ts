@@ -10,16 +10,16 @@ async function main() {
     console.log('[seed] SUPERADMIN_EMAIL/PASSWORD not set, skipping superadmin seed');
     return;
   }
-  const passwordHash = await bcrypt.hash(password, 10);
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     await prisma.user.update({
       where: { email },
-      data: { role: Role.ADMIN_MASTER, passwordHash },
+      data: { role: Role.ADMIN_MASTER },
     });
-    console.log(`[seed] Promoted ${email} to ADMIN_MASTER and reset password`);
+    console.log(`[seed] Promoted ${email} to ADMIN_MASTER and kept current database password`);
     return;
   }
+  const passwordHash = await bcrypt.hash(password, 10);
   const company = await prisma.company.create({
     data: { name: 'Glee-go Master', email, plan: Plan.BUSINESS },
   });
