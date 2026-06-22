@@ -12,7 +12,15 @@ async function main() {
   }
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    console.log(`[seed] Superadmin ${email} already exists`);
+    if (existing.role !== Role.ADMIN_MASTER) {
+      await prisma.user.update({
+        where: { email },
+        data: { role: Role.ADMIN_MASTER },
+      });
+      console.log(`[seed] Promoted ${email} to ADMIN_MASTER`);
+    } else {
+      console.log(`[seed] Superadmin ${email} already exists`);
+    }
     return;
   }
   const company = await prisma.company.create({
