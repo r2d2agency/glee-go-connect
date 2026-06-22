@@ -16,7 +16,7 @@ export default function LoginPage() {
       localStorage.setItem('gleego_token', token);
       router.push('/dashboard');
     } catch (err: any) {
-      setError('Credenciais inválidas');
+      setError(err?.message || 'Credenciais inválidas');
     }
   }
 
