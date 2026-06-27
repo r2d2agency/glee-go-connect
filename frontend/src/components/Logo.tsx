@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const API = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
 
@@ -22,26 +22,41 @@ export function Logo({ size = 36, href = '/' }: { size?: number; withText?: bool
     if (typeof window === 'undefined') return {};
     try { return JSON.parse(localStorage.getItem('gleego_branding') || '{}'); } catch { return {}; }
   });
+  const [imageFailed, setImageFailed] = useState(false);
   useEffect(() => {
     loadBranding().then((b) => {
       if (b) {
         setBrand(b);
+        setImageFailed(false);
         try { localStorage.setItem('gleego_branding', JSON.stringify(b)); } catch {}
       }
     });
   }, []);
 
-  const src = brand.logoUrl || '/brand/logo.png';
+  const src = useMemo(() => {
+    const value = brand.logoUrl?.trim();
+    return value && value !== 'null' && value !== 'undefined' ? value : '/brand/logo.svg';
+  }, [brand.logoUrl]);
   const alt = brand.brandName || 'Glee-go ID';
   const content = (
     <span className="inline-flex items-center gap-2 select-none">
-      <img
-        src={src}
-        alt={alt}
-        style={{ height: size, width: 'auto' }}
-        className="drop-shadow-[0_0_18px_rgba(34,211,106,0.35)]"
-        onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/brand/logo.png'; }}
-      />
+      {!imageFailed ? (
+        <img
+          src={src}
+          alt={alt}
+          style={{ height: size, width: 'auto' }}
+          className="drop-shadow-[0_0_18px_rgba(34,211,106,0.35)]"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <span
+          aria-label={alt}
+          className="inline-flex items-center font-black tracking-normal text-[#22d36a]"
+          style={{ minHeight: size, fontSize: Math.max(18, Math.round(size * 0.62)) }}
+        >
+          {alt}
+        </span>
+      )}
     </span>
   );
   if (!href) return content;

@@ -1,0 +1,7 @@
+<svg width="320" height="96" viewBox="0 0 320 96" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Glee-go ID">
+  <rect width="320" height="96" rx="20" fill="#050A0D"/>
+  <circle cx="49" cy="48" r="28" fill="#22D36A" fill-opacity="0.16"/>
+  <path d="M33 51.5C33 40.73 41.73 32 52.5 32H63V44H52.5C48.36 44 45 47.36 45 51.5C45 55.64 48.36 59 52.5 59H56V53H50V44H68V71H52.5C41.73 71 33 62.27 33 51.5Z" fill="#22D36A"/>
+  <text x="89" y="58" fill="#F5FFF8" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="800" letter-spacing="0">Glee-go ID</text>
+  <path d="M260 68H289" stroke="#22D36A" stroke-width="4" stroke-linecap="round"/>
+</svg>
