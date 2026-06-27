@@ -645,11 +645,20 @@ function StatPill({ label, value, color }: { label: string; value: number; color
 
 function Modal({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
   return (
-    <div className="fixed inset-0 bg-black/50 grid place-items-center p-4 z-50" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold">{title}</h2>
-          <button onClick={onClose} className="text-white/60 text-2xl leading-none">×</button>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm grid place-items-center p-4 z-50" onClick={onClose}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[var(--ge-surface)] border border-white/10 text-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl
+        [&_input]:bg-[var(--ge-surface-2)] [&_textarea]:bg-[var(--ge-surface-2)] [&_select]:bg-[var(--ge-surface-2)]
+        [&_input]:text-white [&_textarea]:text-white [&_select]:text-white
+        [&_input]:border-white/10 [&_textarea]:border-white/10 [&_select]:border-white/10
+        [&_input]:placeholder-white/40 [&_textarea]:placeholder-white/40
+        [&_input]:rounded-lg [&_textarea]:rounded-lg [&_select]:rounded-lg
+        [&_option]:bg-[var(--ge-surface-2)] [&_option]:text-white"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold text-lg">{title}</h2>
+          <button onClick={onClose} className="text-white/50 hover:text-white text-2xl leading-none">×</button>
         </div>
         {children}
       </div>
@@ -728,8 +737,8 @@ function PlanModal({ plan, onClose, onSave }: { plan: PlanProduct; onClose: () =
           <textarea rows={4} className="border rounded px-3 py-2 w-full" value={p.features as any ?? ''} onChange={e => upd('features', e.target.value as any)} />
         </label>
         <div className="sm:col-span-2 flex gap-2 pt-2">
-          <button onClick={onClose} className="px-4 py-2 border rounded-lg">Cancelar</button>
-          <button onClick={() => onSave(p)} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white py-2.5 rounded-lg">Salvar</button>
+          <button onClick={onClose} className="px-4 py-2 border border-white/15 text-white/80 hover:bg-white/5 rounded-lg">Cancelar</button>
+          <button onClick={() => onSave(p)} className="flex-1 ge-btn py-2.5 rounded-lg font-semibold">Salvar</button>
         </div>
       </div>
     </Modal>
