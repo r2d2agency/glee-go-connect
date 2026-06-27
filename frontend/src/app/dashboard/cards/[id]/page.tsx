@@ -379,7 +379,7 @@ export default function EditCardPage() {
                   <div key={i} className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-full pl-3 pr-1 py-1">
                     <input className="bg-transparent text-sm outline-none w-32" placeholder="Nome" value={c}
                       onChange={(e) => { const arr = [...categories]; arr[i] = e.target.value; set('categories', arr); }} />
-                    <button onClick={() => set('categories', categories.filter((_, j) => j !== i))} className="size-6 grid place-items-center rounded-full hover:bg-gray-200 text-white/50">×</button>
+                    <button onClick={() => set('categories', categories.filter((_, j) => j !== i))} className="size-6 grid place-items-center rounded-full hover:bg-white/10 text-white/50">×</button>
                   </div>
                 ))}
               </div>
