@@ -4,6 +4,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
+import { AvatarUploader } from '@/components/AvatarUploader';
 
 type Link = { label: string; url: string; icon?: string };
 type Template = {
@@ -158,7 +159,13 @@ export default function EditCardPage() {
             <input className="border rounded px-3 py-2" placeholder="Telefone" value={card.phone ?? ''} onChange={(e) => set('phone', e.target.value)} />
             <input className="border rounded px-3 py-2" placeholder="Email" value={card.email ?? ''} onChange={(e) => set('email', e.target.value)} />
             <input className="border rounded px-3 py-2" placeholder="Website" value={card.website ?? ''} onChange={(e) => set('website', e.target.value)} />
-            <input className="border rounded px-3 py-2 sm:col-span-2" placeholder="Avatar URL" value={card.avatarUrl ?? ''} onChange={(e) => set('avatarUrl', e.target.value)} />
+            <div className="sm:col-span-2">
+              <AvatarUploader
+                value={card.avatarUrl}
+                onChange={(url) => set('avatarUrl', url)}
+                label="Foto de perfil"
+              />
+            </div>
             <textarea rows={3} className="border rounded px-3 py-2 sm:col-span-2" placeholder="Bio" value={card.bio ?? ''} onChange={(e) => set('bio', e.target.value)} />
           </section>
 
