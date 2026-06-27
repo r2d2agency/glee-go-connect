@@ -100,8 +100,8 @@ export default function EditCardPage() {
   const areas: { label: string; icon?: string }[] = card.areas ?? [];
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b sticky top-0 z-10">
+    <main className="min-h-screen bg-gray-50 text-gray-900 [&_section]:text-gray-900 [&_input]:text-gray-900 [&_textarea]:text-gray-900 [&_select]:text-gray-900 [&_input]:bg-white [&_textarea]:bg-white [&_select]:bg-white">
+      <header className="bg-white border-b sticky top-0 z-10 text-gray-900">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={() => router.push('/dashboard')} className="text-sm text-gray-600 hover:text-gray-900">← Voltar</button>
           <h1 className="font-semibold truncate flex-1">Editar: {card.fullName}</h1>
