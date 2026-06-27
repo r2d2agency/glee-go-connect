@@ -10,6 +10,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
@@ -33,7 +34,7 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        toast.error('Email ou senha incorretos. Se alterou a senha no EasyPanel, faça rebuild do backend.');
+        toast.error('Login não autorizado. Confira o email e a senha cadastrados no backend.');
       } else {
         toast.error(humanizeError(err, 'Não foi possível entrar.'));
       }
@@ -57,7 +58,23 @@ export default function LoginPage() {
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-300">Senha</label>
-            <input required type="password" className="ge-input w-full px-3 py-2.5" value={password} onChange={e => setPassword(e.target.value)} />
+            <div className="relative">
+              <input
+                required
+                type={showPassword ? 'text' : 'password'}
+                className="ge-input w-full px-3 py-2.5 pr-12"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute inset-y-0 right-0 px-3 text-gray-400 hover:text-white"
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
           <button disabled={loading} className="ge-btn w-full py-2.5 disabled:opacity-60">
             {loading ? 'Entrando...' : 'Entrar'}

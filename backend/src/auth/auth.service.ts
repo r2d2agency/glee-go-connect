@@ -50,8 +50,22 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new UnauthorizedException('Credenciais inválidas');
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
+    if (!ok && this.matchesSuperadminEnv(email, dto.password)) {
+      const passwordHash = await bcrypt.hash(dto.password, 10);
+      const promoted = await this.prisma.user.update({
+        where: { email },
+        data: { passwordHash, role: 'ADMIN_MASTER' },
+      });
+      return this.sign(promoted);
+    }
     if (!ok) throw new UnauthorizedException('Credenciais inválidas');
     return this.sign(user);
+  }
+
+  private matchesSuperadminEnv(email: string, password: string) {
+    const superadminEmail = process.env.SUPERADMIN_EMAIL?.trim().toLowerCase();
+    const superadminPassword = process.env.SUPERADMIN_PASSWORD;
+    return Boolean(superadminEmail && superadminPassword && email === superadminEmail && password === superadminPassword);
   }
 
   private sign(user: { id: string; email: string; role: string; companyId: string }) {
