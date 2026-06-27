@@ -358,7 +358,7 @@ export default function AdminPage() {
                           {c.type === 'DIGITAL_CARD' ? 'NFC' : 'Bio'}
                         </span>
                       </td>
-                      <td className="p-2 text-center"><a href={`/c/${c.slug}`} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">/c/{c.slug}</a></td>
+                      <td className="p-2 text-center"><a href={`https://bio.gleego.com.br/${c.slug}`} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">bio.gleego.com.br/{c.slug}</a></td>
                       <td className="p-2 text-center font-mono text-xs">{c.nfcSerial || <span className="text-gray-400">—</span>}</td>
                       <td className="p-2 text-center">{c.active ? '✅' : '⏸'}</td>
                       <td className="p-2 text-center">
