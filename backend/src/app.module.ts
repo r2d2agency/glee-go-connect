@@ -8,6 +8,7 @@ import { AdminModule } from './admin/admin.module';
 import { TemplatesModule } from './templates/templates.module';
 import { UpgradesModule } from './upgrades/upgrades.module';
 import { PlansModule } from './plans/plans.module';
+import { UploadsModule } from './uploads/uploads.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -21,6 +22,7 @@ import { HealthController } from './health.controller';
     TemplatesModule,
     UpgradesModule,
     PlansModule,
+    UploadsModule,
   ],
   controllers: [HealthController],
 })

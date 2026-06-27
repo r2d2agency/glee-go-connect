@@ -29,5 +29,8 @@ RUN npx prisma generate
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
+RUN mkdir -p /app/uploads
+VOLUME ["/app/uploads"]
+
 EXPOSE 3000
 CMD ["sh", "-c", "npx prisma db push --accept-data-loss && (npx prisma db seed || true); node dist/main.js"]
