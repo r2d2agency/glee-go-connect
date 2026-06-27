@@ -63,4 +63,98 @@ export class CardsService {
     if (!card || !card.active) throw new NotFoundException();
     return card;
   }
+
+  async trackEvent(cardId: string, type: string, payload: any) {
+    return this.prisma.analyticsEvent.create({ data: { cardId, type, payload } });
+  }
+
+  async trackBySlug(slug: string, type: string, payload: any) {
+    if (!slug) return { ok: false };
+    const card = await this.prisma.card.findUnique({ where: { slug }, select: { id: true } });
+    if (!card) return { ok: false };
+    await this.prisma.analyticsEvent.create({ data: { cardId: card.id, type, payload } });
+    return { ok: true };
+  }
+
+  async analyticsSummary(companyId: string, days = 30) {
+    const since = new Date(Date.now() - days * 86400000);
+    const cards = await this.prisma.card.findMany({
+      where: { companyId },
+      select: { id: true, slug: true, fullName: true },
+    });
+    const cardIds = cards.map((c) => c.id);
+    if (cardIds.length === 0) {
+      return { totalViews: 0, totalClicks: 0, daily: [], sources: [], referrers: [], countries: [], cities: [], devices: [], topCards: [], cards };
+    }
+    const events = await this.prisma.analyticsEvent.findMany({
+      where: { cardId: { in: cardIds }, createdAt: { gte: since } },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const dailyMap = new Map<string, { date: string; views: number; clicks: number }>();
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      dailyMap.set(key, { date: key, views: 0, clicks: 0 });
+    }
+    const bump = (map: Map<string, number>, key: any) => {
+      const k = (key == null || key === '') ? 'direct' : String(key).slice(0, 80);
+      map.set(k, (map.get(k) || 0) + 1);
+    };
+    const sources = new Map<string, number>();
+    const referrers = new Map<string, number>();
+    const countries = new Map<string, number>();
+    const cities = new Map<string, number>();
+    const devices = new Map<string, number>();
+    const byCard = new Map<string, number>();
+    let totalViews = 0, totalClicks = 0;
+
+    for (const ev of events) {
+      const p = (ev.payload || {}) as any;
+      const day = ev.createdAt.toISOString().slice(0, 10);
+      const slot = dailyMap.get(day);
+      if (slot) {
+        if (ev.type === 'view') slot.views++;
+        else slot.clicks++;
+      }
+      if (ev.type === 'view') {
+        totalViews++;
+        byCard.set(ev.cardId, (byCard.get(ev.cardId) || 0) + 1);
+      } else {
+        totalClicks++;
+      }
+      bump(sources, p.utmSource || p.utm_source);
+      const ref = p.referer || p.referrer;
+      if (ref) {
+        try { bump(referrers, new URL(ref).hostname); }
+        catch { bump(referrers, ref); }
+      } else bump(referrers, 'direct');
+      bump(countries, p.country);
+      bump(cities, p.city);
+      const ua = String(p.ua || '');
+      const device = /Mobi|Android|iPhone/i.test(ua) ? 'mobile' : ua ? 'desktop' : 'unknown';
+      bump(devices, device);
+    }
+
+    const top = (m: Map<string, number>, n = 8) =>
+      [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, n).map(([key, count]) => ({ key, count }));
+
+    const topCards = [...byCard.entries()]
+      .map(([id, count]) => ({ count, card: cards.find((c) => c.id === id) }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    return {
+      totalViews,
+      totalClicks,
+      daily: [...dailyMap.values()],
+      sources: top(sources),
+      referrers: top(referrers),
+      countries: top(countries),
+      cities: top(cities),
+      devices: top(devices),
+      topCards,
+      cards,
+    };
+  }
 }

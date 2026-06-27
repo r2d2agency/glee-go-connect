@@ -90,6 +90,59 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const [shareUrl, setShareUrl] = useState('');
   useEffect(() => { if (typeof window !== 'undefined') setShareUrl(window.location.href); }, []);
 
+  // Track view + UTM/referrer/origin (client-side, best-effort)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const p = new URLSearchParams(window.location.search);
+      const payload: any = {
+        referrer: document.referrer || null,
+        language: navigator.language || null,
+        screen: `${window.screen.width}x${window.screen.height}`,
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        path: window.location.pathname,
+        utmSource: p.get('utm_source'),
+        utmMedium: p.get('utm_medium'),
+        utmCampaign: p.get('utm_campaign'),
+        utmTerm: p.get('utm_term'),
+        utmContent: p.get('utm_content'),
+      };
+      const API = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '');
+      fetch(`${API}/api/public/cards/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({ slug: card.slug, type: 'view', payload }),
+      }).catch(() => {});
+
+      // Meta Pixel
+      if (card.metaPixelId && !(window as any).fbq) {
+        (function (f: any, b: any, e: any, v: any) {
+          if (f.fbq) return; const n: any = f.fbq = function () {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
+          const t = b.createElement(e); t.async = true; t.src = v;
+          const s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+        })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+        (window as any).fbq('init', card.metaPixelId);
+        (window as any).fbq('track', 'PageView');
+      }
+      // Google Analytics 4
+      if (card.gaId && !(window as any).gtag) {
+        const s = document.createElement('script');
+        s.async = true; s.src = `https://www.googletagmanager.com/gtag/js?id=${card.gaId}`;
+        document.head.appendChild(s);
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        function gtag(...args: any[]) { (window as any).dataLayer.push(args); }
+        (window as any).gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', card.gaId);
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const quickActions = useMemo(() => {
     const items: { icon: string; label: string; href: string; color: string }[] = [];
     if (card.whatsapp) items.push({ icon: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/${String(card.whatsapp).replace(/\D/g, '')}`, color: '#22c55e' });

@@ -12,6 +12,11 @@ export class CardsController {
     return this.cards.list(req.user.companyId);
   }
 
+  @Get('analytics/summary')
+  summary(@Req() req: any) {
+    return this.cards.analyticsSummary(req.user.companyId, 30);
+  }
+
   @Get(':id')
   findOne(@Req() req: any, @Param('id') id: string) {
     return this.cards.findOne(req.user.companyId, id);

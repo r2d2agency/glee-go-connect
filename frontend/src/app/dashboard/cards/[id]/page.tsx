@@ -30,7 +30,7 @@ export default function EditCardPage() {
   const [saving, setSaving] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [card, setCard] = useState<any>(null);
-  const [tab, setTab] = useState<'perfil' | 'links' | 'catalogo' | 'galeria' | 'banner' | 'servicos' | 'visual'>('perfil');
+  const [tab, setTab] = useState<'perfil' | 'links' | 'catalogo' | 'galeria' | 'banner' | 'servicos' | 'visual' | 'seo'>('perfil');
 
   useEffect(() => {
     const token = localStorage.getItem('gleego_token');
@@ -130,6 +130,7 @@ export default function EditCardPage() {
     { id: 'catalogo', label: 'Catálogo' },
     { id: 'galeria', label: 'Galeria' },
     { id: 'visual', label: 'Visual' },
+    { id: 'seo', label: 'SEO & Tracking' },
   ];
 
   function updateProduct(i: number, patch: Partial<Product>) {
@@ -445,6 +446,38 @@ export default function EditCardPage() {
                       className="absolute top-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">Remover</button>
                   </div>
                 ))}
+              </div>
+            </section>
+          )}
+
+          {tab === 'seo' && (
+            <section className="ge-card border-white/10 p-4 sm:p-6 space-y-4">
+              <div>
+                <h2 className="font-semibold">SEO & Tracking</h2>
+                <p className="text-xs text-white/50">Otimize sua página para buscadores e conecte pixels de rastreamento.</p>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <label className="block text-sm">
+                  <span className="text-white/70 text-xs">Título SEO</span>
+                  <input className="mt-1 w-full rounded-lg px-3 py-2" value={card.seoTitle ?? ''} onChange={(e) => set('seoTitle', e.target.value)} placeholder="Seu Nome — Profissão" />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-white/70 text-xs">Descrição SEO</span>
+                  <input className="mt-1 w-full rounded-lg px-3 py-2" value={card.seoDescription ?? ''} onChange={(e) => set('seoDescription', e.target.value)} placeholder="Resumo curto exibido no Google e em redes sociais" />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-white/70 text-xs">Meta Pixel ID</span>
+                  <input className="mt-1 w-full rounded-lg px-3 py-2" value={card.metaPixelId ?? ''} onChange={(e) => set('metaPixelId', e.target.value)} placeholder="123456789012345" />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-white/70 text-xs">Google Analytics 4 (GA ID)</span>
+                  <input className="mt-1 w-full rounded-lg px-3 py-2" value={card.gaId ?? ''} onChange={(e) => set('gaId', e.target.value)} placeholder="G-XXXXXXXXXX" />
+                </label>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-white/60">
+                <p className="font-semibold text-white/80 mb-1">UTM</p>
+                <p>Sua página pública aceita parâmetros <code className="text-[var(--ge-green)]">?utm_source</code>, <code className="text-[var(--ge-green)]">utm_medium</code>, <code className="text-[var(--ge-green)]">utm_campaign</code>, <code>utm_term</code> e <code>utm_content</code>. Eles são automaticamente registrados nas visualizações e aparecem no seu dashboard de Analytics.</p>
+                <p className="mt-2">Ex: <code className="text-white/80">https://bio.gleego.com.br/{card.slug}?utm_source=instagram&utm_campaign=lancamento</code></p>
               </div>
             </section>
           )}

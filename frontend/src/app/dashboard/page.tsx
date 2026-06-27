@@ -28,6 +28,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [cards, setCards] = useState<Card[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -65,6 +66,7 @@ export default function Dashboard() {
       })
       .finally(() => setLoading(false));
     api('/leads').then((d) => setLeads(Array.isArray(d) ? d : [])).catch(() => {});
+    api('/cards/analytics/summary').then((d) => setAnalytics(d)).catch(() => {});
   }
 
   useEffect(() => {
@@ -179,6 +181,8 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
         {/* Stats + chart */}
         <StatsPanel cards={cards} leads={leads} />
+
+        <AnalyticsPanel data={analytics} />
 
         {/* Upgrade callout */}
         <div className="rounded-2xl p-5 sm:p-6 mb-6 grid sm:grid-cols-[1fr_auto] gap-3 items-center relative overflow-hidden border border-[rgba(34,211,106,0.25)]"
@@ -432,5 +436,97 @@ function Stat({ label, value, hint, accent }: { label: string; value: any; hint?
       <p className={`text-2xl sm:text-3xl font-bold mt-1 ${accent ? 'text-[var(--ge-green)]' : 'text-white'}`}>{value}</p>
       {hint && <p className="text-[11px] text-white/40 mt-1">{hint}</p>}
     </div>
+  );
+}
+
+function AnalyticsPanel({ data }: { data: any }) {
+  if (!data) {
+    return (
+      <section className="ge-card p-5 mb-6">
+        <h2 className="font-semibold mb-2">Analytics</h2>
+        <p className="text-sm text-white/50">Carregando estatísticas…</p>
+      </section>
+    );
+  }
+  const daily: { date: string; views: number; clicks: number }[] = data.daily || [];
+  const max = Math.max(1, ...daily.map((d) => d.views + d.clicks));
+  const fmt = (n: number) => new Intl.NumberFormat('pt-BR').format(n);
+  const List = ({ title, items, empty }: { title: string; items: { key: string; count: number }[]; empty: string }) => {
+    const tot = items.reduce((s, i) => s + i.count, 0) || 1;
+    return (
+      <div className="ge-card p-4">
+        <h3 className="font-semibold text-sm mb-3">{title}</h3>
+        {items.length === 0 ? (
+          <p className="text-xs text-white/40">{empty}</p>
+        ) : (
+          <ul className="space-y-2">
+            {items.map((i) => (
+              <li key={i.key} className="text-xs">
+                <div className="flex justify-between mb-1">
+                  <span className="truncate text-white/80">{i.key}</span>
+                  <span className="text-white/60">{fmt(i.count)}</span>
+                </div>
+                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-full bg-[var(--ge-green)]" style={{ width: `${(i.count / tot) * 100}%` }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  };
+  return (
+    <section className="mb-6 space-y-4">
+      <div className="grid sm:grid-cols-4 gap-3">
+        <Stat label="Visualizações 30d" value={fmt(data.totalViews || 0)} accent />
+        <Stat label="Cliques 30d" value={fmt(data.totalClicks || 0)} />
+        <Stat label="Cartões" value={(data.cards || []).length} />
+        <Stat label="Top país" value={(data.countries?.[0]?.key) || '—'} hint={data.countries?.[0] ? `${data.countries[0].count} visitas` : undefined} />
+      </div>
+
+      <div className="ge-card p-4 sm:p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold">Visualizações por dia</h3>
+          <span className="text-xs text-white/40">últimos 30 dias</span>
+        </div>
+        <div className="flex items-end gap-1 h-32">
+          {daily.map((d) => {
+            const h = ((d.views + d.clicks) / max) * 100;
+            return (
+              <div key={d.date} className="flex-1 flex flex-col justify-end group relative">
+                <div className="w-full rounded-t bg-gradient-to-t from-[var(--ge-green)] to-emerald-300 transition" style={{ height: `${h}%`, minHeight: d.views + d.clicks ? 2 : 0 }} />
+                <div className="absolute -top-7 left-1/2 -translate-x-1/2 hidden group-hover:block bg-black/80 border border-white/10 text-[10px] px-2 py-1 rounded whitespace-nowrap">
+                  {d.date.slice(5)} · {d.views}v / {d.clicks}c
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <List title="Origem (UTM source)" items={data.sources || []} empty="Sem dados de UTM ainda." />
+        <List title="Sites de origem (referrer)" items={data.referrers || []} empty="Sem referências." />
+        <List title="Países" items={data.countries || []} empty="Localização indisponível." />
+        <List title="Cidades" items={data.cities || []} empty="Localização indisponível." />
+        <List title="Dispositivos" items={data.devices || []} empty="Sem dados." />
+        <div className="ge-card p-4">
+          <h3 className="font-semibold text-sm mb-3">Cartões mais visitados</h3>
+          {(!data.topCards || data.topCards.length === 0) ? (
+            <p className="text-xs text-white/40">Compartilhe seu link para começar a registrar visitas.</p>
+          ) : (
+            <ul className="space-y-2">
+              {data.topCards.map((t: any) => (
+                <li key={t.card?.id} className="flex justify-between text-xs">
+                  <span className="truncate text-white/80">{t.card?.fullName || t.card?.slug}</span>
+                  <span className="text-[var(--ge-green)] font-semibold">{t.count}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
