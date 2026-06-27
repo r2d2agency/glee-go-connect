@@ -21,13 +21,14 @@ export class CardsService {
 
     const type = data.type === 'DIGITAL_CARD' ? 'DIGITAL_CARD' : 'BIO_LINK';
 
+    // Cartão NFC só é criado pelo admin através das solicitações de upgrade.
+    if (type === 'DIGITAL_CARD') {
+      throw new ForbiddenException(
+        'Cartões NFC são emitidos pela equipe Glee-go. Solicite seu upgrade no painel.',
+      );
+    }
     if (company.plan === 'FREE') {
-      if (type === 'DIGITAL_CARD') {
-        throw new ForbiddenException(
-          'Cartão Digital NFC/vCard está disponível apenas nos planos PRO ou BUSINESS. Faça upgrade para liberar.',
-        );
-      }
-      const count = await this.prisma.card.count({ where: { companyId } });
+      const count = await this.prisma.card.count({ where: { companyId, type: 'BIO_LINK' } });
       if (count >= 1) {
         throw new ForbiddenException(
           'Plano grátis permite apenas 1 link bio. Faça upgrade para criar mais.',
