@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
+import { BR_STATES, INDUSTRIES, SOURCES } from '@/lib/br-options';
 
 type Template = { id: string; name: string; description: string; primaryColor: string; dark: boolean };
 
@@ -26,7 +27,17 @@ export default function RegisterWizard() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const [account, setAccount] = useState({ fullName: '', email: '', password: '', slug: '' });
+  const [account, setAccount] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    slug: '',
+    whatsapp: '',
+    city: '',
+    state: '',
+    industry: '',
+    source: '',
+  });
   const [template, setTemplate] = useState<Template>(TEMPLATES[0]);
   const [bio, setBio] = useState({ jobTitle: '', bio: '', avatarUrl: '', primaryColor: TEMPLATES[0].primaryColor });
   const [buttons, setButtons] = useState<Link[]>([{ label: '', url: '' }]);
@@ -44,6 +55,11 @@ export default function RegisterWizard() {
       if (!account.fullName.trim()) return toast.error('Informe seu nome.');
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account.email)) return toast.error('Email inválido.');
       if (account.password.length < 6) return toast.error('Senha precisa ter no mínimo 6 caracteres.');
+      if (!account.whatsapp.trim()) return toast.error('Informe seu WhatsApp.');
+      if (!account.city.trim()) return toast.error('Informe sua cidade.');
+      if (!account.state) return toast.error('Selecione seu estado.');
+      if (!account.industry) return toast.error('Selecione seu ramo de atividade.');
+      if (!account.source) return toast.error('Conte como nos conheceu.');
       if (!/^[a-z0-9-]{2,40}$/.test(slug)) return toast.error('Slug inválido. Use letras minúsculas e hífen.');
     }
     setStep((s) => Math.min(4, s + 1));
@@ -59,6 +75,11 @@ export default function RegisterWizard() {
           email: account.email.trim().toLowerCase(),
           password: account.password,
           companyName: account.fullName.trim(),
+          whatsapp: account.whatsapp.trim(),
+          city: account.city.trim(),
+          state: account.state,
+          industry: account.industry,
+          source: account.source,
         }),
       });
       localStorage.setItem('gleego_token', token);
