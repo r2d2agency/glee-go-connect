@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { Logo } from '@/components/Logo';
+import { AvatarUploader } from '@/components/AvatarUploader';
 
 type Company = { id: string; name: string; email: string; plan: string; active: boolean; _count: { users: number; cards: number } };
 type User = { id: string; email: string; fullName: string; role: string; companyId: string };
@@ -35,7 +36,7 @@ type Stats = {
   byPlan: { plan: string; count: number }[];
 };
 
-type Tab = 'dashboard' | 'kanban' | 'cards' | 'plans' | 'companies' | 'users';
+type Tab = 'dashboard' | 'kanban' | 'cards' | 'plans' | 'companies' | 'users' | 'branding';
 
 const FULFILLMENT_COLS: { key: Upgrade['fulfillmentStatus']; label: string; color: string }[] = [
   { key: 'WAITING', label: 'Aguardando', color: 'bg-yellow-50 border-yellow-200' },
@@ -64,6 +65,8 @@ export default function AdminPage() {
   const [tracking, setTracking] = useState<Upgrade | null>(null);
   const [planEdit, setPlanEdit] = useState<PlanProduct | null>(null);
   const [nfcEdit, setNfcEdit] = useState<Card | null>(null);
+  const [branding, setBranding] = useState<{ logoUrl?: string; faviconUrl?: string; ogImageUrl?: string; primaryColor?: string; brandName?: string }>({});
+  const [savingBranding, setSavingBranding] = useState(false);
 
   const [approveForm, setApproveForm] = useState({
     fullName: '', slug: '', jobTitle: '', whatsapp: '', email: '', phone: '',
