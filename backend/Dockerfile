@@ -33,4 +33,4 @@ RUN mkdir -p /app/uploads
 VOLUME ["/app/uploads"]
 
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss && (npx prisma db seed || true); node dist/main.js"]
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && node prisma/seed.js && node dist/main.js"]
