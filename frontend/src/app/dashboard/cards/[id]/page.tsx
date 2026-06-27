@@ -320,6 +320,47 @@ export default function EditCardPage() {
             </section>
           )}
 
+          {tab === 'servicos' && (
+            <section className="bg-white border rounded-xl p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-1">
+                <div>
+                  <h2 className="font-semibold">Como posso te ajudar</h2>
+                  <p className="text-xs text-gray-500">Grade de serviços/diferenciais com ícone, título e descrição.</p>
+                </div>
+                <button onClick={() => set('services', [...services, { icon: 'briefcase', title: '', description: '' }])}
+                  className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-3 mt-3">
+                {services.length === 0 && <p className="text-sm text-gray-500 sm:col-span-2">Ex: Consultoria Jurídica, Elaboração de Contratos...</p>}
+                {services.map((s, i) => (
+                  <div key={i} className="border rounded-xl p-3 space-y-2 bg-gray-50/50">
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs font-semibold text-gray-500">Serviço #{i + 1}</span>
+                      <button onClick={() => set('services', services.filter((_, j) => j !== i))} className="text-red-600 text-sm">Remover</button>
+                    </div>
+                    <div className="grid grid-cols-[140px_1fr] gap-2">
+                      <select className="border rounded px-2 py-1.5 text-sm bg-white" value={s.icon || 'briefcase'}
+                        onChange={(e) => { const c = [...services]; c[i] = { ...c[i], icon: e.target.value }; set('services', c); }}>
+                        {['lightbulb','bars','users','cube','target','gear','briefcase','chat','user','website','phone','email'].map((o) => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                      <input className="border rounded px-2 py-1.5 text-sm" placeholder="Título" value={s.title}
+                        onChange={(e) => { const c = [...services]; c[i] = { ...c[i], title: e.target.value }; set('services', c); }} />
+                    </div>
+                    <textarea rows={2} className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Descrição curta"
+                      value={s.description ?? ''}
+                      onChange={(e) => { const c = [...services]; c[i] = { ...c[i], description: e.target.value }; set('services', c); }} />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 border-t pt-4 grid sm:grid-cols-2 gap-3">
+                <input className="border rounded px-3 py-2" placeholder="Texto do botão (ex: Falar com a advogada)"
+                  value={card.servicesCtaLabel ?? ''} onChange={(e) => set('servicesCtaLabel', e.target.value)} />
+                <input className="border rounded px-3 py-2" placeholder="Link do botão (WhatsApp, formulário...)"
+                  value={card.servicesCtaUrl ?? ''} onChange={(e) => set('servicesCtaUrl', e.target.value)} />
+              </div>
+            </section>
+          )}
+
           {tab === 'catalogo' && (<>
             <section className="bg-white border rounded-xl p-4 sm:p-6">
               <div className="flex justify-between items-center mb-3">
