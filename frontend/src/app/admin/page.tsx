@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
+import { Logo } from '@/components/Logo';
 
 type Company = { id: string; name: string; email: string; plan: string; active: boolean; _count: { users: number; cards: number } };
 type User = { id: string; email: string; fullName: string; role: string; companyId: string };
@@ -177,16 +178,18 @@ export default function AdminPage() {
   const pending = useMemo(() => upgrades.filter(u => u.status === 'PENDING'), [upgrades]);
   const approvedUpgrades = useMemo(() => upgrades.filter(u => u.status === 'APPROVED'), [upgrades]);
 
-  if (loading) return <main className="p-8">Carregando…</main>;
-  if (error) return <main className="p-8"><p className="text-red-600">{error}</p></main>;
+  if (loading) return <main className="p-8 text-white">Carregando…</main>;
+  if (error) return <main className="p-8 text-white"><p className="text-red-400">{error}</p></main>;
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center gap-3">
-          <h1 className="text-xl font-bold flex-1">Painel Superadmin</h1>
-          <button onClick={load} className="text-sm border rounded-lg px-3 py-1.5 hover:bg-gray-50">↻ Atualizar</button>
-          <a href="/dashboard" className="text-sm text-blue-700 hover:underline">← Voltar</a>
+    <main className="min-h-screen text-white">
+      <header className="bg-[var(--ge-surface)] border-b border-white/5 sticky top-0 z-10 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
+          <Logo size={28} href={null} />
+          <span className="px-2 py-0.5 text-[10px] rounded-md font-bold bg-[var(--ge-green)] text-[#04130a]">ADMIN</span>
+          <h1 className="text-base sm:text-lg font-semibold flex-1 ml-2">Painel Superadmin</h1>
+          <button onClick={load} className="text-sm border border-white/10 rounded-lg px-3 py-1.5 hover:bg-white/5">↻ Atualizar</button>
+          <a href="/dashboard" className="text-sm ge-link hover:underline">← Voltar</a>
         </div>
         <nav className="max-w-7xl mx-auto px-4 flex gap-1 -mb-px overflow-x-auto">
           {([
@@ -198,7 +201,7 @@ export default function AdminPage() {
             ['users', `Usuários (${users.length})`],
           ] as [Tab, string][]).map(([k, label]) => (
             <button key={k} onClick={() => setTab(k)}
-              className={`px-4 py-2 text-sm border-b-2 -mb-px whitespace-nowrap ${tab === k ? 'border-blue-700 text-blue-700 font-semibold' : 'border-transparent text-gray-600 hover:text-gray-900'}`}>
+              className={`px-4 py-2 text-sm border-b-2 -mb-px whitespace-nowrap ${tab === k ? 'border-[var(--ge-green)] text-[var(--ge-green)] font-semibold' : 'border-transparent text-white/60 hover:text-white'}`}>
               {label}
             </button>
           ))}
