@@ -185,8 +185,17 @@ export default function Dashboard() {
             <label className="text-sm sm:col-span-2">Plano desejado
               <select className="mt-1 w-full border rounded px-3 py-2" value={upgrade.plan}
                 onChange={(e) => setUpgrade({ ...upgrade, plan: e.target.value })}>
-                <option value="PRO">PRO — Cartão NFC</option>
-                <option value="BUSINESS">BUSINESS — Cartão + Tag + Avançado</option>
+                {plans.filter((p: any) => p.includesNfc).map((p: any) => (
+                  <option key={p.id} value={p.slug.toUpperCase()}>
+                    {p.name} — {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: p.currency || 'BRL' }).format(p.priceCents / 100)}/{p.billingCycle}
+                  </option>
+                ))}
+                {plans.filter((p: any) => p.includesNfc).length === 0 && (
+                  <>
+                    <option value="PRO">PRO — Cartão NFC</option>
+                    <option value="BUSINESS">BUSINESS — Cartão + Tag + Avançado</option>
+                  </>
+                )}
               </select>
             </label>
             <input className="border rounded px-3 py-2" placeholder="Telefone de contato"
