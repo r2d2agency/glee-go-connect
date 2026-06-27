@@ -216,6 +216,39 @@ function Step1({ value, onChange, slug }: any) {
       <Field label="Senha (mín. 6)">
         <input type="password" className="w-full border rounded-lg px-3 py-2.5" value={value.password} onChange={(e) => onChange({ ...value, password: e.target.value })} />
       </Field>
+      <Field label="WhatsApp">
+        <input inputMode="tel" placeholder="(11) 99999-9999" className="w-full border rounded-lg px-3 py-2.5"
+          value={value.whatsapp} onChange={(e) => onChange({ ...value, whatsapp: e.target.value })} />
+      </Field>
+      <div className="grid grid-cols-[1fr_140px] gap-3">
+        <Field label="Cidade">
+          <input className="w-full border rounded-lg px-3 py-2.5" value={value.city}
+            onChange={(e) => onChange({ ...value, city: e.target.value })} />
+        </Field>
+        <Field label="Estado (UF)">
+          <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.state}
+            onChange={(e) => onChange({ ...value, state: e.target.value })}>
+            <option value="">UF</option>
+            {BR_STATES.map((s) => (
+              <option key={s.uf} value={s.uf}>{s.uf} — {s.name}</option>
+            ))}
+          </select>
+        </Field>
+      </div>
+      <Field label="Ramo de atividade">
+        <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.industry}
+          onChange={(e) => onChange({ ...value, industry: e.target.value })}>
+          <option value="">Selecione...</option>
+          {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
+        </select>
+      </Field>
+      <Field label="Como nos conheceu?">
+        <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.source}
+          onChange={(e) => onChange({ ...value, source: e.target.value })}>
+          <option value="">Selecione...</option>
+          {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </Field>
       <Field label="Seu link público">
         <div className="flex items-center border rounded-lg overflow-hidden">
           <span className="px-3 py-2.5 bg-slate-50 text-slate-500 text-sm border-r">glee.go/c/</span>
