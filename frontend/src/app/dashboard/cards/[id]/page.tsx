@@ -7,6 +7,14 @@ import { humanizeError } from '@/lib/errors';
 import { AvatarUploader } from '@/components/AvatarUploader';
 
 type Link = { label: string; url: string; icon?: string };
+type Product = {
+  photo?: string;
+  title: string;
+  description?: string;
+  price?: string;
+  link?: string;
+  category?: string;
+};
 type Template = {
   id: string; name: string; description: string;
   primaryColor: string; accentColor: string; bgColor: string; dark: boolean;
@@ -21,6 +29,7 @@ export default function EditCardPage() {
   const [saving, setSaving] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [card, setCard] = useState<any>(null);
+  const [tab, setTab] = useState<'perfil' | 'links' | 'catalogo' | 'galeria' | 'banner' | 'visual'>('perfil');
 
   useEffect(() => {
     const token = localStorage.getItem('gleego_token');
@@ -83,6 +92,12 @@ export default function EditCardPage() {
         bgColor: card.bgColor,
         customButtons: card.customButtons ?? [],
         socialLinks: card.socialLinks ?? [],
+        bannerUrl: card.bannerUrl ?? '',
+        bannerCtaLabel: card.bannerCtaLabel ?? '',
+        bannerCtaUrl: card.bannerCtaUrl ?? '',
+        categories: card.categories ?? [],
+        products: (card.products ?? []).slice(0, 10),
+        gallery: card.gallery ?? [],
       };
       await api(`/cards/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
       toast.success('Cartão salvo!');
