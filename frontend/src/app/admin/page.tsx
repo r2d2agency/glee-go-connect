@@ -217,6 +217,7 @@ export default function AdminPage() {
             ['plans', `Planos (${plans.length})`],
             ['companies', `Empresas (${companies.length})`],
             ['users', `Usuários (${users.length})`],
+            ['branding', 'Branding'],
           ] as [Tab, string][]).map(([k, label]) => (
             <button key={k} onClick={() => setTab(k)}
               className={`px-4 py-2 text-sm border-b-2 -mb-px whitespace-nowrap ${tab === k ? 'border-[var(--ge-green)] text-[var(--ge-green)] font-semibold' : 'border-transparent text-white/60 hover:text-white'}`}>
