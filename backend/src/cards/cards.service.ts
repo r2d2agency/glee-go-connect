@@ -9,6 +9,12 @@ export class CardsService {
     return this.prisma.card.findMany({ where: { companyId }, orderBy: { createdAt: 'desc' } });
   }
 
+  async findOne(companyId: string, id: string) {
+    const card = await this.prisma.card.findFirst({ where: { id, companyId } });
+    if (!card) throw new NotFoundException();
+    return card;
+  }
+
   async create(companyId: string, data: any) {
     const company = await this.prisma.company.findUnique({ where: { id: companyId } });
     if (!company) throw new NotFoundException('Empresa não encontrada');
