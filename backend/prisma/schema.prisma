@@ -84,6 +84,12 @@ model Card {
   website      String?
   avatarUrl    String?
   coverUrl     String?
+  companyName  String?
+  companyLogoUrl String?
+  location     String?
+  tagline      String?
+  verified     Boolean  @default(false)
+  areas        Json?
   primaryColor String?
   accentColor  String?
   bgColor      String?

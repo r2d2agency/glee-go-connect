@@ -71,6 +71,12 @@ export default function EditCardPage() {
         email: card.email,
         website: card.website,
         avatarUrl: card.avatarUrl,
+        companyName: card.companyName,
+        companyLogoUrl: card.companyLogoUrl,
+        location: card.location,
+        tagline: card.tagline,
+        verified: !!card.verified,
+        areas: card.areas ?? [],
         template: card.template,
         primaryColor: card.primaryColor,
         accentColor: card.accentColor,
@@ -91,6 +97,7 @@ export default function EditCardPage() {
 
   const buttons: Link[] = card.customButtons ?? [];
   const socials: Link[] = card.socialLinks ?? [];
+  const areas: { label: string; icon?: string }[] = card.areas ?? [];
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -167,6 +174,48 @@ export default function EditCardPage() {
               />
             </div>
             <textarea rows={3} className="border rounded px-3 py-2 sm:col-span-2" placeholder="Bio" value={card.bio ?? ''} onChange={(e) => set('bio', e.target.value)} />
+          </section>
+
+          {/* Empresa */}
+          <section className="bg-white border rounded-xl p-4 sm:p-6 grid sm:grid-cols-2 gap-3">
+            <h2 className="font-semibold sm:col-span-2">Empresa (opcional)</h2>
+            <input className="border rounded px-3 py-2" placeholder="Nome da empresa" value={card.companyName ?? ''} onChange={(e) => set('companyName', e.target.value)} />
+            <input className="border rounded px-3 py-2" placeholder="Localização (cidade/UF ou endereço)" value={card.location ?? ''} onChange={(e) => set('location', e.target.value)} />
+            <input className="border rounded px-3 py-2 sm:col-span-2" placeholder="Frase de apresentação (tagline)" value={card.tagline ?? ''} onChange={(e) => set('tagline', e.target.value)} />
+            <div className="sm:col-span-2">
+              <AvatarUploader
+                value={card.companyLogoUrl}
+                onChange={(url) => set('companyLogoUrl', url)}
+                label="Logo da empresa"
+                size={72}
+              />
+            </div>
+            <label className="sm:col-span-2 flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={!!card.verified} onChange={(e) => set('verified', e.target.checked)} />
+              Mostrar selo verificado ao lado do nome
+            </label>
+          </section>
+
+          {/* Áreas de atuação */}
+          <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="font-semibold">Áreas de atuação</h2>
+              <button onClick={() => set('areas', [...areas, { label: '', icon: 'lightbulb' }])} className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+            </div>
+            <div className="space-y-2">
+              {areas.length === 0 && <p className="text-sm text-gray-500">Nenhuma área. Ex: Iluminação, Consultoria...</p>}
+              {areas.map((a, i) => (
+                <div key={i} className="grid grid-cols-[1fr_140px_auto] gap-2">
+                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="Rótulo" value={a.label}
+                    onChange={(e) => { const c = [...areas]; c[i] = { ...c[i], label: e.target.value }; set('areas', c); }} />
+                  <select className="border rounded px-2 py-1.5 text-sm" value={a.icon || 'lightbulb'}
+                    onChange={(e) => { const c = [...areas]; c[i] = { ...c[i], icon: e.target.value }; set('areas', c); }}>
+                    {['lightbulb','bars','users','cube','target','gear','briefcase','chat'].map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                  <button onClick={() => set('areas', areas.filter((_, j) => j !== i))} className="text-red-600 text-sm px-2">×</button>
+                </div>
+              ))}
+            </div>
           </section>
 
           {/* Socials */}
