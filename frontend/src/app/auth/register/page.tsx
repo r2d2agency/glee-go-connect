@@ -318,18 +318,24 @@ function Step2({ templates, selected, onSelect }: any) {
 
 function Step3({ value, onChange }: any) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div>
         <h2 className="text-xl font-bold text-white">Sua bio</h2>
-        <p className="text-sm text-gray-400">Conte rapidamente o que você faz.</p>
+        <p className="text-sm text-gray-400">Conte rapidamente o que você faz e envie sua foto.</p>
       </div>
+
+      <div className="ge-card p-4 bg-white/[0.02]">
+        <AvatarUploader
+          value={value.avatarUrl}
+          onChange={(url) => onChange({ ...value, avatarUrl: url })}
+          label="Foto de perfil"
+          size={88}
+        />
+      </div>
+
       <Field label="Cargo / título">
         <input className="ge-input w-full px-3 py-2.5" placeholder="Ex: Designer · Pastor · Corretor"
           value={value.jobTitle} onChange={(e) => onChange({ ...value, jobTitle: e.target.value })} />
-      </Field>
-      <Field label="Foto (URL)">
-        <input className="ge-input w-full px-3 py-2.5" placeholder="https://..."
-          value={value.avatarUrl} onChange={(e) => onChange({ ...value, avatarUrl: e.target.value })} />
       </Field>
       <Field label="Bio curta (até 280)">
         <textarea rows={3} maxLength={280} className="ge-input w-full px-3 py-2.5"
@@ -339,19 +345,120 @@ function Step3({ value, onChange }: any) {
         <input type="color" className="h-11 w-20 ge-input p-1" value={value.primaryColor}
           onChange={(e) => onChange({ ...value, primaryColor: e.target.value })} />
       </Field>
+
+      <div className="pt-4 border-t border-white/10 space-y-4">
+        <div>
+          <h3 className="font-semibold text-white">Empresa (opcional)</h3>
+          <p className="text-xs text-gray-400">Mostre o nome e a logo da empresa onde você trabalha.</p>
+        </div>
+        <Field label="Nome da empresa">
+          <input className="ge-input w-full px-3 py-2.5" placeholder="Ex: Gleego Tech"
+            value={value.companyName} onChange={(e) => onChange({ ...value, companyName: e.target.value })} />
+        </Field>
+        <div className="ge-card p-4 bg-white/[0.02]">
+          <AvatarUploader
+            value={value.companyLogoUrl}
+            onChange={(url) => onChange({ ...value, companyLogoUrl: url })}
+            label="Logo da empresa"
+            size={72}
+          />
+        </div>
+      </div>
     </div>
   );
 }
 
 function Step4({ buttons, setButtons, socials, setSocials }: any) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div>
         <h2 className="text-xl font-bold text-white">Seus links</h2>
-        <p className="text-sm text-gray-400">Adicione botões e redes sociais (pode pular).</p>
+        <p className="text-sm text-gray-400">Clique para adicionar — preencha só os que quiser.</p>
       </div>
-      <LinkList title="Botões" items={buttons} onChange={setButtons} labelPh="Ex: Meu site" max={5} />
-      <LinkList title="Redes sociais" items={socials} onChange={setSocials} labelPh="Ex: Instagram" max={5} />
+
+      <QuickList
+        title="Botões de contato"
+        items={buttons}
+        onChange={setButtons}
+        presets={QUICK_BUTTONS}
+        max={6}
+      />
+      <QuickList
+        title="Redes sociais"
+        items={socials}
+        onChange={setSocials}
+        presets={QUICK_SOCIALS}
+        max={8}
+      />
+    </div>
+  );
+}
+
+function QuickList({ title, items, onChange, presets, max }: {
+  title: string; items: Link[]; onChange: (l: Link[]) => void;
+  presets: { type: string; label: string; placeholder: string; prefix: string }[]; max: number;
+}) {
+  function add(p: { type: string; label: string; prefix: string }) {
+    if (items.length >= max) return;
+    if (items.some((i) => i.type === p.type)) return;
+    onChange([...items, { type: p.type, label: p.label, url: p.prefix }]);
+  }
+  return (
+    <div className="space-y-3">
+      <h3 className="font-semibold text-sm text-white">{title}</h3>
+      <div className="flex flex-wrap gap-2">
+        {presets.map((p) => {
+          const added = items.some((i) => i.type === p.type);
+          return (
+            <button
+              key={p.type}
+              type="button"
+              onClick={() => add(p)}
+              disabled={added}
+              className={`px-3 py-1.5 rounded-full text-xs border transition ${
+                added
+                  ? 'border-[var(--ge-green)] bg-[var(--ge-green)]/10 text-[var(--ge-green)]'
+                  : 'border-white/15 text-gray-300 hover:border-[var(--ge-green)] hover:text-white'
+              }`}
+            >
+              {added ? '✓ ' : '+ '}{p.label}
+            </button>
+          );
+        })}
+      </div>
+      {items.length === 0 && (
+        <p className="text-xs text-gray-500">Nenhum {title.toLowerCase()} ainda. Clique acima para adicionar.</p>
+      )}
+      <div className="space-y-2">
+        {items.map((item, i) => {
+          const preset = presets.find((p) => p.type === item.type);
+          return (
+            <div key={i} className="grid grid-cols-[110px_1fr_auto] gap-2 items-center">
+              <span className="text-xs text-gray-300 px-2 py-2 bg-white/5 rounded-md border border-white/10 truncate">
+                {item.label}
+              </span>
+              <input
+                className="ge-input px-3 py-2 text-sm min-w-0"
+                placeholder={preset?.placeholder || 'https://'}
+                value={item.url}
+                onChange={(e) => {
+                  const c = [...items];
+                  c[i] = { ...c[i], url: e.target.value };
+                  onChange(c);
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, j) => j !== i))}
+                className="px-2 text-gray-500 hover:text-red-400"
+                aria-label="Remover"
+              >
+                ×
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
