@@ -66,6 +66,7 @@ model Card {
   coverUrl     String?
   primaryColor String?
   accentColor  String?
+  bgColor      String?
   socialLinks  Json?
   customButtons Json?
   seoTitle     String?
