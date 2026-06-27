@@ -7,7 +7,6 @@ class RegisterDto {
   @IsString() @MinLength(6) password!: string;
   @IsString() fullName!: string;
   @IsOptional() @IsString() companyName?: string;
-  @IsOptional() bio?: any;
 }
 
 class LoginDto {
