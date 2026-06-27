@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Param, Patch, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -93,5 +93,28 @@ export class AdminController {
       where: { id },
       data: { active: body.active, plan: body.plan as any },
     });
+  }
+
+  @Get('branding')
+  async getBranding(@Req() req: any) {
+    this.ensureMaster(req);
+    const rows = await this.prisma.setting.findMany({ where: { key: { startsWith: 'branding.' } } });
+    return Object.fromEntries(rows.map((r) => [r.key.replace('branding.', ''), r.value]));
+  }
+
+  @Put('branding')
+  async setBranding(@Req() req: any, @Body() body: Record<string, string>) {
+    this.ensureMaster(req);
+    const entries = Object.entries(body || {});
+    await Promise.all(
+      entries.map(([k, v]) =>
+        this.prisma.setting.upsert({
+          where: { key: `branding.${k}` },
+          create: { key: `branding.${k}`, value: String(v ?? '') },
+          update: { value: String(v ?? '') },
+        }),
+      ),
+    );
+    return { ok: true };
   }
 }
