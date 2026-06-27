@@ -71,7 +71,12 @@ export default function Dashboard() {
       router.push('/auth/login');
       return;
     }
-    setUser(parseJwt(token));
+    const u = parseJwt(token);
+    if (u?.role === 'ADMIN_MASTER') {
+      router.replace('/admin');
+      return;
+    }
+    setUser(u);
     load();
     api('/upgrades/mine').then(setMyRequests).catch(() => {});
     api('/plans').then((p) => setPlans(p || [])).catch(() => {});
