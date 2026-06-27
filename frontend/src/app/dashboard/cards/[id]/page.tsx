@@ -113,6 +113,24 @@ export default function EditCardPage() {
   const buttons: Link[] = card.customButtons ?? [];
   const socials: Link[] = card.socialLinks ?? [];
   const areas: { label: string; icon?: string }[] = card.areas ?? [];
+  const categories: string[] = Array.isArray(card.categories) ? card.categories : [];
+  const products: Product[] = Array.isArray(card.products) ? card.products : [];
+  const gallery: string[] = Array.isArray(card.gallery) ? card.gallery : [];
+
+  const TABS: { id: typeof tab; label: string }[] = [
+    { id: 'perfil', label: 'Perfil' },
+    { id: 'links', label: 'Links' },
+    { id: 'banner', label: 'Banner' },
+    { id: 'catalogo', label: 'Catálogo' },
+    { id: 'galeria', label: 'Galeria' },
+    { id: 'visual', label: 'Visual' },
+  ];
+
+  function updateProduct(i: number, patch: Partial<Product>) {
+    const arr = [...products];
+    arr[i] = { ...arr[i], ...patch };
+    set('products', arr);
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900 [&_section]:text-gray-900 [&_input]:text-gray-900 [&_textarea]:text-gray-900 [&_select]:text-gray-900 [&_input]:bg-white [&_textarea]:bg-white [&_select]:bg-white">
@@ -127,9 +145,20 @@ export default function EditCardPage() {
         </div>
       </header>
 
+      <nav className="bg-white border-b sticky top-[57px] z-10 overflow-x-auto">
+        <div className="max-w-6xl mx-auto px-4 flex gap-1">
+          {TABS.map((t) => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              className={`px-4 py-3 text-sm whitespace-nowrap border-b-2 transition ${tab === t.id ? 'border-blue-700 text-blue-700 font-semibold' : 'border-transparent text-gray-600 hover:text-gray-900'}`}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
       <div className="max-w-6xl mx-auto p-4 sm:p-6 grid lg:grid-cols-[1fr_360px] gap-6">
         <div className="space-y-6">
-          {/* Templates */}
+          {tab === 'visual' && (<>
           <section className="bg-white border rounded-xl p-4 sm:p-6">
             <h2 className="font-semibold mb-3">Template</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -148,7 +177,6 @@ export default function EditCardPage() {
             </div>
           </section>
 
-          {/* Cores */}
           <section className="bg-white border rounded-xl p-4 sm:p-6">
             <h2 className="font-semibold mb-3">Personalizar cores</h2>
             <div className="grid grid-cols-3 gap-4">
@@ -171,8 +199,9 @@ export default function EditCardPage() {
               ))}
             </div>
           </section>
+          </>)}
 
-          {/* Bio */}
+          {tab === 'perfil' && (<>
           <section className="bg-white border rounded-xl p-4 sm:p-6 grid sm:grid-cols-2 gap-3">
             <h2 className="font-semibold sm:col-span-2">Informações</h2>
             <input className="border rounded px-3 py-2" placeholder="Nome completo" value={card.fullName ?? ''} onChange={(e) => set('fullName', e.target.value)} />
@@ -191,7 +220,6 @@ export default function EditCardPage() {
             <textarea rows={3} className="border rounded px-3 py-2 sm:col-span-2" placeholder="Bio" value={card.bio ?? ''} onChange={(e) => set('bio', e.target.value)} />
           </section>
 
-          {/* Empresa */}
           <section className="bg-white border rounded-xl p-4 sm:p-6 grid sm:grid-cols-2 gap-3">
             <h2 className="font-semibold sm:col-span-2">Empresa (opcional)</h2>
             <input className="border rounded px-3 py-2" placeholder="Nome da empresa" value={card.companyName ?? ''} onChange={(e) => set('companyName', e.target.value)} />
@@ -211,7 +239,6 @@ export default function EditCardPage() {
             </label>
           </section>
 
-          {/* Áreas de atuação */}
           <section className="bg-white border rounded-xl p-4 sm:p-6">
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold">Áreas de atuação</h2>
@@ -232,8 +259,9 @@ export default function EditCardPage() {
               ))}
             </div>
           </section>
+          </>)}
 
-          {/* Socials */}
+          {tab === 'links' && (<>
           <section className="bg-white border rounded-xl p-4 sm:p-6">
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold">Redes sociais</h2>
@@ -251,7 +279,6 @@ export default function EditCardPage() {
             </div>
           </section>
 
-          {/* Buttons */}
           <section className="bg-white border rounded-xl p-4 sm:p-6">
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold">Botões/Links</h2>
@@ -268,6 +295,109 @@ export default function EditCardPage() {
               ))}
             </div>
           </section>
+          </>)}
+
+          {tab === 'banner' && (
+            <section className="bg-white border rounded-xl p-4 sm:p-6 space-y-4">
+              <div>
+                <h2 className="font-semibold">Banner do topo</h2>
+                <p className="text-sm text-gray-500">Imagem grande no topo da sua página com botão de ação.</p>
+              </div>
+              <AvatarUploader value={card.bannerUrl} onChange={(url) => set('bannerUrl', url)} label="Imagem do banner (1600×600 recomendado)" size={120} />
+              <div className="grid sm:grid-cols-2 gap-3">
+                <input className="border rounded px-3 py-2" placeholder="Texto do botão (ex: Fale comigo)" value={card.bannerCtaLabel ?? ''} onChange={(e) => set('bannerCtaLabel', e.target.value)} />
+                <input className="border rounded px-3 py-2" placeholder="Link do botão (https://...)" value={card.bannerCtaUrl ?? ''} onChange={(e) => set('bannerCtaUrl', e.target.value)} />
+              </div>
+              {card.bannerUrl && (
+                <button onClick={() => { set('bannerUrl', ''); set('bannerCtaLabel', ''); set('bannerCtaUrl', ''); }} className="text-sm text-red-600 hover:underline">Remover banner</button>
+              )}
+            </section>
+          )}
+
+          {tab === 'catalogo' && (<>
+            <section className="bg-white border rounded-xl p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-3">
+                <div>
+                  <h2 className="font-semibold">Categorias</h2>
+                  <p className="text-xs text-gray-500">Agrupe seus produtos. Aparecem como filtros na página pública.</p>
+                </div>
+                <button onClick={() => set('categories', [...categories, ''])} className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {categories.length === 0 && <p className="text-sm text-gray-500">Ex: Promoções, Lançamentos, Serviços...</p>}
+                {categories.map((c, i) => (
+                  <div key={i} className="flex items-center gap-1 bg-gray-100 rounded-full pl-3 pr-1 py-1">
+                    <input className="bg-transparent text-sm outline-none w-32" placeholder="Nome" value={c}
+                      onChange={(e) => { const arr = [...categories]; arr[i] = e.target.value; set('categories', arr); }} />
+                    <button onClick={() => set('categories', categories.filter((_, j) => j !== i))} className="size-6 grid place-items-center rounded-full hover:bg-gray-200 text-gray-500">×</button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="bg-white border rounded-xl p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-3">
+                <div>
+                  <h2 className="font-semibold">Catálogo de produtos</h2>
+                  <p className="text-xs text-gray-500">{products.length}/10 itens — foto, descrição, preço e link.</p>
+                </div>
+                <button disabled={products.length >= 10}
+                  onClick={() => set('products', [...products, { title: '', description: '', price: '', link: '', photo: '', category: '' }])}
+                  className="text-sm text-blue-700 hover:underline disabled:opacity-40 disabled:no-underline">+ Adicionar produto</button>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                {products.length === 0 && <p className="text-sm text-gray-500 md:col-span-2">Nenhum produto. Adicione até 10 itens.</p>}
+                {products.map((p, i) => (
+                  <div key={i} className="border rounded-xl p-3 space-y-2 bg-gray-50/50">
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs font-semibold text-gray-500">Item #{i + 1}</span>
+                      <button onClick={() => set('products', products.filter((_, j) => j !== i))} className="text-red-600 text-sm">Remover</button>
+                    </div>
+                    <AvatarUploader value={p.photo} onChange={(url) => updateProduct(i, { photo: url })} label="Foto do produto" size={80} />
+                    <input className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Título" value={p.title}
+                      onChange={(e) => updateProduct(i, { title: e.target.value })} />
+                    <textarea rows={2} className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Descrição curta"
+                      value={p.description ?? ''} onChange={(e) => updateProduct(i, { description: e.target.value })} />
+                    <div className="grid grid-cols-2 gap-2">
+                      <input className="border rounded px-2 py-1.5 text-sm" placeholder="Preço (ex: R$ 99,90)"
+                        value={p.price ?? ''} onChange={(e) => updateProduct(i, { price: e.target.value })} />
+                      <select className="border rounded px-2 py-1.5 text-sm bg-white" value={p.category ?? ''}
+                        onChange={(e) => updateProduct(i, { category: e.target.value })}>
+                        <option value="">Sem categoria</option>
+                        {categories.filter(Boolean).map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <input className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Link (WhatsApp, site, etc.)"
+                      value={p.link ?? ''} onChange={(e) => updateProduct(i, { link: e.target.value })} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>)}
+
+          {tab === 'galeria' && (
+            <section className="bg-white border rounded-xl p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-3">
+                <div>
+                  <h2 className="font-semibold">Galeria de fotos</h2>
+                  <p className="text-xs text-gray-500">Suba fotos do seu trabalho, produtos, ambiente.</p>
+                </div>
+              </div>
+              <div className="mb-4">
+                <AvatarUploader value={undefined} onChange={(url) => url && set('gallery', [...gallery, url])} label="Adicionar foto" size={80} />
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {gallery.length === 0 && <p className="text-sm text-gray-500 col-span-full">Nenhuma foto enviada.</p>}
+                {gallery.map((url, i) => (
+                  <div key={i} className="relative group aspect-square rounded-lg overflow-hidden border bg-gray-100">
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <button onClick={() => set('gallery', gallery.filter((_, j) => j !== i))}
+                      className="absolute top-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">Remover</button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
         {/* Preview */}
