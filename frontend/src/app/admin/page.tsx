@@ -39,10 +39,10 @@ type Stats = {
 type Tab = 'dashboard' | 'kanban' | 'cards' | 'plans' | 'companies' | 'users' | 'branding';
 
 const FULFILLMENT_COLS: { key: Upgrade['fulfillmentStatus']; label: string; color: string }[] = [
-  { key: 'WAITING', label: 'Aguardando', color: 'bg-yellow-50 border-yellow-200' },
-  { key: 'PRODUCING', label: 'Em produção', color: 'bg-blue-50 border-blue-200' },
-  { key: 'SHIPPED', label: 'Enviado', color: 'bg-indigo-50 border-indigo-200' },
-  { key: 'DELIVERED', label: 'Recebido', color: 'bg-green-50 border-green-200' },
+  { key: 'WAITING', label: 'Aguardando', color: 'bg-yellow-500/10 border-yellow-500/30' },
+  { key: 'PRODUCING', label: 'Em produção', color: 'bg-blue-500/10 border-blue-500/30' },
+  { key: 'SHIPPED', label: 'Enviado', color: 'bg-indigo-500/10 border-indigo-500/30' },
+  { key: 'DELIVERED', label: 'Recebido', color: 'bg-emerald-500/10 border-emerald-500/30' },
   { key: 'ACTIVATED', label: 'Ativado', color: 'bg-emerald-100 border-emerald-300' },
 ];
 
@@ -294,7 +294,7 @@ export default function AdminPage() {
                     <p className="text-sm text-white/60">{u.company.email}</p>
                     {u.contactPhone && <p className="text-sm">📞 {u.contactPhone}</p>}
                     {u.address && <p className="text-sm">📍 {u.address}</p>}
-                    {u.message && <p className="text-sm mt-2 bg-gray-50 p-2 rounded">{u.message}</p>}
+                    {u.message && <p className="text-sm mt-2 bg-white/5 border border-white/10 p-2 rounded text-white/80">{u.message}</p>}
                     <p className="text-xs text-white/40 mt-2">{new Date(u.createdAt).toLocaleString('pt-BR')}</p>
                     <div className="flex gap-2 mt-3">
                       <button onClick={() => openApprove(u)} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white text-sm px-3 py-2 rounded-lg">
@@ -319,11 +319,11 @@ export default function AdminPage() {
                     <div key={col.key} className={`border rounded-xl p-3 ${col.color} min-h-[200px]`}>
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-sm">{col.label}</h4>
-                        <span className="text-xs bg-white/70 px-2 py-0.5 rounded-full">{items.length}</span>
+                        <span className="text-xs bg-white/10 text-white px-2 py-0.5 rounded-full">{items.length}</span>
                       </div>
                       <div className="space-y-2">
                         {items.map(u => (
-                          <div key={u.id} className="bg-white rounded-lg p-2.5 text-sm shadow-sm">
+                          <div key={u.id} className="bg-[var(--ge-surface-2)] border border-white/10 text-white rounded-lg p-2.5 text-sm shadow-sm">
                             <p className="font-semibold truncate">{u.company.name}</p>
                             <p className="text-xs text-white/60 truncate">{u.plan}</p>
                             {u.trackingCode && (
@@ -333,11 +333,11 @@ export default function AdminPage() {
                               <select
                                 value={u.fulfillmentStatus}
                                 onChange={(e) => setFulfillment(u, e.target.value as Upgrade['fulfillmentStatus'])}
-                                className="text-xs border rounded px-1 py-0.5 flex-1 min-w-0"
+                                className="text-xs border border-white/10 bg-[var(--ge-surface)] text-white rounded px-1 py-0.5 flex-1 min-w-0"
                               >
-                                {FULFILLMENT_COLS.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
+                                {FULFILLMENT_COLS.map(c => <option key={c.key} value={c.key} className="bg-[var(--ge-surface)] text-white">{c.label}</option>)}
                               </select>
-                              <button onClick={() => setTracking(u)} className="text-xs px-2 py-0.5 border rounded hover:bg-gray-50">
+                              <button onClick={() => setTracking(u)} className="text-xs px-2 py-0.5 border border-white/10 rounded hover:bg-white/5">
                                 ✎
                               </button>
                             </div>
@@ -373,7 +373,7 @@ export default function AdminPage() {
                       <td className="p-2">{c.fullName}</td>
                       <td className="p-2">{c.company.name}</td>
                       <td className="p-2 text-center">
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${c.type === 'DIGITAL_CARD' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${c.type === 'DIGITAL_CARD' ? 'bg-blue-500/15 text-blue-300 border border-blue-500/30' : 'bg-white/10 text-white/80 border border-white/15'}`}>
                           {c.type === 'DIGITAL_CARD' ? 'NFC' : 'Bio'}
                         </span>
                       </td>
@@ -450,8 +450,10 @@ export default function AdminPage() {
                     <td className="p-2">{c.name}</td>
                     <td className="p-2">{c.email}</td>
                     <td className="p-2 text-center">
-                      <select value={c.plan} onChange={e => setPlan(c.id, e.target.value)} className="border rounded px-1">
-                        <option>FREE</option><option>PRO</option><option>BUSINESS</option>
+                      <select value={c.plan} onChange={e => setPlan(c.id, e.target.value)} className="border border-white/10 bg-[var(--ge-surface-2)] text-white rounded px-2 py-1">
+                        <option className="bg-[var(--ge-surface)] text-white">FREE</option>
+                        <option className="bg-[var(--ge-surface)] text-white">PRO</option>
+                        <option className="bg-[var(--ge-surface)] text-white">BUSINESS</option>
                       </select>
                     </td>
                     <td className="p-2 text-center">{c._count.users}</td>
@@ -482,8 +484,10 @@ export default function AdminPage() {
                     <td className="p-2">{u.fullName}</td>
                     <td className="p-2">{u.email}</td>
                     <td className="p-2 text-center">
-                      <select value={u.role} onChange={e => setRole(u.id, e.target.value)} className="border rounded px-1">
-                        <option>ADMIN_MASTER</option><option>ADMIN_COMPANY</option><option>MEMBER</option>
+                      <select value={u.role} onChange={e => setRole(u.id, e.target.value)} className="border border-white/10 bg-[var(--ge-surface-2)] text-white rounded px-2 py-1">
+                        <option className="bg-[var(--ge-surface)] text-white">ADMIN_MASTER</option>
+                        <option className="bg-[var(--ge-surface)] text-white">ADMIN_COMPANY</option>
+                        <option className="bg-[var(--ge-surface)] text-white">MEMBER</option>
                       </select>
                     </td>
                   </tr>
@@ -495,10 +499,10 @@ export default function AdminPage() {
 
         {/* ---------- BRANDING ---------- */}
         {tab === 'branding' && (
-          <form onSubmit={saveBranding} className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-5 sm:p-6 max-w-3xl space-y-6 text-slate-800">
+          <form onSubmit={saveBranding} className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-5 sm:p-6 max-w-3xl space-y-6 text-white">
             <div>
               <h2 className="text-lg font-semibold">Identidade visual</h2>
-              <p className="text-sm text-slate-500">Personalize logo, favicon e cor principal usados no app, página pública e emails.</p>
+              <p className="text-sm text-white/60">Personalize logo, favicon e cor principal usados no app, página pública e emails.</p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6">
@@ -525,25 +529,25 @@ export default function AdminPage() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <label className="block">
-                <span className="text-xs font-medium text-slate-600">Nome da marca</span>
+                <span className="text-xs font-medium text-white/70">Nome da marca</span>
                 <input
-                  className="mt-1 w-full border rounded-lg px-3 py-2"
+                  className="mt-1 w-full border border-white/10 bg-[var(--ge-surface-2)] text-white placeholder-white/40 rounded-lg px-3 py-2"
                   placeholder="Glee-go ID"
                   value={branding.brandName ?? ''}
                   onChange={(e) => setBranding({ ...branding, brandName: e.target.value })}
                 />
               </label>
               <label className="block">
-                <span className="text-xs font-medium text-slate-600">Cor principal</span>
+                <span className="text-xs font-medium text-white/70">Cor principal</span>
                 <div className="mt-1 flex items-center gap-2">
                   <input
                     type="color"
-                    className="h-10 w-14 rounded border"
+                    className="h-10 w-14 rounded border border-white/10 bg-[var(--ge-surface-2)]"
                     value={branding.primaryColor || '#22d36a'}
                     onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
                   />
                   <input
-                    className="flex-1 border rounded-lg px-3 py-2 font-mono text-sm"
+                    className="flex-1 border border-white/10 bg-[var(--ge-surface-2)] text-white placeholder-white/40 rounded-lg px-3 py-2 font-mono text-sm"
                     placeholder="#22d36a"
                     value={branding.primaryColor ?? ''}
                     onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
@@ -560,7 +564,7 @@ export default function AdminPage() {
               >
                 {savingBranding ? 'Salvando...' : 'Salvar branding'}
               </button>
-              <span className="text-xs text-slate-500">Os uploads vão para o backend (/uploads). Configure <code>PUBLIC_BACKEND_URL</code> no EasyPanel.</span>
+              <span className="text-xs text-white/60">Os uploads vão para o backend (/uploads). Configure <code>PUBLIC_BACKEND_URL</code> no EasyPanel.</span>
             </div>
           </form>
         )}
