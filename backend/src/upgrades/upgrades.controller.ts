@@ -54,4 +54,10 @@ export class UpgradesController {
     this.ensureMaster(req);
     return this.svc.unlinkNfc(id);
   }
+
+  @Patch('admin/upgrades/:id/fulfillment')
+  fulfillment(@Req() req: any, @Param('id') id: string, @Body() body: any) {
+    this.ensureMaster(req);
+    return this.svc.updateFulfillment(id, body);
+  }
 }

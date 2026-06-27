@@ -31,6 +31,14 @@ enum UpgradeStatus {
   REJECTED
 }
 
+enum FulfillmentStatus {
+  WAITING
+  PRODUCING
+  SHIPPED
+  DELIVERED
+  ACTIVATED
+}
+
 model Company {
   id        String   @id @default(uuid())
   name      String
@@ -97,14 +105,40 @@ model UpgradeRequest {
   company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   requestedBy String
   plan       Plan          @default(PRO)
+  planProductId String?
   message    String?
   contactPhone String?
   address    String?
   status     UpgradeStatus @default(PENDING)
+  fulfillmentStatus FulfillmentStatus @default(WAITING)
+  trackingCode String?
+  carrier    String?
+  shippedAt  DateTime?
+  deliveredAt DateTime?
+  activatedAt DateTime?
   adminNote  String?
   cardId     String?
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
+}
+
+model PlanProduct {
+  id           String   @id @default(uuid())
+  slug         String   @unique
+  name         String
+  description  String?
+  priceCents   Int      @default(0)
+  currency     String   @default("BRL")
+  billingCycle String   @default("monthly") // monthly | yearly | one_time
+  includesNfc  Boolean  @default(false)
+  maxBioLinks  Int      @default(1)
+  maxCards     Int      @default(0)
+  features     Json?
+  active       Boolean  @default(true)
+  highlight    Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Lead {

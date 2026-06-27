@@ -120,4 +120,22 @@ export class UpgradesService {
       data: { nfcSerial: null, nfcUid: null, nfcLinkedAt: null },
     });
   }
+
+  async updateFulfillment(id: string, body: { fulfillmentStatus?: string; trackingCode?: string; carrier?: string; adminNote?: string }) {
+    const allowed = ['WAITING', 'PRODUCING', 'SHIPPED', 'DELIVERED', 'ACTIVATED'];
+    if (body.fulfillmentStatus && !allowed.includes(body.fulfillmentStatus)) {
+      throw new BadRequestException('Status inválido.');
+    }
+    const data: any = {};
+    if (body.fulfillmentStatus) {
+      data.fulfillmentStatus = body.fulfillmentStatus;
+      if (body.fulfillmentStatus === 'SHIPPED') data.shippedAt = new Date();
+      if (body.fulfillmentStatus === 'DELIVERED') data.deliveredAt = new Date();
+      if (body.fulfillmentStatus === 'ACTIVATED') data.activatedAt = new Date();
+    }
+    if (body.trackingCode !== undefined) data.trackingCode = body.trackingCode || null;
+    if (body.carrier !== undefined) data.carrier = body.carrier || null;
+    if (body.adminNote !== undefined) data.adminNote = body.adminNote || null;
+    return this.prisma.upgradeRequest.update({ where: { id }, data });
+  }
 }
