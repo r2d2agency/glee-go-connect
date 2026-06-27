@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 
 type Link = { label: string; url: string; icon?: string };
 type Area = { label: string; icon?: string; description?: string };
+type Product = { photo?: string; title: string; description?: string; price?: string; link?: string; category?: string };
 
 const ICONS: Record<string, string> = {
   whatsapp: 'M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.78 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.02M12.04 20.15h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.24-8.23a8.2 8.2 0 0 1 8.23 8.24c0 4.54-3.7 8.23-8.23 8.23',
@@ -73,6 +74,15 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const buttons: Link[] = Array.isArray(card.customButtons) ? card.customButtons : [];
   const socials: Link[] = Array.isArray(card.socialLinks) ? card.socialLinks : [];
   const areas: Area[] = Array.isArray(card.areas) ? card.areas : [];
+  const categories: string[] = (Array.isArray(card.categories) ? card.categories : []).filter(Boolean);
+  const products: Product[] = (Array.isArray(card.products) ? card.products : []).filter((p: Product) => p && p.title);
+  const gallery: string[] = (Array.isArray(card.gallery) ? card.gallery : []).filter(Boolean);
+  const [activeCat, setActiveCat] = useState<string>('Todos');
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const filteredProducts = useMemo(
+    () => activeCat === 'Todos' ? products : products.filter((p) => (p.category || '') === activeCat),
+    [products, activeCat]
+  );
 
   const [shareUrl, setShareUrl] = useState('');
   useEffect(() => { if (typeof window !== 'undefined') setShareUrl(window.location.href); }, []);
@@ -103,6 +113,22 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
       `}</style>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        {/* BANNER */}
+        {card.bannerUrl && (
+          <section className="mb-5 rounded-3xl overflow-hidden border border-white/10 relative ge-fade">
+            <img src={card.bannerUrl} alt="Banner" className="w-full h-44 sm:h-64 object-cover" />
+            {(card.bannerCtaLabel && card.bannerCtaUrl) && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-5">
+                <a href={card.bannerCtaUrl} target="_blank" rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
+                  style={{ background: primary, color: '#04130a' }}>
+                  {card.bannerCtaLabel} →
+                </a>
+              </div>
+            )}
+          </section>
+        )}
+
         {/* Brand header */}
         <header className="flex items-start justify-between gap-4 ge-fade">
           <div>
@@ -261,6 +287,87 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
               );
             })}
           </section>
+        )}
+
+        {/* CATÁLOGO */}
+        {products.length > 0 && (
+          <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
+            <div className="flex items-end justify-between gap-3 mb-4">
+              <div>
+                <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold">CATÁLOGO</h2>
+                <p className="text-lg font-semibold mt-1">Meus produtos e serviços</p>
+              </div>
+              <span className="text-xs text-white/50">{filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'itens'}</span>
+            </div>
+
+            {categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {['Todos', ...categories].map((c) => (
+                  <button key={c} onClick={() => setActiveCat(c)}
+                    className="px-3 py-1.5 rounded-full text-xs font-medium border transition"
+                    style={{
+                      background: activeCat === c ? primary : 'transparent',
+                      color: activeCat === c ? '#04130a' : '#fff',
+                      borderColor: activeCat === c ? primary : 'rgba(255,255,255,.15)',
+                    }}>{c}</button>
+                ))}
+              </div>
+            )}
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {filteredProducts.map((p, i) => (
+                <article key={i} className="ge-rise group rounded-2xl border border-white/10 bg-white/[.02] overflow-hidden hover:bg-white/[.05] transition"
+                  style={{ animationDelay: `${i * 50}ms` }}>
+                  {p.photo && (
+                    <button onClick={() => setLightbox(p.photo!)} className="block w-full aspect-[16/10] overflow-hidden bg-black/30">
+                      <img src={p.photo} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                    </button>
+                  )}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold leading-tight">{p.title}</h3>
+                      {p.price && <span className="text-sm font-bold whitespace-nowrap" style={{ color: primary }}>{p.price}</span>}
+                    </div>
+                    {p.description && <p className="text-sm text-white/65 mt-1.5 line-clamp-3">{p.description}</p>}
+                    {p.category && <span className="inline-block mt-2 text-[10px] uppercase tracking-wider text-white/40">{p.category}</span>}
+                    {p.link && (
+                      <a href={p.link} target="_blank" rel="noreferrer"
+                        className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold"
+                        style={{ color: primary }}>
+                        Saiba mais →
+                      </a>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* GALERIA */}
+        {gallery.length > 0 && (
+          <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
+            <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold mb-3">GALERIA</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
+              {gallery.map((url, i) => (
+                <button key={i} onClick={() => setLightbox(url)}
+                  className="ge-rise aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/30 group"
+                  style={{ animationDelay: `${i * 40}ms` }}>
+                  <img src={url} alt="" className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* LIGHTBOX */}
+        {lightbox && (
+          <div onClick={() => setLightbox(null)}
+            className="fixed inset-0 z-50 bg-black/90 grid place-items-center p-4 ge-fade">
+            <img src={lightbox} alt="" className="max-w-full max-h-full rounded-xl object-contain" />
+            <button onClick={() => setLightbox(null)}
+              className="absolute top-4 right-4 size-10 rounded-full bg-white/10 hover:bg-white/20 grid place-items-center text-white text-xl">×</button>
+          </div>
         )}
 
         {/* NFC UPGRADE BANNER */}
