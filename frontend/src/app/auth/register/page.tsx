@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { BR_STATES, INDUSTRIES, SOURCES } from '@/lib/br-options';
 import { Logo } from '@/components/Logo';
+import { AvatarUploader } from '@/components/AvatarUploader';
 
 type Template = { id: string; name: string; description: string; primaryColor: string; dark: boolean };
 
@@ -21,7 +22,24 @@ function slugify(s: string) {
     .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40);
 }
 
-type Link = { label: string; url: string };
+type Link = { label: string; url: string; type?: string };
+
+const QUICK_BUTTONS = [
+  { type: 'site', label: 'Site', placeholder: 'https://seusite.com.br', prefix: '' },
+  { type: 'email', label: 'Email', placeholder: 'voce@email.com', prefix: 'mailto:' },
+  { type: 'whatsapp', label: 'WhatsApp', placeholder: '5511999999999', prefix: 'https://wa.me/' },
+  { type: 'phone', label: 'Telefone', placeholder: '+55 11 99999-9999', prefix: 'tel:' },
+  { type: 'maps', label: 'Localização', placeholder: 'https://maps.google.com/...', prefix: '' },
+];
+
+const QUICK_SOCIALS = [
+  { type: 'instagram', label: 'Instagram', placeholder: '@seuuser', prefix: 'https://instagram.com/' },
+  { type: 'facebook', label: 'Facebook', placeholder: 'sua.pagina', prefix: 'https://facebook.com/' },
+  { type: 'linkedin', label: 'LinkedIn', placeholder: 'seu-perfil', prefix: 'https://linkedin.com/in/' },
+  { type: 'youtube', label: 'YouTube', placeholder: '@canal', prefix: 'https://youtube.com/' },
+  { type: 'tiktok', label: 'TikTok', placeholder: '@seuuser', prefix: 'https://tiktok.com/@' },
+  { type: 'x', label: 'X / Twitter', placeholder: '@seuuser', prefix: 'https://x.com/' },
+];
 
 export default function RegisterWizard() {
   const router = useRouter();
@@ -40,9 +58,17 @@ export default function RegisterWizard() {
     source: '',
   });
   const [template, setTemplate] = useState<Template>(TEMPLATES[0]);
-  const [bio, setBio] = useState({ jobTitle: '', bio: '', avatarUrl: '', primaryColor: TEMPLATES[0].primaryColor });
-  const [buttons, setButtons] = useState<Link[]>([{ label: '', url: '' }]);
-  const [socials, setSocials] = useState<Link[]>([{ label: 'Instagram', url: '' }]);
+  const [bio, setBio] = useState({
+    jobTitle: '',
+    bio: '',
+    avatarUrl: '',
+    primaryColor: TEMPLATES[0].primaryColor,
+    companyName: '',
+    companyLogoUrl: '',
+  });
+  const [buttons, setButtons] = useState<Link[]>([]);
+  const [socials, setSocials] = useState<Link[]>([]);
+  const [accountCreated, setAccountCreated] = useState(false);
 
   const slug = useMemo(() => account.slug || slugify(account.fullName), [account.slug, account.fullName]);
 
@@ -51,7 +77,7 @@ export default function RegisterWizard() {
     setBio((b) => ({ ...b, primaryColor: t.primaryColor }));
   }
 
-  function next() {
+  async function next() {
     if (step === 1) {
       if (!account.fullName.trim()) return toast.error('Informe seu nome.');
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account.email)) return toast.error('Email inválido.');
@@ -62,6 +88,38 @@ export default function RegisterWizard() {
       if (!account.industry) return toast.error('Selecione seu ramo de atividade.');
       if (!account.source) return toast.error('Conte como nos conheceu.');
       if (!/^[a-z0-9-]{2,40}$/.test(slug)) return toast.error('Slug inválido. Use letras minúsculas e hífen.');
+      if (!accountCreated) {
+        setLoading(true);
+        try {
+          const { token } = await api('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+              fullName: account.fullName.trim(),
+              email: account.email.trim().toLowerCase(),
+              password: account.password,
+              companyName: account.fullName.trim(),
+              whatsapp: account.whatsapp.trim(),
+              city: account.city.trim(),
+              state: account.state,
+              industry: account.industry,
+              source: account.source,
+            }),
+          });
+          localStorage.setItem('gleego_token', token);
+          setAccountCreated(true);
+          toast.success('Conta criada! Agora personalize sua bio.');
+        } catch (err) {
+          const msg = humanizeError(err, 'Não foi possível criar a conta.');
+          if (/já cadastrado/i.test(msg)) {
+            toast.error('Esse email já tem conta. Faça login para continuar.');
+          } else {
+            toast.error(msg);
+          }
+          setLoading(false);
+          return;
+        }
+        setLoading(false);
+      }
     }
     setStep((s) => Math.min(4, s + 1));
   }
@@ -69,21 +127,6 @@ export default function RegisterWizard() {
   async function finish() {
     setLoading(true);
     try {
-      const { token } = await api('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({
-          fullName: account.fullName.trim(),
-          email: account.email.trim().toLowerCase(),
-          password: account.password,
-          companyName: account.fullName.trim(),
-          whatsapp: account.whatsapp.trim(),
-          city: account.city.trim(),
-          state: account.state,
-          industry: account.industry,
-          source: account.source,
-        }),
-      });
-      localStorage.setItem('gleego_token', token);
       await api('/cards', {
         method: 'POST',
         body: JSON.stringify({
@@ -93,6 +136,8 @@ export default function RegisterWizard() {
           jobTitle: bio.jobTitle || null,
           bio: bio.bio || null,
           avatarUrl: bio.avatarUrl || null,
+          companyName: bio.companyName || null,
+          companyLogoUrl: bio.companyLogoUrl || null,
           primaryColor: bio.primaryColor,
           template: template.id,
           socialLinks: socials.filter((s) => s.label && s.url),
@@ -103,7 +148,12 @@ export default function RegisterWizard() {
       toast.success('Bio link criado! 🎉');
       router.push('/dashboard');
     } catch (err) {
-      toast.error(humanizeError(err, 'Não foi possível concluir o cadastro.'));
+      const msg = humanizeError(err, 'Não foi possível concluir o cadastro.');
+      if (/já cadastrado/i.test(msg) || /already/i.test(msg)) {
+        toast.error('Esse email já tem conta. Faça login para continuar.');
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -286,18 +336,24 @@ function Step2({ templates, selected, onSelect }: any) {
 
 function Step3({ value, onChange }: any) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div>
         <h2 className="text-xl font-bold text-white">Sua bio</h2>
-        <p className="text-sm text-gray-400">Conte rapidamente o que você faz.</p>
+        <p className="text-sm text-gray-400">Conte rapidamente o que você faz e envie sua foto.</p>
       </div>
+
+      <div className="ge-card p-4 bg-white/[0.02]">
+        <AvatarUploader
+          value={value.avatarUrl}
+          onChange={(url) => onChange({ ...value, avatarUrl: url })}
+          label="Foto de perfil"
+          size={88}
+        />
+      </div>
+
       <Field label="Cargo / título">
         <input className="ge-input w-full px-3 py-2.5" placeholder="Ex: Designer · Pastor · Corretor"
           value={value.jobTitle} onChange={(e) => onChange({ ...value, jobTitle: e.target.value })} />
-      </Field>
-      <Field label="Foto (URL)">
-        <input className="ge-input w-full px-3 py-2.5" placeholder="https://..."
-          value={value.avatarUrl} onChange={(e) => onChange({ ...value, avatarUrl: e.target.value })} />
       </Field>
       <Field label="Bio curta (até 280)">
         <textarea rows={3} maxLength={280} className="ge-input w-full px-3 py-2.5"
@@ -307,19 +363,120 @@ function Step3({ value, onChange }: any) {
         <input type="color" className="h-11 w-20 ge-input p-1" value={value.primaryColor}
           onChange={(e) => onChange({ ...value, primaryColor: e.target.value })} />
       </Field>
+
+      <div className="pt-4 border-t border-white/10 space-y-4">
+        <div>
+          <h3 className="font-semibold text-white">Empresa (opcional)</h3>
+          <p className="text-xs text-gray-400">Mostre o nome e a logo da empresa onde você trabalha.</p>
+        </div>
+        <Field label="Nome da empresa">
+          <input className="ge-input w-full px-3 py-2.5" placeholder="Ex: Gleego Tech"
+            value={value.companyName} onChange={(e) => onChange({ ...value, companyName: e.target.value })} />
+        </Field>
+        <div className="ge-card p-4 bg-white/[0.02]">
+          <AvatarUploader
+            value={value.companyLogoUrl}
+            onChange={(url) => onChange({ ...value, companyLogoUrl: url })}
+            label="Logo da empresa"
+            size={72}
+          />
+        </div>
+      </div>
     </div>
   );
 }
 
 function Step4({ buttons, setButtons, socials, setSocials }: any) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div>
         <h2 className="text-xl font-bold text-white">Seus links</h2>
-        <p className="text-sm text-gray-400">Adicione botões e redes sociais (pode pular).</p>
+        <p className="text-sm text-gray-400">Clique para adicionar — preencha só os que quiser.</p>
       </div>
-      <LinkList title="Botões" items={buttons} onChange={setButtons} labelPh="Ex: Meu site" max={5} />
-      <LinkList title="Redes sociais" items={socials} onChange={setSocials} labelPh="Ex: Instagram" max={5} />
+
+      <QuickList
+        title="Botões de contato"
+        items={buttons}
+        onChange={setButtons}
+        presets={QUICK_BUTTONS}
+        max={6}
+      />
+      <QuickList
+        title="Redes sociais"
+        items={socials}
+        onChange={setSocials}
+        presets={QUICK_SOCIALS}
+        max={8}
+      />
+    </div>
+  );
+}
+
+function QuickList({ title, items, onChange, presets, max }: {
+  title: string; items: Link[]; onChange: (l: Link[]) => void;
+  presets: { type: string; label: string; placeholder: string; prefix: string }[]; max: number;
+}) {
+  function add(p: { type: string; label: string; prefix: string }) {
+    if (items.length >= max) return;
+    if (items.some((i) => i.type === p.type)) return;
+    onChange([...items, { type: p.type, label: p.label, url: p.prefix }]);
+  }
+  return (
+    <div className="space-y-3">
+      <h3 className="font-semibold text-sm text-white">{title}</h3>
+      <div className="flex flex-wrap gap-2">
+        {presets.map((p) => {
+          const added = items.some((i) => i.type === p.type);
+          return (
+            <button
+              key={p.type}
+              type="button"
+              onClick={() => add(p)}
+              disabled={added}
+              className={`px-3 py-1.5 rounded-full text-xs border transition ${
+                added
+                  ? 'border-[var(--ge-green)] bg-[var(--ge-green)]/10 text-[var(--ge-green)]'
+                  : 'border-white/15 text-gray-300 hover:border-[var(--ge-green)] hover:text-white'
+              }`}
+            >
+              {added ? '✓ ' : '+ '}{p.label}
+            </button>
+          );
+        })}
+      </div>
+      {items.length === 0 && (
+        <p className="text-xs text-gray-500">Nenhum {title.toLowerCase()} ainda. Clique acima para adicionar.</p>
+      )}
+      <div className="space-y-2">
+        {items.map((item, i) => {
+          const preset = presets.find((p) => p.type === item.type);
+          return (
+            <div key={i} className="grid grid-cols-[110px_1fr_auto] gap-2 items-center">
+              <span className="text-xs text-gray-300 px-2 py-2 bg-white/5 rounded-md border border-white/10 truncate">
+                {item.label}
+              </span>
+              <input
+                className="ge-input px-3 py-2 text-sm min-w-0"
+                placeholder={preset?.placeholder || 'https://'}
+                value={item.url}
+                onChange={(e) => {
+                  const c = [...items];
+                  c[i] = { ...c[i], url: e.target.value };
+                  onChange(c);
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, j) => j !== i))}
+                className="px-2 text-gray-500 hover:text-red-400"
+                aria-label="Remover"
+              >
+                ×
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
