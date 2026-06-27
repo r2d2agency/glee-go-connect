@@ -20,6 +20,11 @@ enum Plan {
   BUSINESS
 }
 
+enum CardType {
+  BIO_LINK
+  DIGITAL_CARD
+}
+
 model Company {
   id        String   @id @default(uuid())
   name      String
@@ -49,6 +54,7 @@ model Card {
   companyId    String
   company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   slug         String   @unique
+  type         CardType @default(BIO_LINK)
   fullName     String
   jobTitle     String?
   bio          String?
@@ -61,11 +67,12 @@ model Card {
   primaryColor String?
   accentColor  String?
   socialLinks  Json?
+  customButtons Json?
   seoTitle     String?
   seoDescription String?
   metaPixelId  String?
   gaId         String?
-  template     String   @default("classic")
+  template     String   @default("minimal")
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
