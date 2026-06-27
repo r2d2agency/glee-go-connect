@@ -17,12 +17,17 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { token } = await api('/auth/login', {
+      const { token, user } = await api('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
       localStorage.setItem('gleego_token', token);
+      if (user?.role) localStorage.setItem('gleego_role', user.role);
       toast.success('Bem-vindo de volta!');
+      if (user?.role === 'ADMIN_MASTER') {
+        router.push('/admin');
+        return;
+      }
       // Se a conta ainda não está configurada (sem cartões), abre o Wizard.
       try {
         const cards = await api('/cards');
