@@ -74,6 +74,9 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const buttons: Link[] = Array.isArray(card.customButtons) ? card.customButtons : [];
   const socials: Link[] = Array.isArray(card.socialLinks) ? card.socialLinks : [];
   const areas: Area[] = Array.isArray(card.areas) ? card.areas : [];
+  const services: { icon?: string; title: string; description?: string }[] =
+    Array.isArray(card.services) ? card.services.filter((s: any) => s && s.title) : [];
+  const areasHaveDesc = areas.some((a) => a.description && a.description.trim());
   const categories: string[] = (Array.isArray(card.categories) ? card.categories : []).filter(Boolean);
   const products: Product[] = (Array.isArray(card.products) ? card.products : []).filter((p: Product) => p && p.title);
   const gallery: string[] = (Array.isArray(card.gallery) ? card.gallery : []).filter(Boolean);
@@ -230,16 +233,62 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
         {areas.length > 0 && (
           <section className="mt-5 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6 ge-rise">
             <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold">ÁREA DE ATUAÇÃO</h2>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {areas.map((a, i) => (
-                <span key={i} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-sm"
-                      style={{ borderColor: i === 0 ? primary : 'rgba(255,255,255,.1)', background: i === 0 ? `${primary}1a` : 'transparent', color: i === 0 ? primary : '#fff' }}>
-                  <Icon name={a.icon || ICON_OPTIONS[i % ICON_OPTIONS.length]} className="size-4" color={ICON_COLORS[i % ICON_COLORS.length]} />
-                  {a.label}
-                </span>
+            {areasHaveDesc ? (
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {areas.map((a, i) => (
+                  <div key={i} className="ge-rise rounded-xl border p-3 text-center bg-white/[.02]"
+                       style={{ borderColor: i === 0 ? primary : 'rgba(255,255,255,.1)', animationDelay: `${i * 50}ms` }}>
+                    <span className="mx-auto mb-2 size-10 grid place-items-center rounded-lg"
+                          style={{ background: `${primary}1a`, color: primary }}>
+                      <Icon name={a.icon || ICON_OPTIONS[i % ICON_OPTIONS.length]} className="size-5" />
+                    </span>
+                    <div className="text-sm font-semibold leading-tight" style={{ color: i === 0 ? primary : '#fff' }}>{a.label}</div>
+                    {a.description && <div className="text-[11px] text-white/55 mt-1 leading-snug">{a.description}</div>}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {areas.map((a, i) => (
+                  <span key={i} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-sm"
+                        style={{ borderColor: i === 0 ? primary : 'rgba(255,255,255,.1)', background: i === 0 ? `${primary}1a` : 'transparent', color: i === 0 ? primary : '#fff' }}>
+                    <Icon name={a.icon || ICON_OPTIONS[i % ICON_OPTIONS.length]} className="size-4" color={ICON_COLORS[i % ICON_COLORS.length]} />
+                    {a.label}
+                  </span>
+                ))}
+              </div>
+            )}
+            <p className="mt-3 text-xs text-white/50">Clique nas categorias para saber mais sobre minha atuação.</p>
+          </section>
+        )}
+
+        {/* SERVIÇOS — Como posso te ajudar */}
+        {services.length > 0 && (
+          <section className="mt-5 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
+            <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold">COMO POSSO TE AJUDAR</h2>
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              {services.map((s, i) => (
+                <div key={i} className="ge-rise rounded-xl border border-white/10 bg-white/[.02] p-3 text-center"
+                     style={{ animationDelay: `${i * 60}ms` }}>
+                  <span className="mx-auto mb-2 size-11 grid place-items-center rounded-full"
+                        style={{ background: `${ICON_COLORS[i % ICON_COLORS.length]}1f`, color: ICON_COLORS[i % ICON_COLORS.length] }}>
+                    <Icon name={s.icon || 'briefcase'} className="size-5" />
+                  </span>
+                  <div className="text-sm font-semibold leading-tight">{s.title}</div>
+                  {s.description && <div className="text-[11px] text-white/60 mt-1 leading-snug">{s.description}</div>}
+                </div>
               ))}
             </div>
-            <p className="mt-3 text-xs text-white/50">Clique nas categorias para saber mais sobre minha atuação.</p>
+            {card.servicesCtaLabel && card.servicesCtaUrl && (
+              <div className="mt-5 flex justify-center">
+                <a href={card.servicesCtaUrl} target="_blank" rel="noreferrer"
+                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border"
+                   style={{ borderColor: primary, color: primary, background: `${primary}10` }}>
+                  <Icon name="whatsapp" className="size-4" color={primary} />
+                  {card.servicesCtaLabel}
+                </a>
+              </div>
+            )}
           </section>
         )}
 
