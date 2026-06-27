@@ -68,6 +68,7 @@ export default function RegisterWizard() {
   });
   const [buttons, setButtons] = useState<Link[]>([]);
   const [socials, setSocials] = useState<Link[]>([]);
+  const [accountCreated, setAccountCreated] = useState(false);
 
   const slug = useMemo(() => account.slug || slugify(account.fullName), [account.slug, account.fullName]);
 
@@ -76,7 +77,7 @@ export default function RegisterWizard() {
     setBio((b) => ({ ...b, primaryColor: t.primaryColor }));
   }
 
-  function next() {
+  async function next() {
     if (step === 1) {
       if (!account.fullName.trim()) return toast.error('Informe seu nome.');
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account.email)) return toast.error('Email inválido.');
@@ -87,6 +88,38 @@ export default function RegisterWizard() {
       if (!account.industry) return toast.error('Selecione seu ramo de atividade.');
       if (!account.source) return toast.error('Conte como nos conheceu.');
       if (!/^[a-z0-9-]{2,40}$/.test(slug)) return toast.error('Slug inválido. Use letras minúsculas e hífen.');
+      if (!accountCreated) {
+        setLoading(true);
+        try {
+          const { token } = await api('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+              fullName: account.fullName.trim(),
+              email: account.email.trim().toLowerCase(),
+              password: account.password,
+              companyName: account.fullName.trim(),
+              whatsapp: account.whatsapp.trim(),
+              city: account.city.trim(),
+              state: account.state,
+              industry: account.industry,
+              source: account.source,
+            }),
+          });
+          localStorage.setItem('gleego_token', token);
+          setAccountCreated(true);
+          toast.success('Conta criada! Agora personalize sua bio.');
+        } catch (err) {
+          const msg = humanizeError(err, 'Não foi possível criar a conta.');
+          if (/já cadastrado/i.test(msg)) {
+            toast.error('Esse email já tem conta. Faça login para continuar.');
+          } else {
+            toast.error(msg);
+          }
+          setLoading(false);
+          return;
+        }
+        setLoading(false);
+      }
     }
     setStep((s) => Math.min(4, s + 1));
   }
@@ -94,21 +127,6 @@ export default function RegisterWizard() {
   async function finish() {
     setLoading(true);
     try {
-      const { token } = await api('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({
-          fullName: account.fullName.trim(),
-          email: account.email.trim().toLowerCase(),
-          password: account.password,
-          companyName: account.fullName.trim(),
-          whatsapp: account.whatsapp.trim(),
-          city: account.city.trim(),
-          state: account.state,
-          industry: account.industry,
-          source: account.source,
-        }),
-      });
-      localStorage.setItem('gleego_token', token);
       await api('/cards', {
         method: 'POST',
         body: JSON.stringify({
