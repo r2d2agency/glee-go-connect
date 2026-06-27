@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
+import { ApiError, api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 
 export default function LoginPage() {
@@ -31,7 +31,11 @@ export default function LoginPage() {
       } catch {}
       router.push('/dashboard');
     } catch (err) {
-      toast.error(humanizeError(err, 'Não foi possível entrar.'));
+      if (err instanceof ApiError && err.status === 401) {
+        toast.error('Email ou senha incorretos. Se alterou a senha no EasyPanel, faça rebuild do backend.');
+      } else {
+        toast.error(humanizeError(err, 'Não foi possível entrar.'));
+      }
     } finally {
       setLoading(false);
     }

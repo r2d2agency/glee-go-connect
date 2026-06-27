@@ -11,17 +11,27 @@ async function bootstrap() {
     ?.split(',')
     .map(s => s.trim().replace(/\/+$/, ''))
     .filter(Boolean);
+  const defaultOrigins = [
+    'https://bio.gleego.com.br',
+    'https://www.bio.gleego.com.br',
+    'http://localhost:8080',
+    'http://localhost:3000',
+  ];
+  const allowedOrigins = [...new Set([...(corsEnv ?? []), ...defaultOrigins])];
   app.enableCors({
     origin: (origin, cb) => {
       if (!origin) return cb(null, true);
       const clean = origin.replace(/\/+$/, '');
-      if (!corsEnv || corsEnv.length === 0) return cb(null, true);
-      const allowed = corsEnv.includes(clean) || clean.endsWith('.easypanel.host');
+      const allowed =
+        allowedOrigins.includes(clean) ||
+        clean.endsWith('.gleego.com.br') ||
+        clean.endsWith('.easypanel.host');
       return cb(null, allowed);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    optionsSuccessStatus: 204,
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.setGlobalPrefix('api');

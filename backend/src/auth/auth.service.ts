@@ -18,13 +18,14 @@ export class AuthService {
     industry?: string;
     source?: string;
   }) {
-    const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const email = dto.email.trim().toLowerCase();
+    const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) throw new ConflictException('Email já cadastrado');
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const company = await this.prisma.company.create({
       data: {
         name: dto.companyName,
-        email: dto.email,
+        email,
         whatsapp: dto.whatsapp,
         city: dto.city,
         state: dto.state,
@@ -34,7 +35,7 @@ export class AuthService {
     });
     const user = await this.prisma.user.create({
       data: {
-        email: dto.email,
+        email,
         passwordHash,
         fullName: dto.fullName,
         role: 'ADMIN_COMPANY',
@@ -45,7 +46,8 @@ export class AuthService {
   }
 
   async login(dto: { email: string; password: string }) {
-    const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const email = dto.email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new UnauthorizedException('Credenciais inválidas');
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
     if (!ok) throw new UnauthorizedException('Credenciais inválidas');
