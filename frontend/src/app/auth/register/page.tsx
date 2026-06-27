@@ -189,11 +189,11 @@ function Steps({ step }: { step: number }) {
         const done = step > n;
         return (
           <li key={l} className="flex items-center gap-2 shrink-0">
-            <span className={`size-7 rounded-full grid place-items-center text-xs font-semibold border ${active ? 'bg-blue-700 text-white border-blue-700' : done ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-500'}`}>
+            <span className={`size-7 rounded-full grid place-items-center text-xs font-semibold border ${active ? 'bg-[var(--ge-green)] text-[#04130a] border-[var(--ge-green)] ge-pulse' : done ? 'bg-[var(--ge-green-2)] text-white border-[var(--ge-green-2)]' : 'bg-white/5 text-gray-400 border-white/10'}`}>
               {done ? '✓' : n}
             </span>
-            <span className={`text-sm ${active ? 'font-semibold text-slate-900' : 'text-slate-500'}`}>{l}</span>
-            {n < 4 && <span className="hidden sm:block w-8 h-px bg-slate-300" />}
+            <span className={`text-sm ${active ? 'font-semibold text-white' : 'text-gray-400'}`}>{l}</span>
+            {n < 4 && <span className="hidden sm:block w-8 h-px bg-white/10" />}
           </li>
         );
       })}
@@ -205,29 +205,29 @@ function Step1({ value, onChange, slug }: any) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold">Crie sua conta</h2>
-        <p className="text-sm text-slate-500">É grátis e leva menos de 1 minuto.</p>
+        <h2 className="text-xl font-bold text-white">Crie sua conta</h2>
+        <p className="text-sm text-gray-400">É grátis e leva menos de 1 minuto.</p>
       </div>
       <Field label="Seu nome">
-        <input className="w-full border rounded-lg px-3 py-2.5" value={value.fullName} onChange={(e) => onChange({ ...value, fullName: e.target.value })} />
+        <input className="ge-input w-full px-3 py-2.5" value={value.fullName} onChange={(e) => onChange({ ...value, fullName: e.target.value })} />
       </Field>
       <Field label="Email">
-        <input type="email" className="w-full border rounded-lg px-3 py-2.5" value={value.email} onChange={(e) => onChange({ ...value, email: e.target.value })} />
+        <input type="email" className="ge-input w-full px-3 py-2.5" value={value.email} onChange={(e) => onChange({ ...value, email: e.target.value })} />
       </Field>
       <Field label="Senha (mín. 6)">
-        <input type="password" className="w-full border rounded-lg px-3 py-2.5" value={value.password} onChange={(e) => onChange({ ...value, password: e.target.value })} />
+        <input type="password" className="ge-input w-full px-3 py-2.5" value={value.password} onChange={(e) => onChange({ ...value, password: e.target.value })} />
       </Field>
       <Field label="WhatsApp">
-        <input inputMode="tel" placeholder="(11) 99999-9999" className="w-full border rounded-lg px-3 py-2.5"
+        <input inputMode="tel" placeholder="(11) 99999-9999" className="ge-input w-full px-3 py-2.5"
           value={value.whatsapp} onChange={(e) => onChange({ ...value, whatsapp: e.target.value })} />
       </Field>
       <div className="grid grid-cols-[1fr_140px] gap-3">
         <Field label="Cidade">
-          <input className="w-full border rounded-lg px-3 py-2.5" value={value.city}
+          <input className="ge-input w-full px-3 py-2.5" value={value.city}
             onChange={(e) => onChange({ ...value, city: e.target.value })} />
         </Field>
         <Field label="Estado (UF)">
-          <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.state}
+          <select className="ge-input w-full px-3 py-2.5" value={value.state}
             onChange={(e) => onChange({ ...value, state: e.target.value })}>
             <option value="">UF</option>
             {BR_STATES.map((s) => (
@@ -237,25 +237,25 @@ function Step1({ value, onChange, slug }: any) {
         </Field>
       </div>
       <Field label="Ramo de atividade">
-        <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.industry}
+        <select className="ge-input w-full px-3 py-2.5" value={value.industry}
           onChange={(e) => onChange({ ...value, industry: e.target.value })}>
           <option value="">Selecione...</option>
           {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
         </select>
       </Field>
       <Field label="Como nos conheceu?">
-        <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.source}
+        <select className="ge-input w-full px-3 py-2.5" value={value.source}
           onChange={(e) => onChange({ ...value, source: e.target.value })}>
           <option value="">Selecione...</option>
           {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
       </Field>
       <Field label="Seu link público">
-        <div className="flex items-center border rounded-lg overflow-hidden">
-          <span className="px-3 py-2.5 bg-slate-50 text-slate-500 text-sm border-r">bio.gleego.com.br/</span>
-          <input className="flex-1 px-3 py-2.5 min-w-0" placeholder="seu-link" value={value.slug} onChange={(e) => onChange({ ...value, slug: slugify(e.target.value) })} />
+        <div className="flex items-center ge-input overflow-hidden p-0">
+          <span className="px-3 py-2.5 bg-white/5 text-gray-400 text-sm border-r border-white/10">bio.gleego.com.br/</span>
+          <input className="flex-1 px-3 py-2.5 min-w-0 bg-transparent text-white outline-none" placeholder="seu-link" value={value.slug} onChange={(e) => onChange({ ...value, slug: slugify(e.target.value) })} />
         </div>
-        <p className="text-xs text-slate-500 mt-1">Sugerido: <span className="font-mono">{slug || '...'}</span></p>
+        <p className="text-xs text-gray-400 mt-1">Sugerido: <span className="font-mono text-[var(--ge-green)]">{slug || '...'}</span></p>
       </Field>
     </div>
   );
@@ -265,18 +265,18 @@ function Step2({ templates, selected, onSelect }: any) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold">Escolha um template</h2>
-        <p className="text-sm text-slate-500">Você pode mudar a qualquer momento.</p>
+        <h2 className="text-xl font-bold text-white">Escolha um template</h2>
+        <p className="text-sm text-gray-400">Você pode mudar a qualquer momento.</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {templates.map((t: Template) => (
           <button key={t.id} type="button" onClick={() => onSelect(t)}
-            className={`text-left p-4 rounded-xl border-2 transition ${selected.id === t.id ? 'border-blue-700 ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'}`}>
-            <div className={`h-20 rounded-lg mb-3 ${t.dark ? 'bg-slate-900' : 'bg-slate-100'} grid place-items-center`}>
+            className={`text-left p-4 rounded-xl border-2 transition ${selected.id === t.id ? 'border-[var(--ge-green)] ring-2 ring-[var(--ge-green-glow)] bg-white/5' : 'border-white/10 hover:border-white/20 bg-white/[0.02]'}`}>
+            <div className={`h-20 rounded-lg mb-3 ${t.dark ? 'bg-black/60' : 'bg-white/10'} grid place-items-center`}>
               <div className="w-10 h-10 rounded-full" style={{ background: t.primaryColor }} />
             </div>
-            <div className="font-semibold">{t.name}</div>
-            <div className="text-xs text-slate-500">{t.description}</div>
+            <div className="font-semibold text-white">{t.name}</div>
+            <div className="text-xs text-gray-400">{t.description}</div>
           </button>
         ))}
       </div>
@@ -288,23 +288,23 @@ function Step3({ value, onChange }: any) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold">Sua bio</h2>
-        <p className="text-sm text-slate-500">Conte rapidamente o que você faz.</p>
+        <h2 className="text-xl font-bold text-white">Sua bio</h2>
+        <p className="text-sm text-gray-400">Conte rapidamente o que você faz.</p>
       </div>
       <Field label="Cargo / título">
-        <input className="w-full border rounded-lg px-3 py-2.5" placeholder="Ex: Designer · Pastor · Corretor"
+        <input className="ge-input w-full px-3 py-2.5" placeholder="Ex: Designer · Pastor · Corretor"
           value={value.jobTitle} onChange={(e) => onChange({ ...value, jobTitle: e.target.value })} />
       </Field>
       <Field label="Foto (URL)">
-        <input className="w-full border rounded-lg px-3 py-2.5" placeholder="https://..."
+        <input className="ge-input w-full px-3 py-2.5" placeholder="https://..."
           value={value.avatarUrl} onChange={(e) => onChange({ ...value, avatarUrl: e.target.value })} />
       </Field>
       <Field label="Bio curta (até 280)">
-        <textarea rows={3} maxLength={280} className="w-full border rounded-lg px-3 py-2.5"
+        <textarea rows={3} maxLength={280} className="ge-input w-full px-3 py-2.5"
           value={value.bio} onChange={(e) => onChange({ ...value, bio: e.target.value })} />
       </Field>
       <Field label="Cor principal">
-        <input type="color" className="h-11 w-20 border rounded-lg" value={value.primaryColor}
+        <input type="color" className="h-11 w-20 ge-input p-1" value={value.primaryColor}
           onChange={(e) => onChange({ ...value, primaryColor: e.target.value })} />
       </Field>
     </div>
@@ -315,8 +315,8 @@ function Step4({ buttons, setButtons, socials, setSocials }: any) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold">Seus links</h2>
-        <p className="text-sm text-slate-500">Adicione botões e redes sociais (pode pular).</p>
+        <h2 className="text-xl font-bold text-white">Seus links</h2>
+        <p className="text-sm text-gray-400">Adicione botões e redes sociais (pode pular).</p>
       </div>
       <LinkList title="Botões" items={buttons} onChange={setButtons} labelPh="Ex: Meu site" max={5} />
       <LinkList title="Redes sociais" items={socials} onChange={setSocials} labelPh="Ex: Instagram" max={5} />
@@ -328,20 +328,20 @@ function LinkList({ title, items, onChange, labelPh, max }: any) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-sm">{title}</h3>
+        <h3 className="font-semibold text-sm text-white">{title}</h3>
         <button type="button" onClick={() => items.length < max && onChange([...items, { label: '', url: '' }])}
-          className="text-xs text-blue-700 hover:underline disabled:opacity-50" disabled={items.length >= max}>
+          className="text-xs ge-link hover:underline disabled:opacity-50" disabled={items.length >= max}>
           + Adicionar
         </button>
       </div>
       {items.map((item: Link, i: number) => (
         <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-          <input className="border rounded-lg px-3 py-2 text-sm min-w-0" placeholder={labelPh} value={item.label}
+          <input className="ge-input px-3 py-2 text-sm min-w-0" placeholder={labelPh} value={item.label}
             onChange={(e) => { const c = [...items]; c[i] = { ...c[i], label: e.target.value }; onChange(c); }} />
-          <input className="border rounded-lg px-3 py-2 text-sm min-w-0" placeholder="https://" value={item.url}
+          <input className="ge-input px-3 py-2 text-sm min-w-0" placeholder="https://" value={item.url}
             onChange={(e) => { const c = [...items]; c[i] = { ...c[i], url: e.target.value }; onChange(c); }} />
           <button type="button" onClick={() => onChange(items.filter((_: any, j: number) => j !== i))}
-            className="px-2 text-slate-400 hover:text-red-600">×</button>
+            className="px-2 text-gray-500 hover:text-red-400">×</button>
         </div>
       ))}
     </div>
@@ -351,7 +351,7 @@ function LinkList({ title, items, onChange, labelPh, max }: any) {
 function Field({ label, children }: any) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-xs font-medium text-slate-600">{label}</span>
+      <span className="text-xs font-medium text-gray-300">{label}</span>
       {children}
     </label>
   );
