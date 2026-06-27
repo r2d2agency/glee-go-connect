@@ -251,7 +251,7 @@ function Step1({ value, onChange, slug }: any) {
       </Field>
       <Field label="Seu link público">
         <div className="flex items-center border rounded-lg overflow-hidden">
-          <span className="px-3 py-2.5 bg-slate-50 text-slate-500 text-sm border-r">glee.go/c/</span>
+          <span className="px-3 py-2.5 bg-slate-50 text-slate-500 text-sm border-r">bio.gleego.com.br/</span>
           <input className="flex-1 px-3 py-2.5 min-w-0" placeholder="seu-link" value={value.slug} onChange={(e) => onChange({ ...value, slug: slugify(e.target.value) })} />
         </div>
         <p className="text-xs text-slate-500 mt-1">Sugerido: <span className="font-mono">{slug || '...'}</span></p>
@@ -368,7 +368,7 @@ function Preview({ template, fullName, slug, jobTitle, bio, avatarUrl, primaryCo
         <h3 className="font-bold mt-3 truncate">{fullName}</h3>
         {jobTitle && <p className={`text-sm ${dark ? 'text-slate-300' : 'text-slate-500'}`}>{jobTitle}</p>}
         {bio && <p className={`text-sm mt-2 ${dark ? 'text-slate-300' : 'text-slate-600'}`}>{bio}</p>}
-        <p className={`text-xs mt-2 ${dark ? 'text-slate-400' : 'text-slate-400'}`}>glee.go/c/{slug}</p>
+        <p className={`text-xs mt-2 ${dark ? 'text-slate-400' : 'text-slate-400'}`}>bio.gleego.com.br/{slug}</p>
         <div className="mt-4 space-y-2">
           {buttons.filter((b: Link) => b.label).slice(0, 5).map((b: Link, i: number) => (
             <div key={i} className="py-2.5 rounded-lg text-sm font-medium truncate" style={{ background: primaryColor, color: '#fff' }}>
