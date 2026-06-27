@@ -104,6 +104,9 @@ model Card {
   categories      Json?
   products        Json?
   gallery         Json?
+  services         Json?
+  servicesCtaLabel String?
+  servicesCtaUrl   String?
   seoTitle     String?
   seoDescription String?
   metaPixelId  String?

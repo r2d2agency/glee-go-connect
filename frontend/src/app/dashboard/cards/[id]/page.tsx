@@ -15,6 +15,7 @@ type Product = {
   link?: string;
   category?: string;
 };
+type Service = { icon?: string; title: string; description?: string };
 type Template = {
   id: string; name: string; description: string;
   primaryColor: string; accentColor: string; bgColor: string; dark: boolean;
@@ -29,7 +30,7 @@ export default function EditCardPage() {
   const [saving, setSaving] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [card, setCard] = useState<any>(null);
-  const [tab, setTab] = useState<'perfil' | 'links' | 'catalogo' | 'galeria' | 'banner' | 'visual'>('perfil');
+  const [tab, setTab] = useState<'perfil' | 'links' | 'catalogo' | 'galeria' | 'banner' | 'servicos' | 'visual'>('perfil');
 
   useEffect(() => {
     const token = localStorage.getItem('gleego_token');
@@ -98,6 +99,9 @@ export default function EditCardPage() {
         categories: card.categories ?? [],
         products: (card.products ?? []).slice(0, 10),
         gallery: card.gallery ?? [],
+        services: card.services ?? [],
+        servicesCtaLabel: card.servicesCtaLabel ?? '',
+        servicesCtaUrl: card.servicesCtaUrl ?? '',
       };
       await api(`/cards/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
       toast.success('Cartão salvo!');
@@ -116,11 +120,13 @@ export default function EditCardPage() {
   const categories: string[] = Array.isArray(card.categories) ? card.categories : [];
   const products: Product[] = Array.isArray(card.products) ? card.products : [];
   const gallery: string[] = Array.isArray(card.gallery) ? card.gallery : [];
+  const services: Service[] = Array.isArray(card.services) ? card.services : [];
 
   const TABS: { id: typeof tab; label: string }[] = [
     { id: 'perfil', label: 'Perfil' },
     { id: 'links', label: 'Links' },
     { id: 'banner', label: 'Banner' },
+    { id: 'servicos', label: 'Serviços' },
     { id: 'catalogo', label: 'Catálogo' },
     { id: 'galeria', label: 'Galeria' },
     { id: 'visual', label: 'Visual' },
@@ -247,14 +253,17 @@ export default function EditCardPage() {
             <div className="space-y-2">
               {areas.length === 0 && <p className="text-sm text-gray-500">Nenhuma área. Ex: Iluminação, Consultoria...</p>}
               {areas.map((a, i) => (
-                <div key={i} className="grid grid-cols-[1fr_140px_auto] gap-2">
-                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="Rótulo" value={a.label}
-                    onChange={(e) => { const c = [...areas]; c[i] = { ...c[i], label: e.target.value }; set('areas', c); }} />
-                  <select className="border rounded px-2 py-1.5 text-sm" value={a.icon || 'lightbulb'}
-                    onChange={(e) => { const c = [...areas]; c[i] = { ...c[i], icon: e.target.value }; set('areas', c); }}>
+                <div key={i} className="border rounded-lg p-2 grid grid-cols-[1fr_140px_auto] gap-2">
+                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="Rótulo" value={a.label as string}
+                    onChange={(e) => { const c: any[] = [...areas]; c[i] = { ...c[i], label: e.target.value }; set('areas', c); }} />
+                  <select className="border rounded px-2 py-1.5 text-sm" value={(a.icon as string) || 'lightbulb'}
+                    onChange={(e) => { const c: any[] = [...areas]; c[i] = { ...c[i], icon: e.target.value }; set('areas', c); }}>
                     {['lightbulb','bars','users','cube','target','gear','briefcase','chat'].map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                   <button onClick={() => set('areas', areas.filter((_, j) => j !== i))} className="text-red-600 text-sm px-2">×</button>
+                  <input className="col-span-3 border rounded px-2 py-1.5 text-sm" placeholder="Descrição curta (opcional)"
+                    value={(a as any).description ?? ''}
+                    onChange={(e) => { const c: any[] = [...areas]; c[i] = { ...c[i], description: e.target.value }; set('areas', c); }} />
                 </div>
               ))}
             </div>
@@ -311,6 +320,47 @@ export default function EditCardPage() {
               {card.bannerUrl && (
                 <button onClick={() => { set('bannerUrl', ''); set('bannerCtaLabel', ''); set('bannerCtaUrl', ''); }} className="text-sm text-red-600 hover:underline">Remover banner</button>
               )}
+            </section>
+          )}
+
+          {tab === 'servicos' && (
+            <section className="bg-white border rounded-xl p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-1">
+                <div>
+                  <h2 className="font-semibold">Como posso te ajudar</h2>
+                  <p className="text-xs text-gray-500">Grade de serviços/diferenciais com ícone, título e descrição.</p>
+                </div>
+                <button onClick={() => set('services', [...services, { icon: 'briefcase', title: '', description: '' }])}
+                  className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-3 mt-3">
+                {services.length === 0 && <p className="text-sm text-gray-500 sm:col-span-2">Ex: Consultoria Jurídica, Elaboração de Contratos...</p>}
+                {services.map((s, i) => (
+                  <div key={i} className="border rounded-xl p-3 space-y-2 bg-gray-50/50">
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs font-semibold text-gray-500">Serviço #{i + 1}</span>
+                      <button onClick={() => set('services', services.filter((_, j) => j !== i))} className="text-red-600 text-sm">Remover</button>
+                    </div>
+                    <div className="grid grid-cols-[140px_1fr] gap-2">
+                      <select className="border rounded px-2 py-1.5 text-sm bg-white" value={s.icon || 'briefcase'}
+                        onChange={(e) => { const c = [...services]; c[i] = { ...c[i], icon: e.target.value }; set('services', c); }}>
+                        {['lightbulb','bars','users','cube','target','gear','briefcase','chat','user','website','phone','email'].map((o) => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                      <input className="border rounded px-2 py-1.5 text-sm" placeholder="Título" value={s.title}
+                        onChange={(e) => { const c = [...services]; c[i] = { ...c[i], title: e.target.value }; set('services', c); }} />
+                    </div>
+                    <textarea rows={2} className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Descrição curta"
+                      value={s.description ?? ''}
+                      onChange={(e) => { const c = [...services]; c[i] = { ...c[i], description: e.target.value }; set('services', c); }} />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 border-t pt-4 grid sm:grid-cols-2 gap-3">
+                <input className="border rounded px-3 py-2" placeholder="Texto do botão (ex: Falar com a advogada)"
+                  value={card.servicesCtaLabel ?? ''} onChange={(e) => set('servicesCtaLabel', e.target.value)} />
+                <input className="border rounded px-3 py-2" placeholder="Link do botão (WhatsApp, formulário...)"
+                  value={card.servicesCtaUrl ?? ''} onChange={(e) => set('servicesCtaUrl', e.target.value)} />
+              </div>
             </section>
           )}
 
