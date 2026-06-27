@@ -208,6 +208,18 @@ export default function AdminPage() {
           <h1 className="text-base sm:text-lg font-semibold flex-1 ml-2">Painel Superadmin</h1>
           <button onClick={load} className="text-sm border border-white/10 rounded-lg px-3 py-1.5 hover:bg-white/5">↻ Atualizar</button>
           <a href="/dashboard" className="text-sm ge-link hover:underline">← Voltar</a>
+          <button
+            onClick={() => {
+              try {
+                localStorage.removeItem('gleego_token');
+                localStorage.removeItem('gleego_role');
+              } catch {}
+              window.location.href = '/auth/login';
+            }}
+            className="text-sm border border-red-500/30 text-red-300 rounded-lg px-3 py-1.5 hover:bg-red-500/10"
+          >
+            Sair
+          </button>
         </div>
         <nav className="max-w-7xl mx-auto px-4 flex gap-1 -mb-px overflow-x-auto">
           {([
