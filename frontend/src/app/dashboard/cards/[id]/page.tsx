@@ -15,6 +15,7 @@ type Product = {
   link?: string;
   category?: string;
 };
+type Service = { icon?: string; title: string; description?: string };
 type Template = {
   id: string; name: string; description: string;
   primaryColor: string; accentColor: string; bgColor: string; dark: boolean;
@@ -29,7 +30,7 @@ export default function EditCardPage() {
   const [saving, setSaving] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [card, setCard] = useState<any>(null);
-  const [tab, setTab] = useState<'perfil' | 'links' | 'catalogo' | 'galeria' | 'banner' | 'visual'>('perfil');
+  const [tab, setTab] = useState<'perfil' | 'links' | 'catalogo' | 'galeria' | 'banner' | 'servicos' | 'visual'>('perfil');
 
   useEffect(() => {
     const token = localStorage.getItem('gleego_token');
@@ -98,6 +99,9 @@ export default function EditCardPage() {
         categories: card.categories ?? [],
         products: (card.products ?? []).slice(0, 10),
         gallery: card.gallery ?? [],
+        services: card.services ?? [],
+        servicesCtaLabel: card.servicesCtaLabel ?? '',
+        servicesCtaUrl: card.servicesCtaUrl ?? '',
       };
       await api(`/cards/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
       toast.success('Cartão salvo!');
@@ -116,11 +120,13 @@ export default function EditCardPage() {
   const categories: string[] = Array.isArray(card.categories) ? card.categories : [];
   const products: Product[] = Array.isArray(card.products) ? card.products : [];
   const gallery: string[] = Array.isArray(card.gallery) ? card.gallery : [];
+  const services: Service[] = Array.isArray(card.services) ? card.services : [];
 
   const TABS: { id: typeof tab; label: string }[] = [
     { id: 'perfil', label: 'Perfil' },
     { id: 'links', label: 'Links' },
     { id: 'banner', label: 'Banner' },
+    { id: 'servicos', label: 'Serviços' },
     { id: 'catalogo', label: 'Catálogo' },
     { id: 'galeria', label: 'Galeria' },
     { id: 'visual', label: 'Visual' },
