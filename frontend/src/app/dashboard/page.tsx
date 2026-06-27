@@ -31,6 +31,10 @@ export default function Dashboard() {
   const [creating, setCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [user, setUser] = useState<{ email?: string; role?: string }>({});
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [upgrade, setUpgrade] = useState({ plan: 'PRO', message: '', contactPhone: '', address: '' });
+  const [upgradeSending, setUpgradeSending] = useState(false);
+  const [myRequests, setMyRequests] = useState<any[]>([]);
   const [form, setForm] = useState({
     fullName: '',
     slug: '',
@@ -61,6 +65,7 @@ export default function Dashboard() {
     }
     setUser(parseJwt(token));
     load();
+    api('/upgrades/mine').then(setMyRequests).catch(() => {});
   }, [router]);
 
   function logout() {
@@ -118,6 +123,22 @@ export default function Dashboard() {
     }
   }
 
+  async function requestUpgrade(e: React.FormEvent) {
+    e.preventDefault();
+    setUpgradeSending(true);
+    try {
+      await api('/upgrades', { method: 'POST', body: JSON.stringify(upgrade) });
+      toast.success('Solicitação enviada! Nossa equipe entrará em contato.');
+      setShowUpgrade(false);
+      setUpgrade({ plan: 'PRO', message: '', contactPhone: '', address: '' });
+      api('/upgrades/mine').then(setMyRequests).catch(() => {});
+    } catch (err) {
+      toast.error(humanizeError(err));
+    } finally {
+      setUpgradeSending(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <header className="bg-white border-b">
@@ -140,6 +161,48 @@ export default function Dashboard() {
       </header>
 
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
+        {/* Upgrade callout */}
+        <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white rounded-xl p-4 sm:p-5 mb-6 grid sm:grid-cols-[1fr_auto] gap-3 items-center">
+          <div>
+            <h3 className="font-semibold">Quer um cartão ou tag NFC físico?</h3>
+            <p className="text-sm opacity-90">Solicite seu upgrade — nossa equipe produz, ativa e envia o NFC vinculado à sua conta.</p>
+            {myRequests[0] && (
+              <p className="text-xs opacity-90 mt-2">
+                Última solicitação: <strong>{myRequests[0].status}</strong> ({myRequests[0].plan})
+              </p>
+            )}
+          </div>
+          <button onClick={() => setShowUpgrade(true)} className="bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold text-sm shrink-0">
+            Solicitar cartão NFC
+          </button>
+        </div>
+
+        {showUpgrade && (
+          <form onSubmit={requestUpgrade} className="bg-white border rounded-xl p-4 sm:p-6 mb-6 grid sm:grid-cols-2 gap-3">
+            <h3 className="sm:col-span-2 font-semibold">Solicitar cartão/tag NFC</h3>
+            <label className="text-sm sm:col-span-2">Plano desejado
+              <select className="mt-1 w-full border rounded px-3 py-2" value={upgrade.plan}
+                onChange={(e) => setUpgrade({ ...upgrade, plan: e.target.value })}>
+                <option value="PRO">PRO — Cartão NFC</option>
+                <option value="BUSINESS">BUSINESS — Cartão + Tag + Avançado</option>
+              </select>
+            </label>
+            <input className="border rounded px-3 py-2" placeholder="Telefone de contato"
+              value={upgrade.contactPhone} onChange={(e) => setUpgrade({ ...upgrade, contactPhone: e.target.value })} />
+            <input className="border rounded px-3 py-2" placeholder="Endereço de entrega"
+              value={upgrade.address} onChange={(e) => setUpgrade({ ...upgrade, address: e.target.value })} />
+            <textarea rows={3} className="border rounded px-3 py-2 sm:col-span-2"
+              placeholder="Mensagem para nossa equipe (opcional)"
+              value={upgrade.message} onChange={(e) => setUpgrade({ ...upgrade, message: e.target.value })} />
+            <div className="sm:col-span-2 flex gap-2">
+              <button type="button" onClick={() => setShowUpgrade(false)} className="px-4 py-2 border rounded-lg">Cancelar</button>
+              <button disabled={upgradeSending} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white py-2.5 rounded-lg disabled:opacity-50">
+                {upgradeSending ? 'Enviando...' : 'Enviar solicitação'}
+              </button>
+            </div>
+          </form>
+        )}
+
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 mb-6">
           <div className="min-w-0">
             <h2 className="text-xl sm:text-2xl font-bold">Meus cartões</h2>
