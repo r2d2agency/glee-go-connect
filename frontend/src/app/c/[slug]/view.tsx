@@ -289,6 +289,87 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
           </section>
         )}
 
+        {/* CATÁLOGO */}
+        {products.length > 0 && (
+          <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
+            <div className="flex items-end justify-between gap-3 mb-4">
+              <div>
+                <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold">CATÁLOGO</h2>
+                <p className="text-lg font-semibold mt-1">Meus produtos e serviços</p>
+              </div>
+              <span className="text-xs text-white/50">{filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'itens'}</span>
+            </div>
+
+            {categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {['Todos', ...categories].map((c) => (
+                  <button key={c} onClick={() => setActiveCat(c)}
+                    className="px-3 py-1.5 rounded-full text-xs font-medium border transition"
+                    style={{
+                      background: activeCat === c ? primary : 'transparent',
+                      color: activeCat === c ? '#04130a' : '#fff',
+                      borderColor: activeCat === c ? primary : 'rgba(255,255,255,.15)',
+                    }}>{c}</button>
+                ))}
+              </div>
+            )}
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {filteredProducts.map((p, i) => (
+                <article key={i} className="ge-rise group rounded-2xl border border-white/10 bg-white/[.02] overflow-hidden hover:bg-white/[.05] transition"
+                  style={{ animationDelay: `${i * 50}ms` }}>
+                  {p.photo && (
+                    <button onClick={() => setLightbox(p.photo!)} className="block w-full aspect-[16/10] overflow-hidden bg-black/30">
+                      <img src={p.photo} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                    </button>
+                  )}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold leading-tight">{p.title}</h3>
+                      {p.price && <span className="text-sm font-bold whitespace-nowrap" style={{ color: primary }}>{p.price}</span>}
+                    </div>
+                    {p.description && <p className="text-sm text-white/65 mt-1.5 line-clamp-3">{p.description}</p>}
+                    {p.category && <span className="inline-block mt-2 text-[10px] uppercase tracking-wider text-white/40">{p.category}</span>}
+                    {p.link && (
+                      <a href={p.link} target="_blank" rel="noreferrer"
+                        className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold"
+                        style={{ color: primary }}>
+                        Saiba mais →
+                      </a>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* GALERIA */}
+        {gallery.length > 0 && (
+          <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
+            <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold mb-3">GALERIA</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
+              {gallery.map((url, i) => (
+                <button key={i} onClick={() => setLightbox(url)}
+                  className="ge-rise aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/30 group"
+                  style={{ animationDelay: `${i * 40}ms` }}>
+                  <img src={url} alt="" className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* LIGHTBOX */}
+        {lightbox && (
+          <div onClick={() => setLightbox(null)}
+            className="fixed inset-0 z-50 bg-black/90 grid place-items-center p-4 ge-fade">
+            <img src={lightbox} alt="" className="max-w-full max-h-full rounded-xl object-contain" />
+            <button onClick={() => setLightbox(null)}
+              className="absolute top-4 right-4 size-10 rounded-full bg-white/10 hover:bg-white/20 grid place-items-center text-white text-xl">×</button>
+          </div>
+        )}
+
         {/* NFC UPGRADE BANNER */}
         <section className="mt-6 rounded-3xl p-6 sm:p-8 border border-white/10 relative overflow-hidden"
           style={{ background: `linear-gradient(135deg, #0a1024, #0b1d12)` }}>
