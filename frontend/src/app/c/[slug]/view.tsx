@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 
 type Link = { label: string; url: string; icon?: string };
 type Area = { label: string; icon?: string; description?: string };
+type Product = { photo?: string; title: string; description?: string; price?: string; link?: string; category?: string };
 
 const ICONS: Record<string, string> = {
   whatsapp: 'M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.78 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.02M12.04 20.15h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.24-8.23a8.2 8.2 0 0 1 8.23 8.24c0 4.54-3.7 8.23-8.23 8.23',
@@ -73,6 +74,15 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const buttons: Link[] = Array.isArray(card.customButtons) ? card.customButtons : [];
   const socials: Link[] = Array.isArray(card.socialLinks) ? card.socialLinks : [];
   const areas: Area[] = Array.isArray(card.areas) ? card.areas : [];
+  const categories: string[] = (Array.isArray(card.categories) ? card.categories : []).filter(Boolean);
+  const products: Product[] = (Array.isArray(card.products) ? card.products : []).filter((p: Product) => p && p.title);
+  const gallery: string[] = (Array.isArray(card.gallery) ? card.gallery : []).filter(Boolean);
+  const [activeCat, setActiveCat] = useState<string>('Todos');
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const filteredProducts = useMemo(
+    () => activeCat === 'Todos' ? products : products.filter((p) => (p.category || '') === activeCat),
+    [products, activeCat]
+  );
 
   const [shareUrl, setShareUrl] = useState('');
   useEffect(() => { if (typeof window !== 'undefined') setShareUrl(window.location.href); }, []);
@@ -103,6 +113,22 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
       `}</style>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        {/* BANNER */}
+        {card.bannerUrl && (
+          <section className="mb-5 rounded-3xl overflow-hidden border border-white/10 relative ge-fade">
+            <img src={card.bannerUrl} alt="Banner" className="w-full h-44 sm:h-64 object-cover" />
+            {(card.bannerCtaLabel && card.bannerCtaUrl) && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-5">
+                <a href={card.bannerCtaUrl} target="_blank" rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
+                  style={{ background: primary, color: '#04130a' }}>
+                  {card.bannerCtaLabel} →
+                </a>
+              </div>
+            )}
+          </section>
+        )}
+
         {/* Brand header */}
         <header className="flex items-start justify-between gap-4 ge-fade">
           <div>
