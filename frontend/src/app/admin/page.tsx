@@ -499,10 +499,10 @@ export default function AdminPage() {
 
         {/* ---------- BRANDING ---------- */}
         {tab === 'branding' && (
-          <form onSubmit={saveBranding} className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-5 sm:p-6 max-w-3xl space-y-6 text-slate-800">
+          <form onSubmit={saveBranding} className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-5 sm:p-6 max-w-3xl space-y-6 text-white">
             <div>
               <h2 className="text-lg font-semibold">Identidade visual</h2>
-              <p className="text-sm text-slate-500">Personalize logo, favicon e cor principal usados no app, página pública e emails.</p>
+              <p className="text-sm text-white/60">Personalize logo, favicon e cor principal usados no app, página pública e emails.</p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6">
@@ -529,25 +529,25 @@ export default function AdminPage() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <label className="block">
-                <span className="text-xs font-medium text-slate-600">Nome da marca</span>
+                <span className="text-xs font-medium text-white/70">Nome da marca</span>
                 <input
-                  className="mt-1 w-full border rounded-lg px-3 py-2"
+                  className="mt-1 w-full border border-white/10 bg-[var(--ge-surface-2)] text-white placeholder-white/40 rounded-lg px-3 py-2"
                   placeholder="Glee-go ID"
                   value={branding.brandName ?? ''}
                   onChange={(e) => setBranding({ ...branding, brandName: e.target.value })}
                 />
               </label>
               <label className="block">
-                <span className="text-xs font-medium text-slate-600">Cor principal</span>
+                <span className="text-xs font-medium text-white/70">Cor principal</span>
                 <div className="mt-1 flex items-center gap-2">
                   <input
                     type="color"
-                    className="h-10 w-14 rounded border"
+                    className="h-10 w-14 rounded border border-white/10 bg-[var(--ge-surface-2)]"
                     value={branding.primaryColor || '#22d36a'}
                     onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
                   />
                   <input
-                    className="flex-1 border rounded-lg px-3 py-2 font-mono text-sm"
+                    className="flex-1 border border-white/10 bg-[var(--ge-surface-2)] text-white placeholder-white/40 rounded-lg px-3 py-2 font-mono text-sm"
                     placeholder="#22d36a"
                     value={branding.primaryColor ?? ''}
                     onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
@@ -564,7 +564,7 @@ export default function AdminPage() {
               >
                 {savingBranding ? 'Salvando...' : 'Salvar branding'}
               </button>
-              <span className="text-xs text-slate-500">Os uploads vão para o backend (/uploads). Configure <code>PUBLIC_BACKEND_URL</code> no EasyPanel.</span>
+              <span className="text-xs text-white/60">Os uploads vão para o backend (/uploads). Configure <code>PUBLIC_BACKEND_URL</code> no EasyPanel.</span>
             </div>
           </form>
         )}
