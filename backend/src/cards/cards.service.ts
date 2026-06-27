@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -9,8 +9,33 @@ export class CardsService {
     return this.prisma.card.findMany({ where: { companyId }, orderBy: { createdAt: 'desc' } });
   }
 
-  create(companyId: string, data: any) {
-    return this.prisma.card.create({ data: { ...data, companyId } });
+  async create(companyId: string, data: any) {
+    const company = await this.prisma.company.findUnique({ where: { id: companyId } });
+    if (!company) throw new NotFoundException('Empresa não encontrada');
+
+    const type = data.type === 'DIGITAL_CARD' ? 'DIGITAL_CARD' : 'BIO_LINK';
+
+    if (company.plan === 'FREE') {
+      if (type === 'DIGITAL_CARD') {
+        throw new ForbiddenException(
+          'Cartão Digital NFC/vCard está disponível apenas nos planos PRO ou BUSINESS. Faça upgrade para liberar.',
+        );
+      }
+      const count = await this.prisma.card.count({ where: { companyId } });
+      if (count >= 1) {
+        throw new ForbiddenException(
+          'Plano grátis permite apenas 1 link bio. Faça upgrade para criar mais.',
+        );
+      }
+    }
+
+    if (!data.slug || !/^[a-z0-9-]{2,40}$/.test(data.slug)) {
+      throw new ConflictException('Slug inválido. Use letras minúsculas, números e hífen (2 a 40 caracteres).');
+    }
+    const exists = await this.prisma.card.findUnique({ where: { slug: data.slug } });
+    if (exists) throw new ConflictException('Este link já está em uso. Escolha outro slug.');
+
+    return this.prisma.card.create({ data: { ...data, type, companyId } });
   }
 
   async update(companyId: string, id: string, data: any) {
