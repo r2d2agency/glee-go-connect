@@ -273,20 +273,20 @@ function LinkList({ title, items, onChange, labelPh, max }: any) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-sm">{title}</h3>
+        <h3 className="font-semibold text-sm text-white">{title}</h3>
         <button type="button" onClick={() => items.length < max && onChange([...items, { label: '', url: '' }])}
-          className="text-xs text-blue-700 hover:underline disabled:opacity-50" disabled={items.length >= max}>
+          className="text-xs ge-link hover:underline disabled:opacity-50" disabled={items.length >= max}>
           + Adicionar
         </button>
       </div>
       {items.map((item: Link, i: number) => (
         <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-          <input className="border rounded-lg px-3 py-2 text-sm min-w-0" placeholder={labelPh} value={item.label}
+          <input className="ge-input px-3 py-2 text-sm min-w-0" placeholder={labelPh} value={item.label}
             onChange={(e) => { const c = [...items]; c[i] = { ...c[i], label: e.target.value }; onChange(c); }} />
-          <input className="border rounded-lg px-3 py-2 text-sm min-w-0" placeholder="https://" value={item.url}
+          <input className="ge-input px-3 py-2 text-sm min-w-0" placeholder="https://" value={item.url}
             onChange={(e) => { const c = [...items]; c[i] = { ...c[i], url: e.target.value }; onChange(c); }} />
           <button type="button" onClick={() => onChange(items.filter((_: any, j: number) => j !== i))}
-            className="px-2 text-slate-400 hover:text-red-600">×</button>
+            className="px-2 text-gray-500 hover:text-red-400">×</button>
         </div>
       ))}
     </div>
