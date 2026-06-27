@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { BR_STATES, INDUSTRIES, SOURCES } from '@/lib/br-options';
+import { Logo } from '@/components/Logo';
 
 type Template = { id: string; name: string; description: string; primaryColor: string; dark: boolean };
 
@@ -109,17 +110,17 @@ export default function RegisterWizard() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6">
+    <main className="min-h-screen ge-grid-bg p-4 sm:p-6">
       <div className="max-w-5xl mx-auto">
         <header className="flex items-center justify-between mb-6">
-          <a href="/" className="font-bold text-blue-900">Glee-go ID</a>
-          <a href="/auth/login" className="text-sm text-slate-600 hover:underline">Já tenho conta</a>
+          <Logo size={32} />
+          <a href="/auth/login" className="text-sm text-gray-300 hover:text-white">Já tenho conta</a>
         </header>
 
         <Steps step={step} />
 
         <div className="grid lg:grid-cols-[1fr_360px] gap-6 mt-6">
-          <section className="bg-white border rounded-2xl p-5 sm:p-7 shadow-sm">
+          <section className="ge-card p-5 sm:p-7 ge-fade-up">
             {step === 1 && (
               <Step1
                 value={account}
@@ -142,16 +143,16 @@ export default function RegisterWizard() {
                 type="button"
                 onClick={() => setStep((s) => Math.max(1, s - 1))}
                 disabled={step === 1 || loading}
-                className="px-4 py-2.5 border rounded-lg text-sm disabled:opacity-40"
+                className="px-4 py-2.5 border border-white/10 rounded-lg text-sm text-gray-300 hover:bg-white/5 disabled:opacity-40"
               >
                 Voltar
               </button>
               {step < 4 ? (
-                <button type="button" onClick={next} className="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2.5 rounded-lg text-sm font-medium">
+                <button type="button" onClick={next} className="ge-btn px-5 py-2.5 text-sm">
                   Continuar
                 </button>
               ) : (
-                <button type="button" disabled={loading} onClick={finish} className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-5 py-2.5 rounded-lg text-sm font-medium">
+                <button type="button" disabled={loading} onClick={finish} className="ge-btn px-5 py-2.5 text-sm disabled:opacity-60">
                   {loading ? 'Publicando...' : 'Publicar meu bio link'}
                 </button>
               )}
@@ -159,7 +160,7 @@ export default function RegisterWizard() {
           </section>
 
           <aside className="lg:sticky lg:top-6 self-start">
-            <p className="text-xs uppercase tracking-wide text-slate-500 mb-2 px-1">Pré-visualização</p>
+            <p className="text-xs uppercase tracking-wide text-gray-400 mb-2 px-1">Pré-visualização</p>
             <Preview
               template={template}
               fullName={account.fullName || 'Seu nome'}
