@@ -253,14 +253,17 @@ export default function EditCardPage() {
             <div className="space-y-2">
               {areas.length === 0 && <p className="text-sm text-gray-500">Nenhuma área. Ex: Iluminação, Consultoria...</p>}
               {areas.map((a, i) => (
-                <div key={i} className="grid grid-cols-[1fr_140px_auto] gap-2">
-                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="Rótulo" value={a.label}
-                    onChange={(e) => { const c = [...areas]; c[i] = { ...c[i], label: e.target.value }; set('areas', c); }} />
-                  <select className="border rounded px-2 py-1.5 text-sm" value={a.icon || 'lightbulb'}
-                    onChange={(e) => { const c = [...areas]; c[i] = { ...c[i], icon: e.target.value }; set('areas', c); }}>
+                <div key={i} className="border rounded-lg p-2 grid grid-cols-[1fr_140px_auto] gap-2">
+                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="Rótulo" value={a.label as string}
+                    onChange={(e) => { const c: any[] = [...areas]; c[i] = { ...c[i], label: e.target.value }; set('areas', c); }} />
+                  <select className="border rounded px-2 py-1.5 text-sm" value={(a.icon as string) || 'lightbulb'}
+                    onChange={(e) => { const c: any[] = [...areas]; c[i] = { ...c[i], icon: e.target.value }; set('areas', c); }}>
                     {['lightbulb','bars','users','cube','target','gear','briefcase','chat'].map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                   <button onClick={() => set('areas', areas.filter((_, j) => j !== i))} className="text-red-600 text-sm px-2">×</button>
+                  <input className="col-span-3 border rounded px-2 py-1.5 text-sm" placeholder="Descrição curta (opcional)"
+                    value={(a as any).description ?? ''}
+                    onChange={(e) => { const c: any[] = [...areas]; c[i] = { ...c[i], description: e.target.value }; set('areas', c); }} />
                 </div>
               ))}
             </div>
