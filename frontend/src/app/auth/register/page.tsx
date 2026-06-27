@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { BR_STATES, INDUSTRIES, SOURCES } from '@/lib/br-options';
 import { Logo } from '@/components/Logo';
+import { AvatarUploader } from '@/components/AvatarUploader';
 
 type Template = { id: string; name: string; description: string; primaryColor: string; dark: boolean };
 
@@ -21,7 +22,24 @@ function slugify(s: string) {
     .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40);
 }
 
-type Link = { label: string; url: string };
+type Link = { label: string; url: string; type?: string };
+
+const QUICK_BUTTONS = [
+  { type: 'site', label: 'Site', placeholder: 'https://seusite.com.br', prefix: '' },
+  { type: 'email', label: 'Email', placeholder: 'voce@email.com', prefix: 'mailto:' },
+  { type: 'whatsapp', label: 'WhatsApp', placeholder: '5511999999999', prefix: 'https://wa.me/' },
+  { type: 'phone', label: 'Telefone', placeholder: '+55 11 99999-9999', prefix: 'tel:' },
+  { type: 'maps', label: 'Localização', placeholder: 'https://maps.google.com/...', prefix: '' },
+];
+
+const QUICK_SOCIALS = [
+  { type: 'instagram', label: 'Instagram', placeholder: '@seuuser', prefix: 'https://instagram.com/' },
+  { type: 'facebook', label: 'Facebook', placeholder: 'sua.pagina', prefix: 'https://facebook.com/' },
+  { type: 'linkedin', label: 'LinkedIn', placeholder: 'seu-perfil', prefix: 'https://linkedin.com/in/' },
+  { type: 'youtube', label: 'YouTube', placeholder: '@canal', prefix: 'https://youtube.com/' },
+  { type: 'tiktok', label: 'TikTok', placeholder: '@seuuser', prefix: 'https://tiktok.com/@' },
+  { type: 'x', label: 'X / Twitter', placeholder: '@seuuser', prefix: 'https://x.com/' },
+];
 
 export default function RegisterWizard() {
   const router = useRouter();
@@ -40,9 +58,16 @@ export default function RegisterWizard() {
     source: '',
   });
   const [template, setTemplate] = useState<Template>(TEMPLATES[0]);
-  const [bio, setBio] = useState({ jobTitle: '', bio: '', avatarUrl: '', primaryColor: TEMPLATES[0].primaryColor });
-  const [buttons, setButtons] = useState<Link[]>([{ label: '', url: '' }]);
-  const [socials, setSocials] = useState<Link[]>([{ label: 'Instagram', url: '' }]);
+  const [bio, setBio] = useState({
+    jobTitle: '',
+    bio: '',
+    avatarUrl: '',
+    primaryColor: TEMPLATES[0].primaryColor,
+    companyName: '',
+    companyLogoUrl: '',
+  });
+  const [buttons, setButtons] = useState<Link[]>([]);
+  const [socials, setSocials] = useState<Link[]>([]);
 
   const slug = useMemo(() => account.slug || slugify(account.fullName), [account.slug, account.fullName]);
 
@@ -93,6 +118,8 @@ export default function RegisterWizard() {
           jobTitle: bio.jobTitle || null,
           bio: bio.bio || null,
           avatarUrl: bio.avatarUrl || null,
+          companyName: bio.companyName || null,
+          companyLogoUrl: bio.companyLogoUrl || null,
           primaryColor: bio.primaryColor,
           template: template.id,
           socialLinks: socials.filter((s) => s.label && s.url),
@@ -103,7 +130,12 @@ export default function RegisterWizard() {
       toast.success('Bio link criado! 🎉');
       router.push('/dashboard');
     } catch (err) {
-      toast.error(humanizeError(err, 'Não foi possível concluir o cadastro.'));
+      const msg = humanizeError(err, 'Não foi possível concluir o cadastro.');
+      if (/já cadastrado/i.test(msg) || /already/i.test(msg)) {
+        toast.error('Esse email já tem conta. Faça login para continuar.');
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
