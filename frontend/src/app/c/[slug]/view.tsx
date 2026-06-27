@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { BIO_DOMAIN } from '@/lib/bio-url';
 
 type Link = { label: string; url: string; icon?: string };
 type Area = { label: string; icon?: string; description?: string };
@@ -144,13 +145,16 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   }, []);
 
   const quickActions = useMemo(() => {
-    const items: { icon: string; label: string; href: string; color: string }[] = [];
-    if (card.whatsapp) items.push({ icon: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/${String(card.whatsapp).replace(/\D/g, '')}`, color: '#22c55e' });
-    if (card.phone) items.push({ icon: 'phone', label: 'Ligar', href: `tel:${card.phone}`, color: '#3b82f6' });
-    if (card.email) items.push({ icon: 'email', label: 'E-mail', href: `mailto:${card.email}`, color: '#f59e0b' });
-    if (card.website) items.push({ icon: 'website', label: 'Site', href: card.website, color: '#a855f7' });
-    if (card.location) items.push({ icon: 'location', label: 'Localização', href: `https://maps.google.com/?q=${encodeURIComponent(card.location)}`, color: '#ef4444' });
-    return items;
+    const hidden: string[] = Array.isArray(card.hiddenQuickActions) ? card.hiddenQuickActions : [];
+    const wa = String(card.whatsapp || '').replace(/\D/g, '');
+    const base = [
+      { key: 'whatsapp', icon: 'whatsapp', label: 'WhatsApp', href: wa ? `https://wa.me/${wa}` : '', color: '#22c55e' },
+      { key: 'phone', icon: 'phone', label: 'Ligar', href: card.phone ? `tel:${card.phone}` : '', color: '#3b82f6' },
+      { key: 'email', icon: 'email', label: 'E-mail', href: card.email ? `mailto:${card.email}` : '', color: '#f59e0b' },
+      { key: 'website', icon: 'website', label: 'Site', href: card.website || '', color: '#a855f7' },
+      { key: 'location', icon: 'location', label: 'Localização', href: card.location ? `https://maps.google.com/?q=${encodeURIComponent(card.location)}` : '', color: '#ef4444' },
+    ];
+    return base.filter((b) => !hidden.includes(b.key));
   }, [card]);
 
   return (
@@ -251,19 +255,28 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
           </div>
         </section>
 
-        {/* QUICK ACTIONS */}
+        {/* QUICK ACTIONS — sempre exibe os 5 contatos; vazios ficam inativos */}
         {quickActions.length > 0 && (
           <section className="mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-            {quickActions.map((q, i) => (
-              <a key={q.label} href={q.href} target={q.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer"
-                 className="ge-rise group flex flex-col items-center justify-center gap-2 py-4 rounded-2xl border border-white/10 bg-white/[.03] hover:bg-white/[.07] transition"
-                 style={{ animationDelay: `${i * 60}ms` }}>
-                <span className="size-10 grid place-items-center rounded-full transition group-hover:scale-110" style={{ background: `${q.color}22`, color: q.color }}>
-                  <Icon name={q.icon} className="size-5" />
-                </span>
-                <span className="text-xs font-medium text-white/80">{q.label}</span>
-              </a>
-            ))}
+            {quickActions.map((q, i) => {
+              const filled = !!q.href;
+              const Tag: any = filled ? 'a' : 'div';
+              const props: any = filled
+                ? { href: q.href, target: q.href.startsWith('http') ? '_blank' : undefined, rel: 'noreferrer' }
+                : { 'aria-disabled': true, title: 'Não informado' };
+              return (
+                <Tag key={q.key} {...props}
+                  className={`ge-rise group flex flex-col items-center justify-center gap-2 py-4 rounded-2xl border transition ${filled ? 'border-white/10 bg-white/[.03] hover:bg-white/[.07] cursor-pointer' : 'border-dashed border-white/10 bg-white/[.015] opacity-55 cursor-not-allowed'}`}
+                  style={{ animationDelay: `${i * 60}ms` }}>
+                  <span className="size-10 grid place-items-center rounded-full transition group-hover:scale-110"
+                    style={{ background: filled ? `${q.color}22` : 'rgba(255,255,255,.06)', color: filled ? q.color : 'rgba(255,255,255,.45)' }}>
+                    <Icon name={q.icon} className="size-5" />
+                  </span>
+                  <span className={`text-xs font-medium ${filled ? 'text-white/80' : 'text-white/40'}`}>{q.label}</span>
+                  {!filled && <span className="text-[10px] text-white/30 -mt-1">não informado</span>}
+                </Tag>
+              );
+            })}
           </section>
         )}
 
