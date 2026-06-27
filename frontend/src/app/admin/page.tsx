@@ -492,6 +492,78 @@ export default function AdminPage() {
             </table>
           </div>
         )}
+
+        {/* ---------- BRANDING ---------- */}
+        {tab === 'branding' && (
+          <form onSubmit={saveBranding} className="bg-white border rounded-xl p-5 sm:p-6 max-w-3xl space-y-6 text-slate-800">
+            <div>
+              <h2 className="text-lg font-semibold">Identidade visual</h2>
+              <p className="text-sm text-slate-500">Personalize logo, favicon e cor principal usados no app, página pública e emails.</p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-6">
+              <AvatarUploader
+                label="Logo principal (PNG transparente recomendado)"
+                size={120}
+                value={branding.logoUrl}
+                onChange={(url) => setBranding({ ...branding, logoUrl: url })}
+              />
+              <AvatarUploader
+                label="Favicon (quadrado, 256x256)"
+                size={80}
+                value={branding.faviconUrl}
+                onChange={(url) => setBranding({ ...branding, faviconUrl: url })}
+              />
+            </div>
+
+            <AvatarUploader
+              label="Imagem de compartilhamento (OG / WhatsApp)"
+              size={120}
+              value={branding.ogImageUrl}
+              onChange={(url) => setBranding({ ...branding, ogImageUrl: url })}
+            />
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-xs font-medium text-slate-600">Nome da marca</span>
+                <input
+                  className="mt-1 w-full border rounded-lg px-3 py-2"
+                  placeholder="Glee-go ID"
+                  value={branding.brandName ?? ''}
+                  onChange={(e) => setBranding({ ...branding, brandName: e.target.value })}
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-medium text-slate-600">Cor principal</span>
+                <div className="mt-1 flex items-center gap-2">
+                  <input
+                    type="color"
+                    className="h-10 w-14 rounded border"
+                    value={branding.primaryColor || '#22d36a'}
+                    onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
+                  />
+                  <input
+                    className="flex-1 border rounded-lg px-3 py-2 font-mono text-sm"
+                    placeholder="#22d36a"
+                    value={branding.primaryColor ?? ''}
+                    onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
+                  />
+                </div>
+              </label>
+            </div>
+
+            <div className="pt-2 flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={savingBranding}
+                className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:opacity-60"
+              >
+                {savingBranding ? 'Salvando...' : 'Salvar branding'}
+              </button>
+              <span className="text-xs text-slate-500">Os uploads vão para o backend (/uploads). Configure <code>PUBLIC_BACKEND_URL</code> no EasyPanel.</span>
+            </div>
+          </form>
+        )}
       </div>
 
       {/* ---------- MODAL APROVAR ---------- */}
