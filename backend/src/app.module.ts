@@ -10,6 +10,7 @@ import { UpgradesModule } from './upgrades/upgrades.module';
 import { PlansModule } from './plans/plans.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { HealthController } from './health.controller';
+import { BrandingController } from './branding.controller';
 
 @Module({
   imports: [
@@ -24,6 +25,6 @@ import { HealthController } from './health.controller';
     PlansModule,
     UploadsModule,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, BrandingController],
 })
 export class AppModule {}

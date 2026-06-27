@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { Logo } from '@/components/Logo';
+import { AvatarUploader } from '@/components/AvatarUploader';
 
 type Company = { id: string; name: string; email: string; plan: string; active: boolean; _count: { users: number; cards: number } };
 type User = { id: string; email: string; fullName: string; role: string; companyId: string };
@@ -35,7 +36,7 @@ type Stats = {
   byPlan: { plan: string; count: number }[];
 };
 
-type Tab = 'dashboard' | 'kanban' | 'cards' | 'plans' | 'companies' | 'users';
+type Tab = 'dashboard' | 'kanban' | 'cards' | 'plans' | 'companies' | 'users' | 'branding';
 
 const FULFILLMENT_COLS: { key: Upgrade['fulfillmentStatus']; label: string; color: string }[] = [
   { key: 'WAITING', label: 'Aguardando', color: 'bg-yellow-50 border-yellow-200' },
@@ -64,6 +65,8 @@ export default function AdminPage() {
   const [tracking, setTracking] = useState<Upgrade | null>(null);
   const [planEdit, setPlanEdit] = useState<PlanProduct | null>(null);
   const [nfcEdit, setNfcEdit] = useState<Card | null>(null);
+  const [branding, setBranding] = useState<{ logoUrl?: string; faviconUrl?: string; ogImageUrl?: string; primaryColor?: string; brandName?: string }>({});
+  const [savingBranding, setSavingBranding] = useState(false);
 
   const [approveForm, setApproveForm] = useState({
     fullName: '', slug: '', jobTitle: '', whatsapp: '', email: '', phone: '',
@@ -89,6 +92,21 @@ export default function AdminPage() {
     } finally { setLoading(false); }
   };
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    api('/admin/branding').then((b) => setBranding(b || {})).catch(() => {});
+  }, []);
+
+  async function saveBranding(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingBranding(true);
+    try {
+      await api('/admin/branding', { method: 'PUT', body: JSON.stringify(branding) });
+      toast.success('Branding salvo. Faça refresh para ver em todo o sistema.');
+      try { localStorage.setItem('gleego_branding', JSON.stringify(branding)); } catch {}
+    } catch (err) { toast.error(humanizeError(err)); }
+    finally { setSavingBranding(false); }
+  }
 
   /* ---------- Companies/Users helpers ---------- */
   const setRole = async (id: string, role: string) => {
@@ -199,6 +217,7 @@ export default function AdminPage() {
             ['plans', `Planos (${plans.length})`],
             ['companies', `Empresas (${companies.length})`],
             ['users', `Usuários (${users.length})`],
+            ['branding', 'Branding'],
           ] as [Tab, string][]).map(([k, label]) => (
             <button key={k} onClick={() => setTab(k)}
               className={`px-4 py-2 text-sm border-b-2 -mb-px whitespace-nowrap ${tab === k ? 'border-[var(--ge-green)] text-[var(--ge-green)] font-semibold' : 'border-transparent text-white/60 hover:text-white'}`}>
@@ -472,6 +491,78 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
+        )}
+
+        {/* ---------- BRANDING ---------- */}
+        {tab === 'branding' && (
+          <form onSubmit={saveBranding} className="bg-white border rounded-xl p-5 sm:p-6 max-w-3xl space-y-6 text-slate-800">
+            <div>
+              <h2 className="text-lg font-semibold">Identidade visual</h2>
+              <p className="text-sm text-slate-500">Personalize logo, favicon e cor principal usados no app, página pública e emails.</p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-6">
+              <AvatarUploader
+                label="Logo principal (PNG transparente recomendado)"
+                size={120}
+                value={branding.logoUrl}
+                onChange={(url) => setBranding({ ...branding, logoUrl: url })}
+              />
+              <AvatarUploader
+                label="Favicon (quadrado, 256x256)"
+                size={80}
+                value={branding.faviconUrl}
+                onChange={(url) => setBranding({ ...branding, faviconUrl: url })}
+              />
+            </div>
+
+            <AvatarUploader
+              label="Imagem de compartilhamento (OG / WhatsApp)"
+              size={120}
+              value={branding.ogImageUrl}
+              onChange={(url) => setBranding({ ...branding, ogImageUrl: url })}
+            />
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-xs font-medium text-slate-600">Nome da marca</span>
+                <input
+                  className="mt-1 w-full border rounded-lg px-3 py-2"
+                  placeholder="Glee-go ID"
+                  value={branding.brandName ?? ''}
+                  onChange={(e) => setBranding({ ...branding, brandName: e.target.value })}
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-medium text-slate-600">Cor principal</span>
+                <div className="mt-1 flex items-center gap-2">
+                  <input
+                    type="color"
+                    className="h-10 w-14 rounded border"
+                    value={branding.primaryColor || '#22d36a'}
+                    onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
+                  />
+                  <input
+                    className="flex-1 border rounded-lg px-3 py-2 font-mono text-sm"
+                    placeholder="#22d36a"
+                    value={branding.primaryColor ?? ''}
+                    onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
+                  />
+                </div>
+              </label>
+            </div>
+
+            <div className="pt-2 flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={savingBranding}
+                className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:opacity-60"
+              >
+                {savingBranding ? 'Salvando...' : 'Salvar branding'}
+              </button>
+              <span className="text-xs text-slate-500">Os uploads vão para o backend (/uploads). Configure <code>PUBLIC_BACKEND_URL</code> no EasyPanel.</span>
+            </div>
+          </form>
         )}
       </div>
 
