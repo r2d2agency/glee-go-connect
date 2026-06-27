@@ -98,6 +98,12 @@ model Card {
   nfcLinkedAt  DateTime?
   socialLinks  Json?
   customButtons Json?
+  bannerUrl       String?
+  bannerCtaLabel  String?
+  bannerCtaUrl    String?
+  categories      Json?
+  products        Json?
+  gallery         Json?
   seoTitle     String?
   seoDescription String?
   metaPixelId  String?
