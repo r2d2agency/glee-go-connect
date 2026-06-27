@@ -28,6 +28,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [cards, setCards] = useState<Card[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -65,6 +66,7 @@ export default function Dashboard() {
       })
       .finally(() => setLoading(false));
     api('/leads').then((d) => setLeads(Array.isArray(d) ? d : [])).catch(() => {});
+    api('/cards/analytics/summary').then((d) => setAnalytics(d)).catch(() => {});
   }
 
   useEffect(() => {
@@ -179,6 +181,8 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
         {/* Stats + chart */}
         <StatsPanel cards={cards} leads={leads} />
+
+        <AnalyticsPanel data={analytics} />
 
         {/* Upgrade callout */}
         <div className="rounded-2xl p-5 sm:p-6 mb-6 grid sm:grid-cols-[1fr_auto] gap-3 items-center relative overflow-hidden border border-[rgba(34,211,106,0.25)]"
