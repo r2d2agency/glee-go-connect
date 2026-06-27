@@ -112,7 +112,7 @@ export default function EditCardPage() {
     }
   }
 
-  if (loading || !card) return <main className="min-h-screen grid place-items-center text-gray-500">Carregando...</main>;
+  if (loading || !card) return <main className="min-h-screen grid place-items-center text-white/50">Carregando...</main>;
 
   const buttons: Link[] = card.customButtons ?? [];
   const socials: Link[] = card.socialLinks ?? [];
@@ -139,23 +139,23 @@ export default function EditCardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 text-gray-900 [&_section]:text-gray-900 [&_input]:text-gray-900 [&_textarea]:text-gray-900 [&_select]:text-gray-900 [&_input]:bg-white [&_textarea]:bg-white [&_select]:bg-white">
-      <header className="bg-white border-b sticky top-0 z-10 text-gray-900">
+    <main className="min-h-screen bg-[var(--ge-bg)] text-white [&_input]:bg-[var(--ge-surface-2)] [&_textarea]:bg-[var(--ge-surface-2)] [&_select]:bg-[var(--ge-surface-2)] [&_input]:text-white [&_textarea]:text-white [&_select]:text-white [&_input]:border-white/10 [&_textarea]:border-white/10 [&_select]:border-white/10 [&_input]:placeholder-white/40 [&_textarea]:placeholder-white/40">
+      <header className="bg-[var(--ge-surface)] border-b border-white/5 sticky top-0 z-10 text-white">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
-          <button onClick={() => router.push('/dashboard')} className="text-sm text-gray-600 hover:text-gray-900">← Voltar</button>
+          <button onClick={() => router.push('/dashboard')} className="text-sm text-white/60 hover:text-white">← Voltar</button>
           <h1 className="font-semibold truncate flex-1">Editar: {card.fullName}</h1>
-          <a href={`https://bio.gleego.com.br/${card.slug}`} target="_blank" className="text-sm text-blue-700 hover:underline">Ver público</a>
-          <button onClick={save} disabled={saving} className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50">
+          <a href={`https://bio.gleego.com.br/${card.slug}`} target="_blank" className="text-sm text-[var(--ge-green)] hover:underline">Ver público</a>
+          <button onClick={save} disabled={saving} className="ge-btn px-4 py-2 rounded-lg text-sm disabled:opacity-50">
             {saving ? 'Salvando...' : 'Salvar'}
           </button>
         </div>
       </header>
 
-      <nav className="bg-white border-b sticky top-[57px] z-10 overflow-x-auto">
+      <nav className="bg-[var(--ge-surface)] border-b border-white/5 sticky top-[57px] z-10 overflow-x-auto">
         <div className="max-w-6xl mx-auto px-4 flex gap-1">
           {TABS.map((t) => (
             <button key={t.id} onClick={() => setTab(t.id)}
-              className={`px-4 py-3 text-sm whitespace-nowrap border-b-2 transition ${tab === t.id ? 'border-blue-700 text-blue-700 font-semibold' : 'border-transparent text-gray-600 hover:text-gray-900'}`}>
+              className={`px-4 py-3 text-sm whitespace-nowrap border-b-2 transition ${tab === t.id ? 'border-[var(--ge-green)] text-[var(--ge-green)] font-semibold' : 'border-transparent text-white/60 hover:text-white'}`}>
               {t.label}
             </button>
           ))}
@@ -165,12 +165,12 @@ export default function EditCardPage() {
       <div className="max-w-6xl mx-auto p-4 sm:p-6 grid lg:grid-cols-[1fr_360px] gap-6">
         <div className="space-y-6">
           {tab === 'visual' && (<>
-          <section className="bg-white border rounded-xl p-4 sm:p-6">
+          <section className="ge-card border-white/10 p-4 sm:p-6">
             <h2 className="font-semibold mb-3">Template</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {templates.map((t) => (
                 <button key={t.id} type="button" onClick={() => applyTemplate(t)}
-                  className={`text-left rounded-xl p-3 border-2 transition ${card.template === t.id ? 'border-blue-700' : 'border-transparent hover:border-gray-300'}`}
+                  className={`text-left rounded-xl p-3 border-2 transition ${card.template === t.id ? 'border-[var(--ge-green)]' : 'border-transparent hover:border-white/20'}`}
                   style={{ background: t.bgColor, color: t.dark ? '#fff' : '#0F172A' }}>
                   <div className="flex gap-1 mb-2">
                     <span className="size-4 rounded-full" style={{ background: t.primaryColor }} />
@@ -183,7 +183,7 @@ export default function EditCardPage() {
             </div>
           </section>
 
-          <section className="bg-white border rounded-xl p-4 sm:p-6">
+          <section className="ge-card border-white/10 p-4 sm:p-6">
             <h2 className="font-semibold mb-3">Personalizar cores</h2>
             <div className="grid grid-cols-3 gap-4">
               {[
@@ -192,7 +192,7 @@ export default function EditCardPage() {
                 { key: 'bgColor', label: 'Fundo' },
               ].map((f) => (
                 <label key={f.key} className="block">
-                  <span className="text-xs text-gray-600 block mb-1">{f.label}</span>
+                  <span className="text-xs text-white/60 block mb-1">{f.label}</span>
                   <div className="flex items-center gap-2">
                     <input type="color" className="size-10 rounded border cursor-pointer"
                       value={card[f.key] ?? '#000000'}
@@ -208,7 +208,7 @@ export default function EditCardPage() {
           </>)}
 
           {tab === 'perfil' && (<>
-          <section className="bg-white border rounded-xl p-4 sm:p-6 grid sm:grid-cols-2 gap-3">
+          <section className="ge-card border-white/10 p-4 sm:p-6 grid sm:grid-cols-2 gap-3">
             <h2 className="font-semibold sm:col-span-2">Informações</h2>
             <input className="border rounded px-3 py-2" placeholder="Nome completo" value={card.fullName ?? ''} onChange={(e) => set('fullName', e.target.value)} />
             <input className="border rounded px-3 py-2" placeholder="Cargo" value={card.jobTitle ?? ''} onChange={(e) => set('jobTitle', e.target.value)} />
@@ -226,7 +226,7 @@ export default function EditCardPage() {
             <textarea rows={3} className="border rounded px-3 py-2 sm:col-span-2" placeholder="Bio" value={card.bio ?? ''} onChange={(e) => set('bio', e.target.value)} />
           </section>
 
-          <section className="bg-white border rounded-xl p-4 sm:p-6 grid sm:grid-cols-2 gap-3">
+          <section className="ge-card border-white/10 p-4 sm:p-6 grid sm:grid-cols-2 gap-3">
             <h2 className="font-semibold sm:col-span-2">Empresa (opcional)</h2>
             <input className="border rounded px-3 py-2" placeholder="Nome da empresa" value={card.companyName ?? ''} onChange={(e) => set('companyName', e.target.value)} />
             <input className="border rounded px-3 py-2" placeholder="Localização (cidade/UF ou endereço)" value={card.location ?? ''} onChange={(e) => set('location', e.target.value)} />
@@ -245,13 +245,13 @@ export default function EditCardPage() {
             </label>
           </section>
 
-          <section className="bg-white border rounded-xl p-4 sm:p-6">
+          <section className="ge-card border-white/10 p-4 sm:p-6">
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold">Áreas de atuação</h2>
-              <button onClick={() => set('areas', [...areas, { label: '', icon: 'lightbulb' }])} className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+              <button onClick={() => set('areas', [...areas, { label: '', icon: 'lightbulb' }])} className="text-sm text-[var(--ge-green)] hover:underline">+ Adicionar</button>
             </div>
             <div className="space-y-2">
-              {areas.length === 0 && <p className="text-sm text-gray-500">Nenhuma área. Ex: Iluminação, Consultoria...</p>}
+              {areas.length === 0 && <p className="text-sm text-white/50">Nenhuma área. Ex: Iluminação, Consultoria...</p>}
               {areas.map((a, i) => (
                 <div key={i} className="border rounded-lg p-2 grid grid-cols-[1fr_140px_auto] gap-2">
                   <input className="border rounded px-2 py-1.5 text-sm" placeholder="Rótulo" value={a.label as string}
@@ -271,13 +271,13 @@ export default function EditCardPage() {
           </>)}
 
           {tab === 'links' && (<>
-          <section className="bg-white border rounded-xl p-4 sm:p-6">
+          <section className="ge-card border-white/10 p-4 sm:p-6">
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold">Redes sociais</h2>
-              <button onClick={() => addItem('socialLinks')} className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+              <button onClick={() => addItem('socialLinks')} className="text-sm text-[var(--ge-green)] hover:underline">+ Adicionar</button>
             </div>
             <div className="space-y-2">
-              {socials.length === 0 && <p className="text-sm text-gray-500">Nenhuma rede adicionada.</p>}
+              {socials.length === 0 && <p className="text-sm text-white/50">Nenhuma rede adicionada.</p>}
               {socials.map((s, i) => (
                 <div key={i} className="grid grid-cols-[1fr_2fr_auto] gap-2">
                   <input className="border rounded px-2 py-1.5 text-sm" placeholder="Nome (Instagram)" value={s.label} onChange={(e) => updateList('socialLinks', i, { label: e.target.value })} />
@@ -288,13 +288,13 @@ export default function EditCardPage() {
             </div>
           </section>
 
-          <section className="bg-white border rounded-xl p-4 sm:p-6">
+          <section className="ge-card border-white/10 p-4 sm:p-6">
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold">Botões/Links</h2>
-              <button onClick={() => addItem('customButtons')} className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+              <button onClick={() => addItem('customButtons')} className="text-sm text-[var(--ge-green)] hover:underline">+ Adicionar</button>
             </div>
             <div className="space-y-2">
-              {buttons.length === 0 && <p className="text-sm text-gray-500">Nenhum botão.</p>}
+              {buttons.length === 0 && <p className="text-sm text-white/50">Nenhum botão.</p>}
               {buttons.map((b, i) => (
                 <div key={i} className="grid grid-cols-[1fr_2fr_auto] gap-2">
                   <input className="border rounded px-2 py-1.5 text-sm" placeholder="Rótulo" value={b.label} onChange={(e) => updateList('customButtons', i, { label: e.target.value })} />
@@ -307,10 +307,10 @@ export default function EditCardPage() {
           </>)}
 
           {tab === 'banner' && (
-            <section className="bg-white border rounded-xl p-4 sm:p-6 space-y-4">
+            <section className="ge-card border-white/10 p-4 sm:p-6 space-y-4">
               <div>
                 <h2 className="font-semibold">Banner do topo</h2>
-                <p className="text-sm text-gray-500">Imagem grande no topo da sua página com botão de ação.</p>
+                <p className="text-sm text-white/50">Imagem grande no topo da sua página com botão de ação.</p>
               </div>
               <AvatarUploader value={card.bannerUrl} onChange={(url) => set('bannerUrl', url)} label="Imagem do banner (1600×600 recomendado)" size={120} />
               <div className="grid sm:grid-cols-2 gap-3">
@@ -324,25 +324,25 @@ export default function EditCardPage() {
           )}
 
           {tab === 'servicos' && (
-            <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <section className="ge-card border-white/10 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-1">
                 <div>
                   <h2 className="font-semibold">Como posso te ajudar</h2>
-                  <p className="text-xs text-gray-500">Grade de serviços/diferenciais com ícone, título e descrição.</p>
+                  <p className="text-xs text-white/50">Grade de serviços/diferenciais com ícone, título e descrição.</p>
                 </div>
                 <button onClick={() => set('services', [...services, { icon: 'briefcase', title: '', description: '' }])}
-                  className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+                  className="text-sm text-[var(--ge-green)] hover:underline">+ Adicionar</button>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mt-3">
-                {services.length === 0 && <p className="text-sm text-gray-500 sm:col-span-2">Ex: Consultoria Jurídica, Elaboração de Contratos...</p>}
+                {services.length === 0 && <p className="text-sm text-white/50 sm:col-span-2">Ex: Consultoria Jurídica, Elaboração de Contratos...</p>}
                 {services.map((s, i) => (
-                  <div key={i} className="border rounded-xl p-3 space-y-2 bg-gray-50/50">
+                  <div key={i} className="border border-white/10 rounded-xl p-3 space-y-2 bg-[var(--ge-surface-2)]">
                     <div className="flex items-start justify-between">
-                      <span className="text-xs font-semibold text-gray-500">Serviço #{i + 1}</span>
+                      <span className="text-xs font-semibold text-white/50">Serviço #{i + 1}</span>
                       <button onClick={() => set('services', services.filter((_, j) => j !== i))} className="text-red-600 text-sm">Remover</button>
                     </div>
                     <div className="grid grid-cols-[140px_1fr] gap-2">
-                      <select className="border rounded px-2 py-1.5 text-sm bg-white" value={s.icon || 'briefcase'}
+                      <select className="border rounded px-2 py-1.5 text-sm bg-[var(--ge-surface-2)]" value={s.icon || 'briefcase'}
                         onChange={(e) => { const c = [...services]; c[i] = { ...c[i], icon: e.target.value }; set('services', c); }}>
                         {['lightbulb','bars','users','cube','target','gear','briefcase','chat','user','website','phone','email'].map((o) => <option key={o} value={o}>{o}</option>)}
                       </select>
@@ -365,42 +365,42 @@ export default function EditCardPage() {
           )}
 
           {tab === 'catalogo' && (<>
-            <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <section className="ge-card border-white/10 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-3">
                 <div>
                   <h2 className="font-semibold">Categorias</h2>
-                  <p className="text-xs text-gray-500">Agrupe seus produtos. Aparecem como filtros na página pública.</p>
+                  <p className="text-xs text-white/50">Agrupe seus produtos. Aparecem como filtros na página pública.</p>
                 </div>
-                <button onClick={() => set('categories', [...categories, ''])} className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+                <button onClick={() => set('categories', [...categories, ''])} className="text-sm text-[var(--ge-green)] hover:underline">+ Adicionar</button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {categories.length === 0 && <p className="text-sm text-gray-500">Ex: Promoções, Lançamentos, Serviços...</p>}
+                {categories.length === 0 && <p className="text-sm text-white/50">Ex: Promoções, Lançamentos, Serviços...</p>}
                 {categories.map((c, i) => (
-                  <div key={i} className="flex items-center gap-1 bg-gray-100 rounded-full pl-3 pr-1 py-1">
+                  <div key={i} className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-full pl-3 pr-1 py-1">
                     <input className="bg-transparent text-sm outline-none w-32" placeholder="Nome" value={c}
                       onChange={(e) => { const arr = [...categories]; arr[i] = e.target.value; set('categories', arr); }} />
-                    <button onClick={() => set('categories', categories.filter((_, j) => j !== i))} className="size-6 grid place-items-center rounded-full hover:bg-gray-200 text-gray-500">×</button>
+                    <button onClick={() => set('categories', categories.filter((_, j) => j !== i))} className="size-6 grid place-items-center rounded-full hover:bg-white/10 text-white/50">×</button>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <section className="ge-card border-white/10 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-3">
                 <div>
                   <h2 className="font-semibold">Catálogo de produtos</h2>
-                  <p className="text-xs text-gray-500">{products.length}/10 itens — foto, descrição, preço e link.</p>
+                  <p className="text-xs text-white/50">{products.length}/10 itens — foto, descrição, preço e link.</p>
                 </div>
                 <button disabled={products.length >= 10}
                   onClick={() => set('products', [...products, { title: '', description: '', price: '', link: '', photo: '', category: '' }])}
-                  className="text-sm text-blue-700 hover:underline disabled:opacity-40 disabled:no-underline">+ Adicionar produto</button>
+                  className="text-sm text-[var(--ge-green)] hover:underline disabled:opacity-40 disabled:no-underline">+ Adicionar produto</button>
               </div>
               <div className="grid md:grid-cols-2 gap-4">
-                {products.length === 0 && <p className="text-sm text-gray-500 md:col-span-2">Nenhum produto. Adicione até 10 itens.</p>}
+                {products.length === 0 && <p className="text-sm text-white/50 md:col-span-2">Nenhum produto. Adicione até 10 itens.</p>}
                 {products.map((p, i) => (
-                  <div key={i} className="border rounded-xl p-3 space-y-2 bg-gray-50/50">
+                  <div key={i} className="border border-white/10 rounded-xl p-3 space-y-2 bg-[var(--ge-surface-2)]">
                     <div className="flex items-start justify-between">
-                      <span className="text-xs font-semibold text-gray-500">Item #{i + 1}</span>
+                      <span className="text-xs font-semibold text-white/50">Item #{i + 1}</span>
                       <button onClick={() => set('products', products.filter((_, j) => j !== i))} className="text-red-600 text-sm">Remover</button>
                     </div>
                     <AvatarUploader value={p.photo} onChange={(url) => updateProduct(i, { photo: url })} label="Foto do produto" size={80} />
@@ -411,7 +411,7 @@ export default function EditCardPage() {
                     <div className="grid grid-cols-2 gap-2">
                       <input className="border rounded px-2 py-1.5 text-sm" placeholder="Preço (ex: R$ 99,90)"
                         value={p.price ?? ''} onChange={(e) => updateProduct(i, { price: e.target.value })} />
-                      <select className="border rounded px-2 py-1.5 text-sm bg-white" value={p.category ?? ''}
+                      <select className="border rounded px-2 py-1.5 text-sm bg-[var(--ge-surface-2)]" value={p.category ?? ''}
                         onChange={(e) => updateProduct(i, { category: e.target.value })}>
                         <option value="">Sem categoria</option>
                         {categories.filter(Boolean).map((c) => <option key={c} value={c}>{c}</option>)}
@@ -426,20 +426,20 @@ export default function EditCardPage() {
           </>)}
 
           {tab === 'galeria' && (
-            <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <section className="ge-card border-white/10 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-3">
                 <div>
                   <h2 className="font-semibold">Galeria de fotos</h2>
-                  <p className="text-xs text-gray-500">Suba fotos do seu trabalho, produtos, ambiente.</p>
+                  <p className="text-xs text-white/50">Suba fotos do seu trabalho, produtos, ambiente.</p>
                 </div>
               </div>
               <div className="mb-4">
                 <AvatarUploader value={undefined} onChange={(url) => url && set('gallery', [...gallery, url])} label="Adicionar foto" size={80} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {gallery.length === 0 && <p className="text-sm text-gray-500 col-span-full">Nenhuma foto enviada.</p>}
+                {gallery.length === 0 && <p className="text-sm text-white/50 col-span-full">Nenhuma foto enviada.</p>}
                 {gallery.map((url, i) => (
-                  <div key={i} className="relative group aspect-square rounded-lg overflow-hidden border bg-gray-100">
+                  <div key={i} className="relative group aspect-square rounded-lg overflow-hidden border border-white/10 bg-white/5">
                     <img src={url} alt="" className="w-full h-full object-cover" />
                     <button onClick={() => set('gallery', gallery.filter((_, j) => j !== i))}
                       className="absolute top-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">Remover</button>
@@ -467,7 +467,7 @@ export default function EditCardPage() {
               ))}
             </div>
           </div>
-          <p className="text-xs text-gray-500 text-center mt-3">Pré-visualização</p>
+          <p className="text-xs text-white/50 text-center mt-3">Pré-visualização</p>
         </aside>
       </div>
     </main>
