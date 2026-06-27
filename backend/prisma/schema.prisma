@@ -25,6 +25,12 @@ enum CardType {
   DIGITAL_CARD
 }
 
+enum UpgradeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Company {
   id        String   @id @default(uuid())
   name      String
@@ -35,6 +41,7 @@ model Company {
   updatedAt DateTime @updatedAt
   users     User[]
   cards     Card[]
+  upgradeRequests UpgradeRequest[]
 }
 
 model User {
@@ -67,6 +74,9 @@ model Card {
   primaryColor String?
   accentColor  String?
   bgColor      String?
+  nfcSerial    String?  @unique
+  nfcUid       String?
+  nfcLinkedAt  DateTime?
   socialLinks  Json?
   customButtons Json?
   seoTitle     String?
@@ -79,6 +89,22 @@ model Card {
   updatedAt    DateTime @updatedAt
   leads        Lead[]
   events       AnalyticsEvent[]
+}
+
+model UpgradeRequest {
+  id         String        @id @default(uuid())
+  companyId  String
+  company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  requestedBy String
+  plan       Plan          @default(PRO)
+  message    String?
+  contactPhone String?
+  address    String?
+  status     UpgradeStatus @default(PENDING)
+  adminNote  String?
+  cardId     String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 }
 
 model Lead {
