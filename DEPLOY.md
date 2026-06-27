@@ -55,6 +55,14 @@ Crie **3 serviços** no mesmo projeto EasyPanel:
 
   > Se o login retornar 401 depois de trocar a senha do superadmin, mantenha `SUPERADMIN_RESET_PASSWORD=true` por um deploy para o seed atualizar a senha no banco. Depois pode voltar para `false`.
 
+  Para o seu domínio atual, use assim:
+  ```env
+  CORS_ORIGIN=https://bio.gleego.com.br
+  SUPERADMIN_EMAIL=tnicodemos@gmail.com
+  SUPERADMIN_PASSWORD=SUA_NOVA_SENHA_SEM_CIFRAO
+  SUPERADMIN_RESET_PASSWORD=true
+  ```
+
 ### Serviço 3 — Frontend (App)
 - Source: **GitHub** → mesmo repo
 - **Build Path**: `/frontend`
