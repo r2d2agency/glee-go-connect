@@ -246,7 +246,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
               <div className="rounded-2xl p-2 bg-white">
                 {shareUrl && <QRCodeSVG value={shareUrl} size={132} bgColor="#ffffff" fgColor="#0a0f1f" />}
               </div>
-              <span className="text-xs font-semibold truncate max-w-[160px]" style={{ color: primary }}>glee.go/{card.slug}</span>
+              <span className="text-xs font-semibold truncate max-w-[180px]" style={{ color: primary }}>{BIO_DOMAIN}/{card.slug}</span>
             </div>
           </div>
         </section>
