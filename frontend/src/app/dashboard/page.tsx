@@ -50,7 +50,13 @@ export default function Dashboard() {
   function load() {
     setLoading(true);
     api('/cards')
-      .then((data) => { setCards(data); setError(''); })
+      .then((data) => {
+        setCards(data);
+        setError('');
+        if (Array.isArray(data) && data.length === 0) {
+          router.replace('/onboarding');
+        }
+      })
       .catch((err) => {
         const msg = humanizeError(err, 'Não foi possível carregar seus cartões.');
         setError(msg);
