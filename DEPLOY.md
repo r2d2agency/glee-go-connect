@@ -44,10 +44,16 @@ Crie **3 serviços** no mesmo projeto EasyPanel:
   ```
   DATABASE_URL=postgres://gleego:SENHA@projeto_postgres:5432/gleego_id
   JWT_SECRET=<string-aleatoria-64-chars>
-  CORS_ORIGIN=https://app.seudominio.com
+  CORS_ORIGIN=https://app.seudominio.com,https://bio.gleego.com.br
+  PUBLIC_BACKEND_URL=https://api.seudominio.com
+  SUPERADMIN_EMAIL=tnicodemos@gmail.com
+  SUPERADMIN_PASSWORD=senha-forte-sem-cifrao
+  SUPERADMIN_RESET_PASSWORD=true
   PORT=3000
   NODE_ENV=production
   ```
+
+  > Se o login retornar 401 depois de trocar a senha do superadmin, mantenha `SUPERADMIN_RESET_PASSWORD=true` por um deploy para o seed atualizar a senha no banco. Depois pode voltar para `false`.
 
 ### Serviço 3 — Frontend (App)
 - Source: **GitHub** → mesmo repo
