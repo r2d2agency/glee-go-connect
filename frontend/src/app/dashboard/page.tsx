@@ -205,6 +205,9 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div className="flex gap-2 mt-4">
+                  <a href={`/dashboard/cards/${c.id}`} className="text-xs px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded">
+                    Editar
+                  </a>
                   <button onClick={() => toggleActive(c)} className="text-xs px-3 py-1.5 border rounded hover:bg-gray-50">
                     {c.active ? 'Desativar' : 'Ativar'}
                   </button>

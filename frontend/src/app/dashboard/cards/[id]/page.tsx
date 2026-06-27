@@ -1,0 +1,224 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { api } from '@/lib/api';
+import { humanizeError } from '@/lib/errors';
+
+type Link = { label: string; url: string; icon?: string };
+type Template = {
+  id: string; name: string; description: string;
+  primaryColor: string; accentColor: string; bgColor: string; dark: boolean;
+};
+
+export default function EditCardPage() {
+  const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [card, setCard] = useState<any>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('gleego_token');
+    if (!token) { router.push('/auth/login'); return; }
+    Promise.all([api(`/cards/${id}`), api('/templates')])
+      .then(([c, t]) => { setCard(c); setTemplates(t); })
+      .catch((e) => toast.error(humanizeError(e)))
+      .finally(() => setLoading(false));
+  }, [id, router]);
+
+  function set<K extends string>(key: K, value: any) {
+    setCard((c: any) => ({ ...c, [key]: value }));
+  }
+
+  function applyTemplate(t: Template) {
+    setCard((c: any) => ({
+      ...c,
+      template: t.id,
+      primaryColor: t.primaryColor,
+      accentColor: t.accentColor,
+      bgColor: t.bgColor,
+    }));
+  }
+
+  function updateList(field: 'customButtons' | 'socialLinks', idx: number, patch: Partial<Link>) {
+    setCard((c: any) => {
+      const arr: Link[] = Array.isArray(c[field]) ? [...c[field]] : [];
+      arr[idx] = { ...arr[idx], ...patch };
+      return { ...c, [field]: arr };
+    });
+  }
+  function addItem(field: 'customButtons' | 'socialLinks') {
+    setCard((c: any) => ({ ...c, [field]: [...(c[field] ?? []), { label: '', url: '' }] }));
+  }
+  function removeItem(field: 'customButtons' | 'socialLinks', idx: number) {
+    setCard((c: any) => ({ ...c, [field]: (c[field] ?? []).filter((_: any, i: number) => i !== idx) }));
+  }
+
+  async function save() {
+    setSaving(true);
+    try {
+      const payload = {
+        fullName: card.fullName,
+        jobTitle: card.jobTitle,
+        bio: card.bio,
+        phone: card.phone,
+        whatsapp: card.whatsapp,
+        email: card.email,
+        website: card.website,
+        avatarUrl: card.avatarUrl,
+        template: card.template,
+        primaryColor: card.primaryColor,
+        accentColor: card.accentColor,
+        bgColor: card.bgColor,
+        customButtons: card.customButtons ?? [],
+        socialLinks: card.socialLinks ?? [],
+      };
+      await api(`/cards/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+      toast.success('Cartão salvo!');
+    } catch (e) {
+      toast.error(humanizeError(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading || !card) return <main className="min-h-screen grid place-items-center text-gray-500">Carregando...</main>;
+
+  const buttons: Link[] = card.customButtons ?? [];
+  const socials: Link[] = card.socialLinks ?? [];
+
+  return (
+    <main className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+          <button onClick={() => router.push('/dashboard')} className="text-sm text-gray-600 hover:text-gray-900">← Voltar</button>
+          <h1 className="font-semibold truncate flex-1">Editar: {card.fullName}</h1>
+          <a href={`/c/${card.slug}`} target="_blank" className="text-sm text-blue-700 hover:underline">Ver público</a>
+          <button onClick={save} disabled={saving} className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50">
+            {saving ? 'Salvando...' : 'Salvar'}
+          </button>
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 grid lg:grid-cols-[1fr_360px] gap-6">
+        <div className="space-y-6">
+          {/* Templates */}
+          <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <h2 className="font-semibold mb-3">Template</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {templates.map((t) => (
+                <button key={t.id} type="button" onClick={() => applyTemplate(t)}
+                  className={`text-left rounded-xl p-3 border-2 transition ${card.template === t.id ? 'border-blue-700' : 'border-transparent hover:border-gray-300'}`}
+                  style={{ background: t.bgColor, color: t.dark ? '#fff' : '#0F172A' }}>
+                  <div className="flex gap-1 mb-2">
+                    <span className="size-4 rounded-full" style={{ background: t.primaryColor }} />
+                    <span className="size-4 rounded-full" style={{ background: t.accentColor }} />
+                  </div>
+                  <div className="font-semibold text-sm">{t.name}</div>
+                  <div className="text-[11px] opacity-70">{t.description}</div>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Cores */}
+          <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <h2 className="font-semibold mb-3">Personalizar cores</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { key: 'primaryColor', label: 'Primária' },
+                { key: 'accentColor', label: 'Destaque' },
+                { key: 'bgColor', label: 'Fundo' },
+              ].map((f) => (
+                <label key={f.key} className="block">
+                  <span className="text-xs text-gray-600 block mb-1">{f.label}</span>
+                  <div className="flex items-center gap-2">
+                    <input type="color" className="size-10 rounded border cursor-pointer"
+                      value={card[f.key] ?? '#000000'}
+                      onChange={(e) => set(f.key, e.target.value)} />
+                    <input type="text" className="flex-1 border rounded px-2 py-1.5 text-sm font-mono"
+                      value={card[f.key] ?? ''}
+                      onChange={(e) => set(f.key, e.target.value)} />
+                  </div>
+                </label>
+              ))}
+            </div>
+          </section>
+
+          {/* Bio */}
+          <section className="bg-white border rounded-xl p-4 sm:p-6 grid sm:grid-cols-2 gap-3">
+            <h2 className="font-semibold sm:col-span-2">Informações</h2>
+            <input className="border rounded px-3 py-2" placeholder="Nome completo" value={card.fullName ?? ''} onChange={(e) => set('fullName', e.target.value)} />
+            <input className="border rounded px-3 py-2" placeholder="Cargo" value={card.jobTitle ?? ''} onChange={(e) => set('jobTitle', e.target.value)} />
+            <input className="border rounded px-3 py-2" placeholder="WhatsApp" value={card.whatsapp ?? ''} onChange={(e) => set('whatsapp', e.target.value)} />
+            <input className="border rounded px-3 py-2" placeholder="Telefone" value={card.phone ?? ''} onChange={(e) => set('phone', e.target.value)} />
+            <input className="border rounded px-3 py-2" placeholder="Email" value={card.email ?? ''} onChange={(e) => set('email', e.target.value)} />
+            <input className="border rounded px-3 py-2" placeholder="Website" value={card.website ?? ''} onChange={(e) => set('website', e.target.value)} />
+            <input className="border rounded px-3 py-2 sm:col-span-2" placeholder="Avatar URL" value={card.avatarUrl ?? ''} onChange={(e) => set('avatarUrl', e.target.value)} />
+            <textarea rows={3} className="border rounded px-3 py-2 sm:col-span-2" placeholder="Bio" value={card.bio ?? ''} onChange={(e) => set('bio', e.target.value)} />
+          </section>
+
+          {/* Socials */}
+          <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="font-semibold">Redes sociais</h2>
+              <button onClick={() => addItem('socialLinks')} className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+            </div>
+            <div className="space-y-2">
+              {socials.length === 0 && <p className="text-sm text-gray-500">Nenhuma rede adicionada.</p>}
+              {socials.map((s, i) => (
+                <div key={i} className="grid grid-cols-[1fr_2fr_auto] gap-2">
+                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="Nome (Instagram)" value={s.label} onChange={(e) => updateList('socialLinks', i, { label: e.target.value })} />
+                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="URL" value={s.url} onChange={(e) => updateList('socialLinks', i, { url: e.target.value })} />
+                  <button onClick={() => removeItem('socialLinks', i)} className="text-red-600 text-sm px-2">×</button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Buttons */}
+          <section className="bg-white border rounded-xl p-4 sm:p-6">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="font-semibold">Botões/Links</h2>
+              <button onClick={() => addItem('customButtons')} className="text-sm text-blue-700 hover:underline">+ Adicionar</button>
+            </div>
+            <div className="space-y-2">
+              {buttons.length === 0 && <p className="text-sm text-gray-500">Nenhum botão.</p>}
+              {buttons.map((b, i) => (
+                <div key={i} className="grid grid-cols-[1fr_2fr_auto] gap-2">
+                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="Rótulo" value={b.label} onChange={(e) => updateList('customButtons', i, { label: e.target.value })} />
+                  <input className="border rounded px-2 py-1.5 text-sm" placeholder="URL" value={b.url} onChange={(e) => updateList('customButtons', i, { url: e.target.value })} />
+                  <button onClick={() => removeItem('customButtons', i)} className="text-red-600 text-sm px-2">×</button>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {/* Preview */}
+        <aside className="lg:sticky lg:top-20 self-start">
+          <div className="rounded-3xl p-5 text-center" style={{ background: card.bgColor || '#0A0F1F', color: '#fff', border: '1px solid rgba(255,255,255,.08)' }}>
+            <div className="size-20 mx-auto rounded-full p-[3px]" style={{ background: `linear-gradient(135deg, ${card.primaryColor || '#2563EB'}, ${card.accentColor || '#3B82F6'})` }}>
+              {card.avatarUrl ? <img src={card.avatarUrl} className="size-full rounded-full object-cover" alt="" /> : <div className="size-full rounded-full bg-black/30" />}
+            </div>
+            <h3 className="font-bold mt-3">{card.fullName || 'Seu nome'}</h3>
+            {card.jobTitle && <p className="text-xs opacity-70">{card.jobTitle}</p>}
+            <div className="mt-4 py-2 rounded-lg text-sm font-semibold" style={{ background: `linear-gradient(135deg, ${card.primaryColor}, ${card.accentColor})` }}>
+              Salvar contato
+            </div>
+            <div className="mt-2 space-y-1.5">
+              {buttons.slice(0, 3).filter(b => b.label).map((b, i) => (
+                <div key={i} className="text-xs py-2 rounded-lg truncate" style={{ background: 'rgba(255,255,255,.06)' }}>{b.label}</div>
+              ))}
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 text-center mt-3">Pré-visualização</p>
+        </aside>
+      </div>
+    </main>
+  );
+}
