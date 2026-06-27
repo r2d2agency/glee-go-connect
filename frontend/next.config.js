@@ -9,7 +9,7 @@ const nextConfig = {
       beforeFiles: [
         // bio.gleego.com.br/<slug>  ->  /c/<slug>
         {
-          source: '/:slug((?!_next|api|c|auth|dashboard|admin|onboarding|favicon|assets|uploads|robots\\.txt|sitemap\\.xml).+)',
+          source: '/:slug((?!_next|api|c|auth|dashboard|admin|onboarding|favicon|brand|assets|uploads|robots\\.txt|sitemap\\.xml).+)',
           has: [{ type: 'host', value: BIO_DOMAIN }],
           destination: '/c/:slug',
         },
