@@ -1,7 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { api } from '@/lib/api';
+import { humanizeError } from '@/lib/errors';
 
 type Card = {
   id: string;
@@ -43,11 +45,11 @@ export default function Dashboard() {
   function load() {
     setLoading(true);
     api('/cards')
-      .then((data) => {
-        setCards(data);
-        setError('');
+      .then((data) => { setCards(data); setError(''); })
+      .catch((err) => {
+        const msg = humanizeError(err, 'Não foi possível carregar seus cartões.');
+        setError(msg);
       })
-      .catch(() => setError('Sessão expirada. Faça login novamente.'))
       .finally(() => setLoading(false));
   }
 
@@ -80,13 +82,14 @@ export default function Dashboard() {
           .replace(/(^-|-$)/g, '');
       await api('/cards', {
         method: 'POST',
-        body: JSON.stringify({ ...form, slug }),
+        body: JSON.stringify({ ...form, slug, type: 'BIO_LINK' }),
       });
       setForm({ fullName: '', slug: '', jobTitle: '', phone: '', whatsapp: '', email: '', website: '', bio: '' });
       setShowForm(false);
+      toast.success('Cartão criado!');
       load();
-    } catch (err: any) {
-      setError(err?.message || 'Erro ao criar cartão');
+    } catch (err) {
+      toast.error(humanizeError(err, 'Erro ao criar cartão.'));
     } finally {
       setCreating(false);
     }
@@ -99,8 +102,8 @@ export default function Dashboard() {
         body: JSON.stringify({ active: !card.active }),
       });
       load();
-    } catch (err: any) {
-      setError(err?.message || 'Erro');
+    } catch (err) {
+      toast.error(humanizeError(err));
     }
   }
 
@@ -108,44 +111,42 @@ export default function Dashboard() {
     if (!confirm(`Excluir o cartão de ${card.fullName}?`)) return;
     try {
       await api(`/cards/${card.id}`, { method: 'DELETE' });
+      toast.success('Cartão removido.');
       load();
-    } catch (err: any) {
-      setError(err?.message || 'Erro');
+    } catch (err) {
+      toast.error(humanizeError(err));
     }
   }
 
   return (
     <main className="min-h-screen bg-gray-50">
       <header className="bg-white border-b">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold">Glee-go ID</h1>
-            <p className="text-xs text-gray-500">{user.email} · {user.role}</p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-xl font-bold truncate">Glee-go ID</h1>
+            <p className="text-xs text-gray-500 truncate">{user.email} · {user.role}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {user.role === 'ADMIN_MASTER' && (
-              <a href="/admin" className="px-3 py-2 text-sm rounded border hover:bg-gray-100">
+              <a href="/admin" className="px-3 py-1.5 sm:py-2 text-sm rounded border hover:bg-gray-100">
                 Admin
               </a>
             )}
-            <button onClick={logout} className="px-3 py-2 text-sm rounded border hover:bg-gray-100">
+            <button onClick={logout} className="px-3 py-1.5 sm:py-2 text-sm rounded border hover:bg-gray-100">
               Sair
             </button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold">Meus cartões</h2>
+      <div className="max-w-6xl mx-auto p-4 sm:p-6">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 mb-6">
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold">Meus cartões</h2>
             <p className="text-sm text-gray-500">{cards.length} cartão(ões)</p>
           </div>
-          <button
-            onClick={() => setShowForm((s) => !s)}
-            className="bg-black text-white px-4 py-2 rounded text-sm"
-          >
-            {showForm ? 'Cancelar' : '+ Novo cartão'}
+          <button onClick={() => setShowForm((s) => !s)} className="bg-blue-700 hover:bg-blue-800 text-white px-3 sm:px-4 py-2 rounded-lg text-sm shrink-0">
+            {showForm ? 'Cancelar' : '+ Novo'}
           </button>
         </div>
 
@@ -156,7 +157,7 @@ export default function Dashboard() {
         )}
 
         {showForm && (
-          <form onSubmit={createCard} className="bg-white border rounded-xl p-6 mb-6 grid md:grid-cols-2 gap-3">
+          <form onSubmit={createCard} className="bg-white border rounded-xl p-4 sm:p-6 mb-6 grid sm:grid-cols-2 gap-3">
             <input required className="border rounded px-3 py-2" placeholder="Nome completo *"
               value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
             <input className="border rounded px-3 py-2" placeholder="Slug (URL) — opcional"
@@ -169,11 +170,11 @@ export default function Dashboard() {
               value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} />
             <input className="border rounded px-3 py-2" placeholder="Email"
               value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-            <input className="border rounded px-3 py-2 md:col-span-2" placeholder="Website"
+            <input className="border rounded px-3 py-2 sm:col-span-2" placeholder="Website"
               value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
-            <textarea className="border rounded px-3 py-2 md:col-span-2" placeholder="Bio" rows={3}
+            <textarea className="border rounded px-3 py-2 sm:col-span-2" placeholder="Bio" rows={3}
               value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
-            <button disabled={creating} className="md:col-span-2 bg-black text-white py-2 rounded disabled:opacity-50">
+            <button disabled={creating} className="sm:col-span-2 bg-blue-700 hover:bg-blue-800 text-white py-2.5 rounded-lg disabled:opacity-50">
               {creating ? 'Criando...' : 'Criar cartão'}
             </button>
           </form>
@@ -182,24 +183,24 @@ export default function Dashboard() {
         {loading ? (
           <p className="text-gray-500">Carregando...</p>
         ) : cards.length === 0 ? (
-          <div className="bg-white border rounded-xl p-12 text-center">
+          <div className="bg-white border rounded-xl p-8 sm:p-12 text-center">
             <p className="text-gray-600 mb-4">Você ainda não tem cartões.</p>
-            <button onClick={() => setShowForm(true)} className="bg-black text-white px-4 py-2 rounded">
+            <button onClick={() => setShowForm(true)} className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg">
               Criar meu primeiro cartão
             </button>
           </div>
         ) : (
-          <ul className="grid md:grid-cols-2 gap-4">
+          <ul className="grid sm:grid-cols-2 gap-4">
             {cards.map((c) => (
-              <li key={c.id} className="bg-white border rounded-xl p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold">{c.fullName}</h3>
+              <li key={c.id} className="bg-white border rounded-xl p-4 sm:p-5">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold truncate">{c.fullName}</h3>
                     {c.jobTitle && <p className="text-sm text-gray-500">{c.jobTitle}</p>}
                     <a href={`/c/${c.slug}`} target="_blank" rel="noreferrer"
-                       className="text-xs text-blue-600 hover:underline">/c/{c.slug}</a>
+                       className="text-xs text-blue-600 hover:underline truncate block">/c/{c.slug}</a>
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${c.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${c.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                     {c.active ? 'ativo' : 'inativo'}
                   </span>
                 </div>
