@@ -21,6 +21,14 @@ export default function LoginPage() {
       });
       localStorage.setItem('gleego_token', token);
       toast.success('Bem-vindo de volta!');
+      // Se a conta ainda não está configurada (sem cartões), abre o Wizard.
+      try {
+        const cards = await api('/cards');
+        if (!Array.isArray(cards) || cards.length === 0) {
+          router.push('/onboarding');
+          return;
+        }
+      } catch {}
       router.push('/dashboard');
     } catch (err) {
       toast.error(humanizeError(err, 'Não foi possível entrar.'));
