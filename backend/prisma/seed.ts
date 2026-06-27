@@ -5,19 +5,21 @@ const prisma = new PrismaClient();
 
 async function main() {
   await seedPlans();
-  const email = process.env.SUPERADMIN_EMAIL;
+  const email = process.env.SUPERADMIN_EMAIL?.trim().toLowerCase();
   const password = process.env.SUPERADMIN_PASSWORD;
+  const shouldResetPassword = process.env.SUPERADMIN_RESET_PASSWORD === 'true';
   if (!email || !password) {
     console.log('[seed] SUPERADMIN_EMAIL/PASSWORD not set, skipping superadmin seed');
     return;
   }
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
+    const passwordHash = shouldResetPassword ? await bcrypt.hash(password, 10) : undefined;
     await prisma.user.update({
       where: { email },
-      data: { role: Role.ADMIN_MASTER },
+      data: { role: Role.ADMIN_MASTER, ...(passwordHash ? { passwordHash } : {}) },
     });
-    console.log(`[seed] Promoted ${email} to ADMIN_MASTER and kept current database password`);
+    console.log(`[seed] Promoted ${email} to ADMIN_MASTER${shouldResetPassword ? ' and reset password from SUPERADMIN_PASSWORD' : ' and kept current database password'}`);
     return;
   }
   const passwordHash = await bcrypt.hash(password, 10);
