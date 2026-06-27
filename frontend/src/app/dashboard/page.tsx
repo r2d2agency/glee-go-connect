@@ -316,3 +316,121 @@ export default function Dashboard() {
     </main>
   );
 }
+
+function StatsPanel({ cards, leads }: { cards: any[]; leads: any[] }) {
+  const total = cards.length;
+  const active = cards.filter((c) => c.active).length;
+  const totalLeads = leads.length;
+
+  // build last 14 days series
+  const days: { label: string; date: string; count: number }[] = [];
+  const now = new Date();
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    days.push({ date: key, label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), count: 0 });
+  }
+  leads.forEach((l: any) => {
+    const k = (l.createdAt || '').slice(0, 10);
+    const day = days.find((d) => d.date === k);
+    if (day) day.count++;
+  });
+  const leads7 = days.slice(7).reduce((s, d) => s + d.count, 0);
+  const max = Math.max(1, ...days.map((d) => d.count));
+
+  // per card lead counts (top 5)
+  const byCard: Record<string, number> = {};
+  leads.forEach((l: any) => {
+    byCard[l.cardId] = (byCard[l.cardId] || 0) + 1;
+  });
+  const ranking = cards
+    .map((c) => ({ name: c.fullName, slug: c.slug, count: byCard[c.id] || 0 }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+  const rankMax = Math.max(1, ...ranking.map((r) => r.count));
+
+  const W = 600, H = 160, P = 24;
+  const barW = (W - P * 2) / days.length - 6;
+
+  return (
+    <section className="mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
+        <Stat label="Cartões" value={total} hint={`${active} ativos`} />
+        <Stat label="Leads (total)" value={totalLeads} accent />
+        <Stat label="Leads 7 dias" value={leads7} />
+        <Stat label="Conversão" value={total ? `${Math.round((totalLeads / Math.max(total, 1)) * 10) / 10}` : '0'} hint="leads/cartão" />
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-4">
+        <div className="ge-card p-4 sm:p-5 lg:col-span-2">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm text-white/80">Leads — últimos 14 dias</h3>
+            <span className="text-xs text-white/40">{totalLeads} no total</span>
+          </div>
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40">
+            <defs>
+              <linearGradient id="barG" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="#22d36a" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="#22d36a" stopOpacity="0.25" />
+              </linearGradient>
+            </defs>
+            {[0.25, 0.5, 0.75].map((g) => (
+              <line key={g} x1={P} x2={W - P} y1={P + (H - P * 2) * g} y2={P + (H - P * 2) * g}
+                stroke="rgba(255,255,255,0.06)" strokeDasharray="3 3" />
+            ))}
+            {days.map((d, i) => {
+              const h = ((H - P * 2) * d.count) / max;
+              const x = P + i * ((W - P * 2) / days.length) + 3;
+              const y = H - P - h;
+              return (
+                <g key={d.date}>
+                  <rect x={x} y={y} width={barW} height={h} rx={3} fill="url(#barG)" />
+                  {i % 2 === 0 && (
+                    <text x={x + barW / 2} y={H - 6} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.4)">
+                      {d.label}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        <div className="ge-card p-4 sm:p-5">
+          <h3 className="font-semibold text-sm text-white/80 mb-3">Top cartões</h3>
+          {ranking.length === 0 ? (
+            <p className="text-xs text-white/40">Sem dados ainda.</p>
+          ) : (
+            <ul className="space-y-3">
+              {ranking.map((r) => (
+                <li key={r.slug}>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="truncate text-white/80">{r.name}</span>
+                    <span className="text-[var(--ge-green)] font-semibold">{r.count}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                    <div className="h-full rounded-full"
+                      style={{ width: `${(r.count / rankMax) * 100}%`,
+                        background: 'linear-gradient(90deg,#22d36a,#16a34a)' }} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Stat({ label, value, hint, accent }: { label: string; value: any; hint?: string; accent?: boolean }) {
+  return (
+    <div className="ge-card p-4 sm:p-5 relative overflow-hidden">
+      {accent && <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-[var(--ge-green)] opacity-10 blur-2xl" />}
+      <p className="text-[11px] uppercase tracking-wider text-white/40">{label}</p>
+      <p className={`text-2xl sm:text-3xl font-bold mt-1 ${accent ? 'text-[var(--ge-green)]' : 'text-white'}`}>{value}</p>
+      {hint && <p className="text-[11px] text-white/40 mt-1">{hint}</p>}
+    </div>
+  );
+}
