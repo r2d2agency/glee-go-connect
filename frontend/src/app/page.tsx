@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Logo } from '@/components/Logo';
 
 export default function Home() {
@@ -47,13 +46,10 @@ export default function Home() {
         <div className="relative ge-fade-up" style={{ animationDelay: '120ms' }}>
           <div className="absolute -inset-10 bg-[radial-gradient(circle_at_center,rgba(34,211,106,0.25),transparent_60%)] blur-2xl" />
           <div className="relative ge-float">
-            <Image
+            <img
               src="/brand/cards.png"
               alt="Cartão Glee-go ID NFC"
-              width={1200}
-              height={900}
               className="rounded-3xl shadow-[0_30px_80px_-20px_rgba(34,211,106,0.35)]"
-              priority
             />
           </div>
           {/* floating chips */}
