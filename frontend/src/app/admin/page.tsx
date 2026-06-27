@@ -93,6 +93,21 @@ export default function AdminPage() {
   };
   useEffect(() => { load(); }, []);
 
+  useEffect(() => {
+    api('/admin/branding').then((b) => setBranding(b || {})).catch(() => {});
+  }, []);
+
+  async function saveBranding(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingBranding(true);
+    try {
+      await api('/admin/branding', { method: 'PUT', body: JSON.stringify(branding) });
+      toast.success('Branding salvo. Faça refresh para ver em todo o sistema.');
+      try { localStorage.setItem('gleego_branding', JSON.stringify(branding)); } catch {}
+    } catch (err) { toast.error(humanizeError(err)); }
+    finally { setSavingBranding(false); }
+  }
+
   /* ---------- Companies/Users helpers ---------- */
   const setRole = async (id: string, role: string) => {
     try { await api(`/admin/users/${id}`, { method: 'PATCH', body: JSON.stringify({ role }) }); toast.success('Papel atualizado.'); load(); }
