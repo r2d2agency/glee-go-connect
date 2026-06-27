@@ -242,7 +242,7 @@ export default function AdminPage() {
             </div>
 
             <div className="grid lg:grid-cols-2 gap-4">
-              <div className="bg-white border rounded-xl p-5">
+              <div className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-5">
                 <h3 className="font-semibold mb-3">Solicitações</h3>
                 <div className="grid grid-cols-3 gap-3">
                   <StatPill label="Pendentes" value={stats.upgrades.pending} color="bg-yellow-100 text-yellow-800" />
@@ -250,7 +250,7 @@ export default function AdminPage() {
                   <StatPill label="Rejeitadas" value={stats.upgrades.rejected} color="bg-red-100 text-red-700" />
                 </div>
               </div>
-              <div className="bg-white border rounded-xl p-5">
+              <div className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-5">
                 <h3 className="font-semibold mb-3">Fulfillment (cartões NFC)</h3>
                 <div className="grid grid-cols-5 gap-2">
                   <StatPill label="Aguard." value={stats.fulfillment.waiting} color="bg-yellow-100 text-yellow-800" />
@@ -260,7 +260,7 @@ export default function AdminPage() {
                   <StatPill label="Ativado" value={stats.fulfillment.activated} color="bg-emerald-100 text-emerald-800" />
                 </div>
               </div>
-              <div className="bg-white border rounded-xl p-5 lg:col-span-2">
+              <div className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-5 lg:col-span-2">
                 <h3 className="font-semibold mb-3">Empresas por plano</h3>
                 <div className="flex flex-wrap gap-2">
                   {stats.byPlan.map(p => (
@@ -268,7 +268,7 @@ export default function AdminPage() {
                       {p.plan}: <strong>{p.count}</strong>
                     </span>
                   ))}
-                  <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm">
+                  <span className="px-3 py-1.5 rounded-full bg-gray-100 text-white/80 text-sm">
                     Com NFC: <strong>{stats.withNfc}</strong>
                   </span>
                 </div>
@@ -283,19 +283,19 @@ export default function AdminPage() {
             {/* Pendentes (aprovação) */}
             <div>
               <h2 className="font-semibold mb-3">🟡 Pendentes de aprovação ({pending.length})</h2>
-              {pending.length === 0 && <p className="text-sm text-gray-500">Nenhuma solicitação pendente.</p>}
+              {pending.length === 0 && <p className="text-sm text-white/60">Nenhuma solicitação pendente.</p>}
               <div className="grid sm:grid-cols-2 gap-3">
                 {pending.map(u => (
-                  <article key={u.id} className="bg-white border rounded-xl p-4">
+                  <article key={u.id} className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-4">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-semibold truncate flex-1">{u.company.name}</h3>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">{u.plan}</span>
                     </div>
-                    <p className="text-sm text-gray-500">{u.company.email}</p>
+                    <p className="text-sm text-white/60">{u.company.email}</p>
                     {u.contactPhone && <p className="text-sm">📞 {u.contactPhone}</p>}
                     {u.address && <p className="text-sm">📍 {u.address}</p>}
                     {u.message && <p className="text-sm mt-2 bg-gray-50 p-2 rounded">{u.message}</p>}
-                    <p className="text-xs text-gray-400 mt-2">{new Date(u.createdAt).toLocaleString('pt-BR')}</p>
+                    <p className="text-xs text-white/40 mt-2">{new Date(u.createdAt).toLocaleString('pt-BR')}</p>
                     <div className="flex gap-2 mt-3">
                       <button onClick={() => openApprove(u)} className="flex-1 bg-blue-700 hover:bg-blue-800 text-white text-sm px-3 py-2 rounded-lg">
                         Aprovar
@@ -325,7 +325,7 @@ export default function AdminPage() {
                         {items.map(u => (
                           <div key={u.id} className="bg-white rounded-lg p-2.5 text-sm shadow-sm">
                             <p className="font-semibold truncate">{u.company.name}</p>
-                            <p className="text-xs text-gray-500 truncate">{u.plan}</p>
+                            <p className="text-xs text-white/60 truncate">{u.plan}</p>
                             {u.trackingCode && (
                               <p className="text-xs mt-1">📮 {u.carrier ? `${u.carrier} ` : ''}{u.trackingCode}</p>
                             )}
@@ -343,7 +343,7 @@ export default function AdminPage() {
                             </div>
                           </div>
                         ))}
-                        {items.length === 0 && <p className="text-xs text-gray-400 text-center py-4">—</p>}
+                        {items.length === 0 && <p className="text-xs text-white/40 text-center py-4">—</p>}
                       </div>
                     </div>
                   );
@@ -356,9 +356,9 @@ export default function AdminPage() {
         {/* ---------- CARDS / TAGS ---------- */}
         {tab === 'cards' && (
           <section>
-            <div className="overflow-x-auto bg-white border rounded-xl">
+            <div className="overflow-x-auto bg-[var(--ge-surface)] border border-white/10 rounded-xl">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50"><tr>
+                <thead className="bg-white/5"><tr>
                   <th className="p-2 text-left">Nome</th>
                   <th className="p-2 text-left">Empresa</th>
                   <th className="p-2">Tipo</th>
@@ -369,7 +369,7 @@ export default function AdminPage() {
                 </tr></thead>
                 <tbody>
                   {cards.map(c => (
-                    <tr key={c.id} className="border-t">
+                    <tr key={c.id} className="border-t border-white/5">
                       <td className="p-2">{c.fullName}</td>
                       <td className="p-2">{c.company.name}</td>
                       <td className="p-2 text-center">
@@ -378,7 +378,7 @@ export default function AdminPage() {
                         </span>
                       </td>
                       <td className="p-2 text-center"><a href={`https://bio.gleego.com.br/${c.slug}`} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">bio.gleego.com.br/{c.slug}</a></td>
-                      <td className="p-2 text-center font-mono text-xs">{c.nfcSerial || <span className="text-gray-400">—</span>}</td>
+                      <td className="p-2 text-center font-mono text-xs">{c.nfcSerial || <span className="text-white/40">—</span>}</td>
                       <td className="p-2 text-center">{c.active ? '✅' : '⏸'}</td>
                       <td className="p-2 text-center">
                         {c.type === 'DIGITAL_CARD' && (
@@ -389,7 +389,7 @@ export default function AdminPage() {
                       </td>
                     </tr>
                   ))}
-                  {cards.length === 0 && <tr><td colSpan={7} className="p-4 text-center text-gray-500">Nenhum cartão.</td></tr>}
+                  {cards.length === 0 && <tr><td colSpan={7} className="p-4 text-center text-white/60">Nenhum cartão.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -407,17 +407,17 @@ export default function AdminPage() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {plans.map(p => (
-                <article key={p.id} className={`bg-white border rounded-xl p-4 ${p.highlight ? 'ring-2 ring-blue-500' : ''}`}>
+                <article key={p.id} className={`bg-[var(--ge-surface)] border border-white/10 rounded-xl p-4 ${p.highlight ? 'ring-2 ring-blue-500' : ''}`}>
                   <div className="flex items-start gap-2">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold truncate">{p.name}</h3>
-                      <p className="text-xs text-gray-500">{p.slug}</p>
+                      <p className="text-xs text-white/60">{p.slug}</p>
                     </div>
                     {!p.active && <span className="text-xs bg-gray-200 px-2 py-0.5 rounded-full">inativo</span>}
                   </div>
-                  <p className="text-2xl font-bold mt-2">{brl(p.priceCents, p.currency)}<span className="text-xs text-gray-500 font-normal"> / {p.billingCycle}</span></p>
-                  {p.description && <p className="text-sm text-gray-600 mt-1">{p.description}</p>}
-                  <ul className="text-xs text-gray-700 mt-2 space-y-0.5">
+                  <p className="text-2xl font-bold mt-2">{brl(p.priceCents, p.currency)}<span className="text-xs text-white/60 font-normal"> / {p.billingCycle}</span></p>
+                  {p.description && <p className="text-sm text-white/70 mt-1">{p.description}</p>}
+                  <ul className="text-xs text-white/80 mt-2 space-y-0.5">
                     <li>📇 Bio links: {p.maxBioLinks}</li>
                     <li>💳 Cartões: {p.maxCards}</li>
                     <li>{p.includesNfc ? '✅' : '❌'} Inclui NFC físico</li>
@@ -437,16 +437,16 @@ export default function AdminPage() {
 
         {/* ---------- COMPANIES ---------- */}
         {tab === 'companies' && (
-          <div className="overflow-x-auto bg-white border rounded-xl">
+          <div className="overflow-x-auto bg-[var(--ge-surface)] border border-white/10 rounded-xl">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50"><tr>
+              <thead className="bg-white/5"><tr>
                 <th className="p-2 text-left">Nome</th><th className="p-2 text-left">Email</th>
                 <th className="p-2">Plano</th><th className="p-2">Users</th><th className="p-2">Cartões</th>
                 <th className="p-2">Ativa</th><th className="p-2">Ações</th>
               </tr></thead>
               <tbody>
                 {companies.map(c => (
-                  <tr key={c.id} className="border-t">
+                  <tr key={c.id} className="border-t border-white/5">
                     <td className="p-2">{c.name}</td>
                     <td className="p-2">{c.email}</td>
                     <td className="p-2 text-center">
@@ -471,14 +471,14 @@ export default function AdminPage() {
 
         {/* ---------- USERS ---------- */}
         {tab === 'users' && (
-          <div className="overflow-x-auto bg-white border rounded-xl">
+          <div className="overflow-x-auto bg-[var(--ge-surface)] border border-white/10 rounded-xl">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50"><tr>
+              <thead className="bg-white/5"><tr>
                 <th className="p-2 text-left">Nome</th><th className="p-2 text-left">Email</th><th className="p-2">Papel</th>
               </tr></thead>
               <tbody>
                 {users.map(u => (
-                  <tr key={u.id} className="border-t">
+                  <tr key={u.id} className="border-t border-white/5">
                     <td className="p-2">{u.fullName}</td>
                     <td className="p-2">{u.email}</td>
                     <td className="p-2 text-center">
@@ -495,7 +495,7 @@ export default function AdminPage() {
 
         {/* ---------- BRANDING ---------- */}
         {tab === 'branding' && (
-          <form onSubmit={saveBranding} className="bg-white border rounded-xl p-5 sm:p-6 max-w-3xl space-y-6 text-slate-800">
+          <form onSubmit={saveBranding} className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-5 sm:p-6 max-w-3xl space-y-6 text-slate-800">
             <div>
               <h2 className="text-lg font-semibold">Identidade visual</h2>
               <p className="text-sm text-slate-500">Personalize logo, favicon e cor principal usados no app, página pública e emails.</p>
@@ -570,7 +570,7 @@ export default function AdminPage() {
       {approving && (
         <Modal onClose={() => setApproving(null)} title={`Aprovar — ${approving.company.name}`}>
           <form onSubmit={approve} className="grid sm:grid-cols-2 gap-3">
-            <p className="sm:col-span-2 text-xs text-gray-500">
+            <p className="sm:col-span-2 text-xs text-white/60">
               Será criado um cartão DIGITAL_CARD vinculado ao número de série da tag NFC. O plano da empresa será atualizado para <strong>{approving.plan}</strong>.
             </p>
             <input required className="border rounded px-3 py-2" placeholder="Nome no cartão *"
@@ -593,7 +593,7 @@ export default function AdminPage() {
                 <input className="border rounded px-3 py-2" placeholder="UID NFC (opcional)"
                   value={approveForm.nfcUid} onChange={(e) => setApproveForm({ ...approveForm, nfcUid: e.target.value })} />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Pode aprovar sem informar agora — o vínculo pode ser feito depois na aba Cartões/Tags.</p>
+              <p className="text-xs text-white/60 mt-1">Pode aprovar sem informar agora — o vínculo pode ser feito depois na aba Cartões/Tags.</p>
             </div>
             <textarea rows={2} className="border rounded px-3 py-2 sm:col-span-2" placeholder="Nota interna (opcional)"
               value={approveForm.adminNote} onChange={(e) => setApproveForm({ ...approveForm, adminNote: e.target.value })} />
@@ -624,8 +624,8 @@ export default function AdminPage() {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-white border rounded-xl p-4">
-      <p className="text-xs text-gray-500">{label}</p>
+    <div className="bg-[var(--ge-surface)] border border-white/10 rounded-xl p-4">
+      <p className="text-xs text-white/60">{label}</p>
       <p className="text-2xl font-bold mt-1">{value}</p>
     </div>
   );
@@ -645,7 +645,7 @@ function Modal({ children, onClose, title }: { children: React.ReactNode; onClos
       <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 text-2xl leading-none">×</button>
+          <button onClick={onClose} className="text-white/60 text-2xl leading-none">×</button>
         </div>
         {children}
       </div>
