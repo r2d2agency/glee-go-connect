@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
+import { AvatarUploader } from '@/components/AvatarUploader';
 
 type Template = { id: string; name: string; description: string; primaryColor: string; dark: boolean };
 
@@ -188,11 +189,11 @@ export default function OnboardingWizard() {
                   <input className="w-full border rounded-lg px-3 py-2.5" placeholder="Ex: Designer · Pastor · Corretor"
                     value={bio.jobTitle} onChange={(e) => setBio({ ...bio, jobTitle: e.target.value })} />
                 </label>
-                <label className="block space-y-1.5">
-                  <span className="text-xs font-medium text-slate-600">Foto (URL)</span>
-                  <input className="w-full border rounded-lg px-3 py-2.5" placeholder="https://..."
-                    value={bio.avatarUrl} onChange={(e) => setBio({ ...bio, avatarUrl: e.target.value })} />
-                </label>
+                <AvatarUploader
+                  value={bio.avatarUrl}
+                  onChange={(url) => setBio({ ...bio, avatarUrl: url })}
+                  label="Sua foto"
+                />
                 <label className="block space-y-1.5">
                   <span className="text-xs font-medium text-slate-600">Bio curta (até 280)</span>
                   <textarea rows={3} maxLength={280} className="w-full border rounded-lg px-3 py-2.5"

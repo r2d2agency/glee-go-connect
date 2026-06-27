@@ -32,6 +32,10 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-gleego}:${POSTGRES_PASSWORD:-gleego}@postgres:5432/${POSTGRES_DB:-gleego_id}
       JWT_SECRET: ${JWT_SECRET:-change-me}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      PUBLIC_BACKEND_URL: ${PUBLIC_BACKEND_URL:-http://localhost:3000}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - backend_uploads:/app/uploads
     ports:
       - "3000:3000"
 
@@ -53,3 +57,4 @@ services:
 
 volumes:
   postgres_data:
+  backend_uploads:
