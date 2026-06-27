@@ -34,6 +34,7 @@ export default function Dashboard() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [upgrade, setUpgrade] = useState({ plan: 'PRO', message: '', contactPhone: '', address: '' });
   const [upgradeSending, setUpgradeSending] = useState(false);
+  const [plans, setPlans] = useState<any[]>([]);
   const [myRequests, setMyRequests] = useState<any[]>([]);
   const [form, setForm] = useState({
     fullName: '',
@@ -66,6 +67,7 @@ export default function Dashboard() {
     setUser(parseJwt(token));
     load();
     api('/upgrades/mine').then(setMyRequests).catch(() => {});
+    api('/plans').then((p) => setPlans(p || [])).catch(() => {});
   }, [router]);
 
   function logout() {
