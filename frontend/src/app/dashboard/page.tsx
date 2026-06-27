@@ -280,8 +280,8 @@ export default function Dashboard() {
                   <div className="min-w-0">
                     <h3 className="font-semibold truncate">{c.fullName}</h3>
                     {c.jobTitle && <p className="text-sm text-white/50">{c.jobTitle}</p>}
-                    <a href={`/c/${c.slug}`} target="_blank" rel="noreferrer"
-                       className="text-xs ge-link hover:underline truncate block">/c/{c.slug}</a>
+                    <a href={`https://bio.gleego.com.br/${c.slug}`} target="_blank" rel="noreferrer"
+                       className="text-xs ge-link hover:underline truncate block">bio.gleego.com.br/{c.slug}</a>
                   </div>
                   <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${c.active ? 'bg-[rgba(34,211,106,0.15)] text-[var(--ge-green)]' : 'bg-white/5 text-white/50'}`}>
                     {c.active ? 'ativo' : 'inativo'}

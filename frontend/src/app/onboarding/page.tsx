@@ -150,7 +150,7 @@ export default function OnboardingWizard() {
                 <label className="block space-y-1.5">
                   <span className="text-xs font-medium text-slate-600">Seu link público</span>
                   <div className="flex items-center border rounded-lg overflow-hidden">
-                    <span className="px-3 py-2.5 bg-slate-50 text-slate-500 text-sm border-r">glee.go/c/</span>
+                    <span className="px-3 py-2.5 bg-slate-50 text-slate-500 text-sm border-r">bio.gleego.com.br/</span>
                     <input className="flex-1 px-3 py-2.5 min-w-0" placeholder="seu-link" value={slugInput}
                       onChange={(e) => setSlugInput(slugify(e.target.value))} />
                   </div>
@@ -244,7 +244,7 @@ export default function OnboardingWizard() {
                 <h3 className="font-bold mt-3 truncate">{fullName || 'Seu nome'}</h3>
                 {bio.jobTitle && <p className={`text-sm ${template.dark ? 'text-slate-300' : 'text-slate-500'}`}>{bio.jobTitle}</p>}
                 {bio.bio && <p className={`text-sm mt-2 ${template.dark ? 'text-slate-300' : 'text-slate-600'}`}>{bio.bio}</p>}
-                <p className={`text-xs mt-2 ${template.dark ? 'text-slate-400' : 'text-slate-400'}`}>glee.go/c/{slug || 'seu-link'}</p>
+                <p className={`text-xs mt-2 ${template.dark ? 'text-slate-400' : 'text-slate-400'}`}>bio.gleego.com.br/{slug || 'seu-link'}</p>
                 <div className="mt-4 space-y-2">
                   {buttons.filter((b) => b.label).slice(0, 5).map((b, i) => (
                     <div key={i} className="py-2.5 rounded-lg text-sm font-medium truncate" style={{ background: bio.primaryColor, color: '#fff' }}>

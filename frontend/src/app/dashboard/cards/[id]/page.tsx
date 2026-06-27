@@ -105,7 +105,7 @@ export default function EditCardPage() {
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={() => router.push('/dashboard')} className="text-sm text-gray-600 hover:text-gray-900">← Voltar</button>
           <h1 className="font-semibold truncate flex-1">Editar: {card.fullName}</h1>
-          <a href={`/c/${card.slug}`} target="_blank" className="text-sm text-blue-700 hover:underline">Ver público</a>
+          <a href={`https://bio.gleego.com.br/${card.slug}`} target="_blank" className="text-sm text-blue-700 hover:underline">Ver público</a>
           <button onClick={save} disabled={saving} className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50">
             {saving ? 'Salvando...' : 'Salvar'}
           </button>
