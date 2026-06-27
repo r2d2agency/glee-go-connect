@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ApiError, api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
+import { Logo } from '@/components/Logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,28 +43,31 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-blue-50">
-      <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4 bg-white p-6 sm:p-8 rounded-2xl border shadow-sm">
-        <div>
-          <h1 className="text-2xl font-bold">Entrar</h1>
-          <p className="text-sm text-slate-500 mt-1">Acesse seu painel Glee-go ID.</p>
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-slate-600">Email</label>
-          <input required type="email" className="w-full border rounded-lg px-3 py-2.5" value={email} onChange={e => setEmail(e.target.value)} />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-slate-600">Senha</label>
-          <input required type="password" className="w-full border rounded-lg px-3 py-2.5" value={password} onChange={e => setPassword(e.target.value)} />
-        </div>
-        <button disabled={loading} className="w-full bg-blue-700 hover:bg-blue-800 disabled:opacity-60 text-white py-2.5 rounded-lg font-medium">
-          {loading ? 'Entrando...' : 'Entrar'}
-        </button>
-        <p className="text-center text-sm text-slate-500">
-          Não tem conta?{' '}
-          <a href="/auth/register" className="text-blue-700 font-medium hover:underline">Criar grátis</a>
-        </p>
-      </form>
+    <main className="min-h-screen ge-grid-bg flex items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-sm ge-fade-up">
+        <div className="flex justify-center mb-6"><Logo size={40} /></div>
+        <form onSubmit={onSubmit} className="ge-card p-6 sm:p-8 space-y-4 shadow-2xl">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white">Entrar</h1>
+            <p className="text-sm text-gray-400 mt-1">Acesse seu painel Glee-go ID.</p>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-gray-300">Email</label>
+            <input required type="email" className="ge-input w-full px-3 py-2.5" value={email} onChange={e => setEmail(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-gray-300">Senha</label>
+            <input required type="password" className="ge-input w-full px-3 py-2.5" value={password} onChange={e => setPassword(e.target.value)} />
+          </div>
+          <button disabled={loading} className="ge-btn w-full py-2.5 disabled:opacity-60">
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+          <p className="text-center text-sm text-gray-400">
+            Não tem conta?{' '}
+            <a href="/auth/register" className="ge-link font-medium hover:underline">Criar grátis</a>
+          </p>
+        </form>
+      </div>
     </main>
   );
 }
