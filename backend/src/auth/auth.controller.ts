@@ -7,6 +7,11 @@ class RegisterDto {
   @IsString() @MinLength(6) password!: string;
   @IsString() fullName!: string;
   @IsOptional() @IsString() companyName?: string;
+  @IsOptional() @IsString() whatsapp?: string;
+  @IsOptional() @IsString() city?: string;
+  @IsOptional() @IsString() state?: string;
+  @IsOptional() @IsString() industry?: string;
+  @IsOptional() @IsString() source?: string;
 }
 
 class LoginDto {

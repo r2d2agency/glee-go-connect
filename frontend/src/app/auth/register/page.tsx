@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
+import { BR_STATES, INDUSTRIES, SOURCES } from '@/lib/br-options';
 
 type Template = { id: string; name: string; description: string; primaryColor: string; dark: boolean };
 
@@ -26,7 +27,17 @@ export default function RegisterWizard() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const [account, setAccount] = useState({ fullName: '', email: '', password: '', slug: '' });
+  const [account, setAccount] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    slug: '',
+    whatsapp: '',
+    city: '',
+    state: '',
+    industry: '',
+    source: '',
+  });
   const [template, setTemplate] = useState<Template>(TEMPLATES[0]);
   const [bio, setBio] = useState({ jobTitle: '', bio: '', avatarUrl: '', primaryColor: TEMPLATES[0].primaryColor });
   const [buttons, setButtons] = useState<Link[]>([{ label: '', url: '' }]);
@@ -44,6 +55,11 @@ export default function RegisterWizard() {
       if (!account.fullName.trim()) return toast.error('Informe seu nome.');
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account.email)) return toast.error('Email inválido.');
       if (account.password.length < 6) return toast.error('Senha precisa ter no mínimo 6 caracteres.');
+      if (!account.whatsapp.trim()) return toast.error('Informe seu WhatsApp.');
+      if (!account.city.trim()) return toast.error('Informe sua cidade.');
+      if (!account.state) return toast.error('Selecione seu estado.');
+      if (!account.industry) return toast.error('Selecione seu ramo de atividade.');
+      if (!account.source) return toast.error('Conte como nos conheceu.');
       if (!/^[a-z0-9-]{2,40}$/.test(slug)) return toast.error('Slug inválido. Use letras minúsculas e hífen.');
     }
     setStep((s) => Math.min(4, s + 1));
@@ -59,6 +75,11 @@ export default function RegisterWizard() {
           email: account.email.trim().toLowerCase(),
           password: account.password,
           companyName: account.fullName.trim(),
+          whatsapp: account.whatsapp.trim(),
+          city: account.city.trim(),
+          state: account.state,
+          industry: account.industry,
+          source: account.source,
         }),
       });
       localStorage.setItem('gleego_token', token);
@@ -194,6 +215,39 @@ function Step1({ value, onChange, slug }: any) {
       </Field>
       <Field label="Senha (mín. 6)">
         <input type="password" className="w-full border rounded-lg px-3 py-2.5" value={value.password} onChange={(e) => onChange({ ...value, password: e.target.value })} />
+      </Field>
+      <Field label="WhatsApp">
+        <input inputMode="tel" placeholder="(11) 99999-9999" className="w-full border rounded-lg px-3 py-2.5"
+          value={value.whatsapp} onChange={(e) => onChange({ ...value, whatsapp: e.target.value })} />
+      </Field>
+      <div className="grid grid-cols-[1fr_140px] gap-3">
+        <Field label="Cidade">
+          <input className="w-full border rounded-lg px-3 py-2.5" value={value.city}
+            onChange={(e) => onChange({ ...value, city: e.target.value })} />
+        </Field>
+        <Field label="Estado (UF)">
+          <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.state}
+            onChange={(e) => onChange({ ...value, state: e.target.value })}>
+            <option value="">UF</option>
+            {BR_STATES.map((s) => (
+              <option key={s.uf} value={s.uf}>{s.uf} — {s.name}</option>
+            ))}
+          </select>
+        </Field>
+      </div>
+      <Field label="Ramo de atividade">
+        <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.industry}
+          onChange={(e) => onChange({ ...value, industry: e.target.value })}>
+          <option value="">Selecione...</option>
+          {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
+        </select>
+      </Field>
+      <Field label="Como nos conheceu?">
+        <select className="w-full border rounded-lg px-3 py-2.5 bg-white" value={value.source}
+          onChange={(e) => onChange({ ...value, source: e.target.value })}>
+          <option value="">Selecione...</option>
+          {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
       </Field>
       <Field label="Seu link público">
         <div className="flex items-center border rounded-lg overflow-hidden">

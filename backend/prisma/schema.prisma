@@ -45,6 +45,11 @@ model Company {
   email     String
   plan      Plan     @default(FREE)
   active    Boolean  @default(true)
+  whatsapp  String?
+  city      String?
+  state     String?
+  industry  String?
+  source    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   users     User[]
