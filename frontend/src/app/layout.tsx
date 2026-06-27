@@ -5,6 +5,11 @@ import { Toaster } from 'sonner';
 export const metadata: Metadata = {
   title: 'Glee-go ID — Bio Link e Cartões digitais',
   description: 'Crie grátis seu link bio. Faça upgrade para cartão digital NFC, vCard e captura de leads.',
+  icons: {
+    icon: '/brand/logo.png',
+    shortcut: '/brand/logo.png',
+    apple: '/brand/logo.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
