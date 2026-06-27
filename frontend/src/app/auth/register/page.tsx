@@ -50,6 +50,7 @@ export default function RegisterWizard() {
     fullName: '',
     email: '',
     password: '',
+    confirmPassword: '',
     slug: '',
     whatsapp: '',
     city: '',
@@ -82,6 +83,7 @@ export default function RegisterWizard() {
       if (!account.fullName.trim()) return toast.error('Informe seu nome.');
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account.email)) return toast.error('Email inválido.');
       if (account.password.length < 6) return toast.error('Senha precisa ter no mínimo 6 caracteres.');
+      if (account.password !== account.confirmPassword) return toast.error('As senhas não conferem.');
       if (!account.whatsapp.trim()) return toast.error('Informe seu WhatsApp.');
       if (!account.city.trim()) return toast.error('Informe sua cidade.');
       if (!account.state) return toast.error('Selecione seu estado.');
@@ -265,7 +267,10 @@ function Step1({ value, onChange, slug }: any) {
         <input type="email" className="ge-input w-full px-3 py-2.5" value={value.email} onChange={(e) => onChange({ ...value, email: e.target.value })} />
       </Field>
       <Field label="Senha (mín. 6)">
-        <input type="password" className="ge-input w-full px-3 py-2.5" value={value.password} onChange={(e) => onChange({ ...value, password: e.target.value })} />
+        <PasswordInput value={value.password} onChange={(password) => onChange({ ...value, password })} />
+      </Field>
+      <Field label="Confirmar senha">
+        <PasswordInput value={value.confirmPassword} onChange={(confirmPassword) => onChange({ ...value, confirmPassword })} />
       </Field>
       <Field label="WhatsApp">
         <input inputMode="tel" placeholder="(11) 99999-9999" className="ge-input w-full px-3 py-2.5"
@@ -511,6 +516,28 @@ function Field({ label, children }: any) {
       <span className="text-xs font-medium text-gray-300">{label}</span>
       {children}
     </label>
+  );
+}
+
+function PasswordInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <input
+        type={show ? 'text' : 'password'}
+        className="ge-input w-full px-3 py-2.5 pr-12"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <button
+        type="button"
+        onClick={() => setShow((v) => !v)}
+        className="absolute inset-y-0 right-0 px-3 text-gray-400 hover:text-white"
+        aria-label={show ? 'Ocultar senha' : 'Mostrar senha'}
+      >
+        {show ? '🙈' : '👁️'}
+      </button>
+    </div>
   );
 }
 
