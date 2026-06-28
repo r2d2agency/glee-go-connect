@@ -166,6 +166,9 @@ export default function Dashboard() {
             <span className="hidden sm:block text-xs text-white/50 truncate border-l border-white/10 pl-3">{user.email} · {user.role}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            <a href="/dashboard/leads" className="px-3 py-1.5 sm:py-2 text-sm rounded-lg border border-white/10 hover:bg-white/5">
+              Leads
+            </a>
             {user.role === 'ADMIN_MASTER' && (
               <a href="/admin" className="px-3 py-1.5 sm:py-2 text-sm rounded-lg border border-white/10 hover:bg-white/5">
                 Admin
