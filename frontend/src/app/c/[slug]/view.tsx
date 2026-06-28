@@ -91,6 +91,54 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const [shareUrl, setShareUrl] = useState('');
   useEffect(() => { if (typeof window !== 'undefined') setShareUrl(window.location.href); }, []);
 
+  // Lead gate (catálogo)
+  const plan: string = card?.company?.plan || 'FREE';
+  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 1;
+  const limitedProducts = useMemo(() => products.slice(0, productLimit), [products, productLimit]);
+  const limitedFiltered = useMemo(
+    () => activeCat === 'Todos' ? limitedProducts : limitedProducts.filter((p) => (p.category || '') === activeCat),
+    [limitedProducts, activeCat]
+  );
+  const gateRequired = !!card.catalogLeadGate && limitedProducts.length > 0;
+  const storageKey = `ge_lead_${card.slug}`;
+  const [unlocked, setUnlocked] = useState(!gateRequired);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ name: '', phone: '', email: '' });
+  useEffect(() => {
+    if (typeof window === 'undefined' || !gateRequired) return;
+    try { if (localStorage.getItem(storageKey)) setUnlocked(true); } catch {}
+  }, [gateRequired, storageKey]);
+
+  async function submitLead(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.name.trim() || !form.phone.trim()) return;
+    setSubmitting(true);
+    try {
+      const API = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '');
+      const p = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+      await fetch(`${API}/api/leads/public`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: card.slug,
+          name: form.name.trim(),
+          phone: form.phone.trim(),
+          email: form.email.trim() || undefined,
+          message: 'Acesso ao catálogo',
+          utmSource: p.get('utm_source') || undefined,
+          utmMedium: p.get('utm_medium') || undefined,
+          utmCampaign: p.get('utm_campaign') || undefined,
+        }),
+      });
+      try { localStorage.setItem(storageKey, JSON.stringify({ ...form, at: Date.now() })); } catch {}
+      setUnlocked(true);
+    } catch {
+      setUnlocked(true); // best-effort: não bloquear visitante
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   // Track view + UTM/referrer/origin (client-side, best-effort)
   useEffect(() => {
     if (typeof window === 'undefined') return;
