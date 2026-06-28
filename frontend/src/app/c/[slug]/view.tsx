@@ -251,7 +251,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   return (
     <main
       data-theme={isLight ? 'light' : 'dark'}
-      style={{ background: bg, color: fg, ['--fg' as any]: fgRgb }}
+      style={{ background: bg, color: fg, ['--fg' as any]: fgRgb, ['--fg-rgb' as any]: fgRgb }}
       className="min-h-screen relative overflow-hidden ge-theme"
     >
       {/* Ambient glows */}
