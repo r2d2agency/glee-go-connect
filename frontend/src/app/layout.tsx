@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
+import { WhatsAppFloat } from '@/components/WhatsAppFloat';
 
 export const metadata: Metadata = {
   title: 'Glee-go ID — Bio Link e Cartões digitais',
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         {children}
         <Toaster position="top-right" richColors closeButton />
+        <WhatsAppFloat />
       </body>
     </html>
   );
