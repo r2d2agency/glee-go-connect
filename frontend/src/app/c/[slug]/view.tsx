@@ -87,7 +87,21 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const products: Product[] = (Array.isArray(card.products) ? card.products : []).filter((p: Product) => p && p.title);
   const gallery: string[] = (Array.isArray(card.gallery) ? card.gallery : []).filter(Boolean);
   const [activeCat, setActiveCat] = useState<string>('Todos');
-  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<{ list: string[]; index: number } | null>(null);
+  const openLightbox = (list: string[], index: number) => setLightbox({ list, index });
+  const closeLightbox = () => setLightbox(null);
+  const lightboxPrev = () => setLightbox((s) => s ? { ...s, index: (s.index - 1 + s.list.length) % s.list.length } : s);
+  const lightboxNext = () => setLightbox((s) => s ? { ...s, index: (s.index + 1) % s.list.length } : s);
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') lightboxPrev();
+      else if (e.key === 'ArrowRight') lightboxNext();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightbox]);
   const filteredProducts = useMemo(
     () => activeCat === 'Todos' ? products : products.filter((p) => (p.category || '') === activeCat),
     [products, activeCat]
