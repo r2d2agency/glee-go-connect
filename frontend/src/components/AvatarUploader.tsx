@@ -46,7 +46,7 @@ export function AvatarUploader({ value, onChange, label = 'Foto de perfil', size
           style={{ width: size, height: size }}
         >
           {value
-            ? <img src={value} alt="" className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
+            ? <img src={value} alt="" className="w-full h-full object-contain" style={{ objectPosition: 'center' }} />
             : <span className="text-xs">Sem foto</span>}
         </div>
         <div className="flex flex-col gap-1.5">
