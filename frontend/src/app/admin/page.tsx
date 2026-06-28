@@ -390,7 +390,22 @@ export default function AdminPage() {
                           {c.type === 'DIGITAL_CARD' ? 'NFC' : 'Bio'}
                         </span>
                       </td>
-                      <td className="p-2 text-center"><a href={`https://bio.gleego.com.br/${c.slug}`} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">bio.gleego.com.br/{c.slug}</a></td>
+                      <td className="p-2 text-center">
+                        <div className="flex items-center justify-center gap-2 flex-wrap">
+                          <a
+                            href={`https://bio.gleego.com.br/${c.slug}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[var(--ge-green)] hover:underline text-xs"
+                          >
+                            bio.gleego.com.br/{c.slug}
+                          </a>
+                          <CardLinkActions
+                            url={`https://bio.gleego.com.br/${c.slug}`}
+                            filename={`gleego-${c.slug}`}
+                          />
+                        </div>
+                      </td>
                       <td className="p-2 text-center font-mono text-xs">{c.nfcSerial || <span className="text-white/40">—</span>}</td>
                       <td className="p-2 text-center">{c.active ? '✅' : '⏸'}</td>
                       <td className="p-2 text-center">
