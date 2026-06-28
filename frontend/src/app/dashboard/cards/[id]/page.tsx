@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { AvatarUploader } from '@/components/AvatarUploader';
+import { FileUploader } from '@/components/FileUploader';
 
 type Link = { label: string; url: string; icon?: string };
 type Product = {
@@ -14,6 +15,9 @@ type Product = {
   price?: string;
   link?: string;
   category?: string;
+  kind?: 'product' | 'digital';
+  fileUrl?: string;
+  fileName?: string;
 };
 type Service = { icon?: string; title: string; description?: string };
 type Template = {
@@ -399,8 +403,8 @@ export default function EditCardPage() {
                   </p>
                 </div>
                 <button disabled={products.length >= productLimit}
-                  onClick={() => set('products', [...products, { title: '', description: '', price: '', link: '', photo: '', category: '' }])}
-                  className="text-sm text-[var(--ge-green)] hover:underline disabled:opacity-40 disabled:no-underline">+ Adicionar produto</button>
+                  onClick={() => set('products', [...products, { kind: 'product', title: '', description: '', price: '', link: '', photo: '', category: '' }])}
+                  className="text-sm text-[var(--ge-green)] hover:underline disabled:opacity-40 disabled:no-underline">+ Adicionar item</button>
               </div>
               <div className="mb-4 flex items-start gap-3 p-3 rounded-xl border border-white/10 bg-white/[.03]">
                 <input id="leadgate" type="checkbox" className="mt-1 size-4 accent-[var(--ge-green)]"
@@ -419,13 +423,31 @@ export default function EditCardPage() {
                       <span className="text-xs font-semibold text-white/50">Item #{i + 1}</span>
                       <button onClick={() => set('products', products.filter((_, j) => j !== i))} className="text-red-600 text-sm">Remover</button>
                     </div>
-                    <AvatarUploader value={p.photo} onChange={(url) => updateProduct(i, { photo: url })} label="Foto do produto" size={80} />
+                    <div className="flex gap-1 p-1 rounded-lg bg-black/30 border border-white/10 text-xs">
+                      {([
+                        { id: 'product', label: '🛍 Produto / Serviço' },
+                        { id: 'digital', label: '⬇ Conteúdo digital' },
+                      ] as const).map((opt) => {
+                        const active = (p.kind || 'product') === opt.id;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => updateProduct(i, { kind: opt.id })}
+                            className={`flex-1 px-2 py-1.5 rounded-md transition ${active ? 'bg-[var(--ge-green)] text-black font-semibold' : 'text-white/60 hover:text-white'}`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <AvatarUploader value={p.photo} onChange={(url) => updateProduct(i, { photo: url })} label={(p.kind === 'digital' ? 'Capa do conteúdo' : 'Foto do produto')} size={80} />
                     <input className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Título" value={p.title}
                       onChange={(e) => updateProduct(i, { title: e.target.value })} />
                     <textarea rows={2} className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Descrição curta"
                       value={p.description ?? ''} onChange={(e) => updateProduct(i, { description: e.target.value })} />
                     <div className="grid grid-cols-2 gap-2">
-                      <input className="border rounded px-2 py-1.5 text-sm" placeholder="Preço (ex: R$ 99,90)"
+                      <input className="border rounded px-2 py-1.5 text-sm" placeholder={p.kind === 'digital' ? 'Preço (ou "Grátis")' : 'Preço (ex: R$ 99,90)'}
                         value={p.price ?? ''} onChange={(e) => updateProduct(i, { price: e.target.value })} />
                       <select className="border rounded px-2 py-1.5 text-sm bg-[var(--ge-surface-2)]" value={p.category ?? ''}
                         onChange={(e) => updateProduct(i, { category: e.target.value })}>
@@ -433,8 +455,17 @@ export default function EditCardPage() {
                         {categories.filter(Boolean).map((c) => <option key={c} value={c}>{c}</option>)}
                       </select>
                     </div>
-                    <input className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Link (WhatsApp, site, etc.)"
-                      value={p.link ?? ''} onChange={(e) => updateProduct(i, { link: e.target.value })} />
+                    {p.kind === 'digital' ? (
+                      <FileUploader
+                        value={p.fileUrl}
+                        fileName={p.fileName}
+                        label="Arquivo do e-book / conteúdo (PDF, EPUB, ZIP, MP3...)"
+                        onChange={(d) => updateProduct(i, { fileUrl: d?.url || '', fileName: d?.fileName || '' })}
+                      />
+                    ) : (
+                      <input className="border rounded px-2 py-1.5 text-sm w-full" placeholder="Link (WhatsApp, site, etc.)"
+                        value={p.link ?? ''} onChange={(e) => updateProduct(i, { link: e.target.value })} />
+                    )}
                   </div>
                 ))}
               </div>
