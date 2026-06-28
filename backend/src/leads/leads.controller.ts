@@ -25,4 +25,13 @@ export class LeadsController {
     res.setHeader('Content-Disposition', `attachment; filename="leads-${Date.now()}.csv"`);
     res.send('\uFEFF' + csv);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('export.xlsx')
+  async exportXlsx(@Req() req: any, @Res() res: any) {
+    const buf = await this.leads.exportXlsx(req.user.companyId);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="leads-${Date.now()}.xlsx"`);
+    res.send(buf);
+  }
 }
