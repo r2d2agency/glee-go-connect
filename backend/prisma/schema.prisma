@@ -102,6 +102,7 @@ model Card {
   bannerUrl       String?
   bannerCtaLabel  String?
   bannerCtaUrl    String?
+  banners         Json?
   categories      Json?
   products        Json?
   gallery         Json?
