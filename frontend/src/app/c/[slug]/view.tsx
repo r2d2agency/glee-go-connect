@@ -75,7 +75,18 @@ const ICON_COLORS = ['#22ff88', '#38bdf8', '#fbbf24', '#c084fc', '#ff5577', '#22
 export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string }) {
   const primary = card.primaryColor || '#22c55e';
   const accent = card.accentColor || '#3b82f6';
-  const bg = card.bgColor || '#050912';
+  // Força tema escuro: ignora bgColor claro vindo de templates antigos
+  function isDark(hex?: string) {
+    if (!hex) return false;
+    const h = hex.replace('#', '');
+    if (h.length !== 6) return false;
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return lum < 0.35;
+  }
+  const bg = isDark(card.bgColor) ? card.bgColor : '#050912';
 
   const buttons: Link[] = Array.isArray(card.customButtons) ? card.customButtons : [];
   const socials: Link[] = Array.isArray(card.socialLinks) ? card.socialLinks : [];
