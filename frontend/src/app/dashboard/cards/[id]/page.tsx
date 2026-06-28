@@ -132,7 +132,7 @@ export default function EditCardPage() {
   const videos: { url: string; cover?: string; title?: string }[] =
     Array.isArray(card.videos) ? card.videos : [];
   const plan: string = card?.company?.plan || 'FREE';
-  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 1;
+  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 50;
 
   const TABS: { id: typeof tab; label: string }[] = [
     { id: 'perfil', label: 'Perfil' },
@@ -426,12 +426,22 @@ export default function EditCardPage() {
                   <h2 className="font-semibold">Catálogo de produtos</h2>
                   <p className="text-xs text-white/50">
                     {products.length}/{productLimit} itens — plano <b>{plan}</b>
-                    {plan === 'FREE' && ' (faça upgrade para Pro: 5 itens)'}
+                    {plan === 'FREE' && (
+                      <>{' '}<a href="https://wa.me/5517991308048?text=Olá%21%20Quero%20fazer%20upgrade%20do%20meu%20plano%20Glee-go%20ID." target="_blank" rel="noopener noreferrer" className="text-[var(--ge-green)] underline">Chama no Whats e faça upgrade</a></>
+                    )}
                   </p>
                 </div>
-                <button disabled={products.length >= productLimit}
-                  onClick={() => set('products', [...products, { kind: 'product', title: '', description: '', price: '', link: '', photo: '', category: '' }])}
-                  className="text-sm text-[var(--ge-green)] hover:underline disabled:opacity-40 disabled:no-underline">+ Adicionar item</button>
+                <button
+                  onClick={() => {
+                    if (products.length >= productLimit) {
+                      toast.error('Limite do plano grátis atingido. Fale no WhatsApp para fazer upgrade.', {
+                        action: { label: 'Chamar no Whats', onClick: () => window.open('https://wa.me/5517991308048?text=Olá%21%20Quero%20fazer%20upgrade%20do%20meu%20plano%20Glee-go%20ID.', '_blank') },
+                      });
+                      return;
+                    }
+                    set('products', [...products, { kind: 'product', title: '', description: '', price: '', link: '', photo: '', category: '' }]);
+                  }}
+                  className="text-sm text-[var(--ge-green)] hover:underline">+ Adicionar item</button>
               </div>
               <div className="mb-4 flex items-start gap-3 p-3 rounded-xl border border-white/10 bg-white/[.03]">
                 <input id="leadgate" type="checkbox" className="mt-1 size-4 accent-[var(--ge-green)]"

@@ -153,7 +153,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
 
   // Lead gate (catálogo)
   const plan: string = card?.company?.plan || 'FREE';
-  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 1;
+  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 50;
   const limitedProducts = useMemo(() => products.slice(0, productLimit), [products, productLimit]);
   const limitedFiltered = useMemo(
     () => activeCat === 'Todos' ? limitedProducts : limitedProducts.filter((p) => (p.category || '') === activeCat),
