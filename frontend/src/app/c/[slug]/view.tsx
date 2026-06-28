@@ -612,7 +612,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
               {gallery.map((url, i) => (
                 <button key={i} onClick={() => openLightbox(gallery, i)}
-                  className="ge-rise aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/30 group"
+                  className="ge-rise aspect-[4/5] rounded-xl overflow-hidden border border-white/10 bg-black/30 group"
                   style={{ animationDelay: `${i * 40}ms` }}>
                   <img src={url} alt="" className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
                 </button>
