@@ -229,7 +229,29 @@ export default function EditCardPage() {
                 value={card.avatarUrl}
                 onChange={(url) => set('avatarUrl', url)}
                 label="Foto de perfil"
+                shape={card.avatarShape === 'rounded' ? 'rounded' : 'circle'}
               />
+              <div className="mt-2 flex items-center gap-3 text-xs text-white/70">
+                <span>Formato:</span>
+                <label className="flex items-center gap-1 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="avatarShape"
+                    checked={(card.avatarShape ?? 'circle') === 'circle'}
+                    onChange={() => set('avatarShape', 'circle')}
+                  />
+                  ⚪ Círculo
+                </label>
+                <label className="flex items-center gap-1 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="avatarShape"
+                    checked={card.avatarShape === 'rounded'}
+                    onChange={() => set('avatarShape', 'rounded')}
+                  />
+                  ▢ Quadrado arredondado
+                </label>
+              </div>
             </div>
             <textarea rows={3} className="border rounded px-3 py-2 sm:col-span-2" placeholder="Bio" value={card.bio ?? ''} onChange={(e) => set('bio', e.target.value)} />
           </section>
