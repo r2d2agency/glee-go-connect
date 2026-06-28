@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { uploadFile } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
+import { ImageCropModal } from './ImageCropModal';
 
 type Props = {
   value?: string | null;
@@ -15,8 +16,9 @@ type Props = {
 export function AvatarUploader({ value, onChange, label = 'Foto de perfil', size = 96, shape = 'circle' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<File | null>(null);
 
-  async function handleFile(file: File) {
+  function handleFile(file: File) {
     if (!file.type.startsWith('image/')) {
       toast.error('Selecione uma imagem.');
       return;
@@ -25,9 +27,15 @@ export function AvatarUploader({ value, onChange, label = 'Foto de perfil', size
       toast.error('A imagem deve ter no máximo 5MB.');
       return;
     }
+    setPending(file);
+  }
+
+  async function handleCropped(blob: Blob) {
+    setPending(null);
     setBusy(true);
     try {
-      const { url } = await uploadFile(file);
+      const f = new File([blob], `avatar-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      const { url } = await uploadFile(f);
       onChange(url);
       toast.success('Foto enviada!');
     } catch (e) {
@@ -81,6 +89,15 @@ export function AvatarUploader({ value, onChange, label = 'Foto de perfil', size
           e.target.value = '';
         }}
       />
+      {pending && (
+        <ImageCropModal
+          file={pending}
+          shape={shape}
+          aspect={1}
+          onCancel={() => setPending(null)}
+          onConfirm={handleCropped}
+        />
+      )}
     </div>
   );
 }
