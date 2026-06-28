@@ -122,6 +122,8 @@ export default function EditCardPage() {
   const products: Product[] = Array.isArray(card.products) ? card.products : [];
   const gallery: string[] = Array.isArray(card.gallery) ? card.gallery : [];
   const services: Service[] = Array.isArray(card.services) ? card.services : [];
+  const plan: string = card?.company?.plan || 'FREE';
+  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 1;
 
   const TABS: { id: typeof tab; label: string }[] = [
     { id: 'perfil', label: 'Perfil' },
