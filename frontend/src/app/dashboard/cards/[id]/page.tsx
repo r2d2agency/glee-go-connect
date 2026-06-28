@@ -85,6 +85,7 @@ export default function EditCardPage() {
         email: card.email,
         website: card.website,
         avatarUrl: card.avatarUrl,
+        avatarShape: card.avatarShape ?? 'circle',
         companyName: card.companyName,
         companyLogoUrl: card.companyLogoUrl,
         location: card.location,
