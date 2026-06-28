@@ -617,6 +617,45 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
           </div>
         )}
 
+        {/* LEAD GATE POPUP */}
+        {gateOpen && !unlocked && (
+          <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm grid place-items-center p-4 ge-fade"
+               onClick={() => { setGateOpen(false); setPendingAction(null); }}>
+            <form onSubmit={submitLead} onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-2xl border border-white/10 p-6 sm:p-7 ge-rise relative"
+              style={{ background: `linear-gradient(180deg, ${primary}14, #0a0f1a)` }}>
+              <button type="button" onClick={() => { setGateOpen(false); setPendingAction(null); }}
+                className="absolute top-3 right-3 size-8 rounded-full bg-white/10 hover:bg-white/20 grid place-items-center text-white">×</button>
+              <div className="text-center">
+                <div className="mx-auto size-12 grid place-items-center rounded-full mb-3"
+                     style={{ background: `${primary}22`, color: primary, boxShadow: `0 0 24px ${primary}55` }}>
+                  <Icon name="cube" className="size-6" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold">Acesse o conteúdo</h3>
+                <p className="text-sm text-white/65 mt-1">Preencha seus dados para liberar o acesso.</p>
+              </div>
+              <div className="mt-5 grid gap-3 text-left">
+                <input required placeholder="Seu nome" value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full rounded-xl bg-white/[.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-white/30" />
+                <input required placeholder="WhatsApp (com DDD)" value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  inputMode="tel"
+                  className="w-full rounded-xl bg-white/[.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-white/30" />
+                <input type="email" placeholder="E-mail (opcional)" value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full rounded-xl bg-white/[.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-white/30" />
+                <button type="submit" disabled={submitting}
+                  className="mt-1 w-full rounded-xl px-4 py-3 font-semibold text-sm disabled:opacity-60"
+                  style={{ background: primary, color: '#04130a', boxShadow: `0 0 24px ${primary}66` }}>
+                  {submitting ? 'Enviando...' : 'Liberar acesso →'}
+                </button>
+                <p className="text-[11px] text-white/40 text-center">Seus dados são enviados apenas para o autor deste perfil.</p>
+              </div>
+            </form>
+          </div>
+        )}
+
         {/* NFC UPGRADE BANNER */}
         <section className="mt-6 rounded-3xl p-6 sm:p-8 border border-white/10 relative overflow-hidden"
           style={{ background: `linear-gradient(135deg, #0a1024, #0b1d12)` }}>
