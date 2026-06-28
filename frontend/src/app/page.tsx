@@ -90,6 +90,15 @@ export default function Home() {
             { i: '🚀', t: 'Pixel Meta + GA', d: 'Conecte seus pixels para remarketing e mensuração de campanhas.' },
             { i: '🛠️', t: 'Painel admin', d: 'Gestão completa com kanban de produção, envio e ativação dos cartões.' },
             { i: '🔐', t: 'Multiempresa', d: 'Vários cartões por conta, controle de equipe e permissões por usuário.' },
+            { i: '🛍️', t: 'Catálogo de produtos', d: 'Mostre produtos com preço, fotos e link de compra direto no seu bio.' },
+            { i: '📥', t: 'Conteúdo digital + e-books', d: 'Disponibilize PDFs, e-books e materiais para download com capa personalizada.' },
+            { i: '🧲', t: 'Captura com gate de leads', d: 'Libere o catálogo apenas após o lead preencher nome, WhatsApp e e-mail.' },
+            { i: '📤', t: 'Exportar leads em Excel', d: 'Baixe seus leads em .xlsx e dispare follow-up direto no WhatsApp.' },
+            { i: '🔔', t: 'Webhooks com HMAC', d: 'Integre com whats.gleego.com.br, CRMs e automações com assinatura segura.' },
+            { i: '🖼️', t: 'Galeria de fotos', d: 'Upload em lote, lightbox em tela cheia com navegação e proporção 4:5.' },
+            { i: '▶️', t: 'Vídeos do YouTube', d: 'Carrossel ilimitado de vídeos com capa automática e player embutido.' },
+            { i: '✂️', t: 'Editor de imagem', d: 'Recorte, zoom e rotação no avatar. Escolha bolinha ou quadrado arredondado.' },
+            { i: '🌗', t: 'Tema claro e escuro', d: 'Cores totalmente personalizáveis com contraste automático de textos.' },
           ].map((f, i) => (
             <article key={f.t} className="ge-card p-6 ge-fade-up hover:border-[var(--ge-green)]/40 transition-colors" style={{ animationDelay: `${i * 60}ms` }}>
               <div className="text-2xl">{f.i}</div>
@@ -150,7 +159,7 @@ export default function Home() {
             <div className="mt-2 text-4xl font-extrabold">Grátis</div>
             <p className="mt-2 text-sm text-white/60">Tudo que você precisa para começar online.</p>
             <ul className="mt-6 space-y-2 text-sm text-white/80">
-              {['1 link bio personalizado', 'Templates e cores', 'Foto de perfil e capa', 'WhatsApp, Instagram e redes', 'QR Code e vCard', 'Estatísticas básicas'].map((i) => (
+              {['1 link bio personalizado', 'Templates, cores e tema claro/escuro', 'Avatar com recorte + galeria de fotos', 'WhatsApp, Instagram e redes', '1 catálogo (produto ou e-book)', 'Vídeos do YouTube', 'QR Code e vCard', 'Estatísticas básicas'].map((i) => (
                 <li key={i} className="flex gap-2"><span className="text-[var(--ge-green)]">✓</span>{i}</li>
               ))}
             </ul>
@@ -162,7 +171,7 @@ export default function Home() {
             <div className="mt-2 text-4xl font-extrabold">Upgrade</div>
             <p className="mt-2 text-sm text-white/60">Cartão físico NFC + recursos profissionais.</p>
             <ul className="mt-6 space-y-2 text-sm text-white/80">
-              {['Tudo do Bio Link', 'Cartão ou tag NFC físico', 'Perfil de empresa + logo', 'Áreas de atuação', 'Captura de leads com UTM', 'Pixel Meta + Google Analytics', 'Selo de perfil verificado', 'Suporte prioritário'].map((i) => (
+              {['Tudo do Bio Link', 'Cartão ou tag NFC físico', 'Perfil de empresa + logo', 'Até 5 catálogos (produtos e e-books)', 'Gate de captura de leads', 'Exportação de leads em Excel', 'Webhooks (whats.gleego.com.br, CRMs)', 'Pixel Meta + Google Analytics + UTM', 'Selo de perfil verificado', 'Suporte prioritário'].map((i) => (
                 <li key={i} className="flex gap-2"><span className="text-[var(--ge-green)]">✓</span>{i}</li>
               ))}
             </ul>
@@ -185,6 +194,10 @@ export default function Home() {
             { q: 'Funciona em iPhone e Android?', a: 'Sim. A página é 100% responsiva e o botão Salvar contato gera um .vcf compatível com qualquer agenda.' },
             { q: 'Posso ter vários cartões na mesma conta?', a: 'Sim. Cada conta pode ter múltiplos cartões, ideal para equipes, igrejas e empresas.' },
             { q: 'Vocês têm template para igrejas e ministérios?', a: 'Sim. Temos templates pensados para igrejas, ministérios, líderes e empresas de todos os ramos.' },
+            { q: 'Posso vender produtos ou entregar e-books pelo meu link?', a: 'Sim. Você cria catálogos com produtos (com preço e link de compra) ou conteúdo digital (PDFs, e-books) com capa personalizada para download.' },
+            { q: 'Como funciona a captura de leads?', a: 'No plano PRO você ativa um gate que mostra um formulário (nome, WhatsApp e e-mail) antes de liberar o acesso ao catálogo. Os leads ficam no painel e podem ser exportados em Excel.' },
+            { q: 'Dá para integrar com WhatsApp e outras plataformas?', a: 'Sim. Temos webhooks com assinatura HMAC para integração com whats.gleego.com.br, CRMs e automações. Toda nova captura dispara o evento lead.created.' },
+            { q: 'Posso colocar vídeos do YouTube?', a: 'Sim. Você adiciona quantos vídeos quiser em um carrossel, com capa automática do YouTube ou personalizada.' },
           ].map((f) => (
             <details key={f.q} className="group ge-card p-5">
               <summary className="flex items-center justify-between cursor-pointer list-none font-medium">
