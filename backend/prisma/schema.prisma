@@ -106,6 +106,7 @@ model Card {
   products        Json?
   gallery         Json?
   services         Json?
+  videos           Json?
   servicesCtaLabel String?
   servicesCtaUrl   String?
   catalogLeadGate  Boolean  @default(false)

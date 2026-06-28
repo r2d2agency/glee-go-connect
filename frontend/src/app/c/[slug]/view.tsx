@@ -1,10 +1,11 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { BIO_DOMAIN } from '@/lib/bio-url';
 
 type Link = { label: string; url: string; icon?: string };
 type Area = { label: string; icon?: string; description?: string };
+type Video = { url: string; cover?: string; title?: string };
 type Product = {
   photo?: string; title: string; description?: string; price?: string;
   link?: string; category?: string;
@@ -72,6 +73,24 @@ function guessIcon(s: Link): string {
 
 const ICON_COLORS = ['#22ff88', '#38bdf8', '#fbbf24', '#c084fc', '#ff5577', '#22d3ee', '#f472b6', '#fb923c'];
 
+function ytId(url: string): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url.includes('://') ? url : `https://${url}`);
+    const host = u.hostname.replace(/^www\./, '');
+    if (host === 'youtu.be') return u.pathname.slice(1).split('/')[0] || null;
+    if (host.endsWith('youtube.com') || host.endsWith('youtube-nocookie.com')) {
+      if (u.pathname === '/watch') return u.searchParams.get('v');
+      const m = u.pathname.match(/^\/(embed|shorts|v|live)\/([^/?#]+)/);
+      if (m) return m[2];
+    }
+  } catch {}
+  const m = url.match(/[?&]v=([a-zA-Z0-9_-]{6,})/) || url.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
+  return m ? m[1] : null;
+}
+function ytThumb(id: string) { return `https://img.youtube.com/vi/${id}/hqdefault.jpg`; }
+function ytEmbed(id: string) { return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`; }
+
 export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string }) {
   const primary = card.primaryColor || '#22c55e';
   const accent = card.accentColor || '#3b82f6';
@@ -98,8 +117,18 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const categories: string[] = (Array.isArray(card.categories) ? card.categories : []).filter(Boolean);
   const products: Product[] = (Array.isArray(card.products) ? card.products : []).filter((p: Product) => p && p.title);
   const gallery: string[] = (Array.isArray(card.gallery) ? card.gallery : []).filter(Boolean);
+  const videos: Video[] = (Array.isArray(card.videos) ? card.videos : []).filter((v: Video) => v && v.url);
   const [activeCat, setActiveCat] = useState<string>('Todos');
   const [lightbox, setLightbox] = useState<{ list: string[]; index: number } | null>(null);
+  const [videoOpen, setVideoOpen] = useState<string | null>(null);
+  const videoTrackRef = useRef<HTMLDivElement | null>(null);
+  const scrollVideos = (dir: 1 | -1) => {
+    const el = videoTrackRef.current;
+    if (!el) return;
+    const card = el.querySelector('[data-video-card]') as HTMLElement | null;
+    const step = (card?.offsetWidth || 280) + 12;
+    el.scrollBy({ left: step * dir, behavior: 'smooth' });
+  };
   const openLightbox = (list: string[], index: number) => setLightbox({ list, index });
   const closeLightbox = () => setLightbox(null);
   const lightboxPrev = () => setLightbox((s) => s ? { ...s, index: (s.index - 1 + s.list.length) % s.list.length } : s);
@@ -262,14 +291,23 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
         .ge-theme { color: rgb(var(--fg)); }
         .ge-theme .text-white { color: rgb(var(--fg)) !important; }
         .ge-theme .text-white\\/40 { color: rgba(var(--fg), .4) !important; }
+        .ge-theme .text-white\\/45 { color: rgba(var(--fg), .5) !important; }
         .ge-theme .text-white\\/50 { color: rgba(var(--fg), .55) !important; }
+        .ge-theme .text-white\\/55 { color: rgba(var(--fg), .6) !important; }
         .ge-theme .text-white\\/60 { color: rgba(var(--fg), .6) !important; }
+        .ge-theme .text-white\\/65 { color: rgba(var(--fg), .7) !important; }
         .ge-theme[data-theme="light"] .text-white\\/40 { color: rgba(var(--fg), .7) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/45 { color: rgba(var(--fg), .72) !important; }
         .ge-theme[data-theme="light"] .text-white\\/50 { color: rgba(var(--fg), .75) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/55 { color: rgba(var(--fg), .78) !important; }
         .ge-theme[data-theme="light"] .text-white\\/60 { color: rgba(var(--fg), .8) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/65 { color: rgba(var(--fg), .82) !important; }
         .ge-theme .text-white\\/70 { color: rgba(var(--fg), .7) !important; }
         .ge-theme .text-white\\/75 { color: rgba(var(--fg), .75) !important; }
         .ge-theme .text-white\\/80 { color: rgba(var(--fg), .8) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/70 { color: rgba(var(--fg), .85) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/75 { color: rgba(var(--fg), .88) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/80 { color: rgba(var(--fg), .9) !important; }
         .ge-theme .border-white\\/10 { border-color: rgba(var(--fg), .12) !important; }
         .ge-theme .border-white\\/15 { border-color: rgba(var(--fg), .16) !important; }
         .ge-theme .border-white\\/20 { border-color: rgba(var(--fg), .2) !important; }
@@ -641,7 +679,85 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
           </section>
         )}
 
-        {/* GALERIA */}
+        {/* VÍDEOS — carrossel YouTube */}
+        {videos.length > 0 && (
+          <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
+            <div className="flex items-end justify-between gap-3 mb-3">
+              <div>
+                <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold">VÍDEOS</h2>
+                <p className="text-lg font-semibold mt-1">Assista no YouTube</p>
+              </div>
+              {videos.length > 1 && (
+                <div className="hidden sm:flex gap-2">
+                  <button onClick={() => scrollVideos(-1)} aria-label="Anterior"
+                    className="size-9 rounded-full border border-white/15 bg-white/[.05] hover:bg-white/[.1] grid place-items-center">‹</button>
+                  <button onClick={() => scrollVideos(1)} aria-label="Próximo"
+                    className="size-9 rounded-full border border-white/15 bg-white/[.05] hover:bg-white/[.1] grid place-items-center">›</button>
+                </div>
+              )}
+            </div>
+            <div
+              ref={videoTrackRef}
+              className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1"
+              style={{ scrollbarWidth: 'thin' }}
+            >
+              {videos.map((v, i) => {
+                const id = ytId(v.url);
+                const cover = v.cover || (id ? ytThumb(id) : '');
+                return (
+                  <button
+                    key={i}
+                    data-video-card
+                    onClick={() => id && setVideoOpen(id)}
+                    className="ge-rise group snap-start shrink-0 w-[260px] sm:w-[300px] rounded-2xl border border-white/10 bg-white/[.02] overflow-hidden text-left hover:bg-white/[.05] transition"
+                    style={{ animationDelay: `${i * 50}ms` }}
+                  >
+                    <div className="aspect-video relative bg-black/40 overflow-hidden">
+                      {cover && <img src={cover} alt={v.title || 'Vídeo'} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />}
+                      <div className="absolute inset-0 grid place-items-center">
+                        <span
+                          className="size-14 grid place-items-center rounded-full"
+                          style={{
+                            background: `radial-gradient(circle at 30% 30%, ${primary}cc, ${primary}55 70%)`,
+                            boxShadow: `0 0 20px ${primary}aa, 0 0 40px ${primary}66, inset 0 0 14px ${primary}66`,
+                            border: `1.5px solid ${primary}`,
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" className="size-6 text-white drop-shadow"><path fill="currentColor" d="M5 4v16l14-8z" /></svg>
+                        </span>
+                      </div>
+                    </div>
+                    {(v.title || !id) && (
+                      <div className="p-3">
+                        <div className="text-sm font-semibold line-clamp-2">{v.title || 'Vídeo do YouTube'}</div>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* PLAYER MODAL */}
+        {videoOpen && (
+          <div onClick={() => setVideoOpen(null)}
+            className="fixed inset-0 z-50 bg-black/95 grid place-items-center p-4 sm:p-8 ge-fade">
+            <div className="relative w-full max-w-4xl aspect-video" onClick={(e) => e.stopPropagation()}>
+              <iframe
+                src={ytEmbed(videoOpen)}
+                title="YouTube"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full rounded-xl border border-white/10 bg-black"
+              />
+              <button onClick={() => setVideoOpen(null)} aria-label="Fechar"
+                className="absolute -top-3 -right-3 size-10 rounded-full bg-white text-black grid place-items-center text-xl shadow-lg">×</button>
+            </div>
+          </div>
+        )}
+
+        {/* GALERIA (continuação) */}
         {gallery.length > 0 && (
           <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
             <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold mb-3">GALERIA</h2>
