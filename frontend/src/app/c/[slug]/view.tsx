@@ -149,7 +149,9 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   );
 
   const [shareUrl, setShareUrl] = useState('');
+  const [footerYear, setFooterYear] = useState(2026);
   useEffect(() => { if (typeof window !== 'undefined') setShareUrl(window.location.href); }, []);
+  useEffect(() => { setFooterYear(new Date().getFullYear()); }, []);
 
   // Lead gate (catálogo)
   const plan: string = card?.company?.plan || 'FREE';
@@ -867,7 +869,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
             </div>
             <p className="text-xs text-white/50">Sua identidade. Seu link.<br/>Seu jeito de se conectar.</p>
           </div>
-          <p className="text-xs text-white/40">© {new Date().getFullYear()} Glee-go ID. Todos os direitos reservados.</p>
+          <p className="text-xs text-white/40">© {footerYear} Glee-go ID. Todos os direitos reservados.</p>
           <a href={`https://${BIO_DOMAIN}`} className="text-sm font-semibold inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition hover:-translate-y-0.5"
              style={{ borderColor: primary, color: primary, boxShadow: `0 0 14px ${primary}66` }}>
             {BIO_DOMAIN}/criar →
@@ -884,6 +886,7 @@ type BannerItem = { image?: string; ctaLabel?: string; ctaUrl?: string };
 function BannerCarousel({ banners, primary }: { banners: BannerItem[]; primary: string }) {
   const items = (banners || []).filter((b) => b && b.image);
   const [idx, setIdx] = useState(0);
+  useEffect(() => { if (idx >= items.length) setIdx(0); }, [idx, items.length]);
   useEffect(() => {
     if (items.length <= 1) return;
     const t = setInterval(() => setIdx((i) => (i + 1) % items.length), 5000);
@@ -892,13 +895,13 @@ function BannerCarousel({ banners, primary }: { banners: BannerItem[]; primary: 
   if (items.length === 0) return null;
   const go = (n: number) => setIdx(((n % items.length) + items.length) % items.length);
   return (
-    <section className="mb-5 rounded-3xl overflow-hidden border border-white/10 relative ge-fade">
-      <div className="relative w-full h-44 sm:h-64">
+    <section className="mb-5 rounded-3xl overflow-hidden border border-white/10 relative ge-fade bg-black/20">
+      <div className="relative w-full aspect-[16/7] min-h-[140px] max-h-[320px]">
         {items.map((b, i) => {
           const hasButton = !!(b.ctaLabel && b.ctaUrl);
           const wrap = !hasButton && b.ctaUrl;
           const Img = (
-            <img src={b.image} alt={`Banner ${i + 1}`} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+            <img src={b.image} alt={`Banner ${i + 1}`} className="absolute inset-0 w-full h-full object-contain transition-opacity duration-700"
               style={{ opacity: i === idx ? 1 : 0 }} />
           );
           return (
