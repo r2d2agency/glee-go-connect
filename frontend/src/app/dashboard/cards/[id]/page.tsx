@@ -554,8 +554,10 @@ export default function EditCardPage() {
         {/* Preview */}
         <aside className="lg:sticky lg:top-20 self-start">
           <div className="rounded-3xl p-5 text-center" style={{ background: card.bgColor || '#0A0F1F', color: '#fff', border: '1px solid rgba(255,255,255,.08)' }}>
-            <div className="size-20 mx-auto rounded-full p-[3px]" style={{ background: `linear-gradient(135deg, ${card.primaryColor || '#2563EB'}, ${card.accentColor || '#3B82F6'})` }}>
-              {card.avatarUrl ? <img src={card.avatarUrl} className="size-full rounded-full object-cover" alt="" /> : <div className="size-full rounded-full bg-black/30" />}
+            <div className={`size-20 mx-auto ${card.avatarShape === 'rounded' ? 'rounded-2xl' : 'rounded-full'} p-[3px]`} style={{ background: `linear-gradient(135deg, ${card.primaryColor || '#2563EB'}, ${card.accentColor || '#3B82F6'})` }}>
+              {card.avatarUrl
+                ? <img src={card.avatarUrl} className={`size-full ${card.avatarShape === 'rounded' ? 'rounded-[14px]' : 'rounded-full'} object-cover`} style={{ objectPosition: 'center' }} alt="" />
+                : <div className={`size-full ${card.avatarShape === 'rounded' ? 'rounded-[14px]' : 'rounded-full'} bg-black/30`} />}
             </div>
             <h3 className="font-bold mt-3">{card.fullName || 'Seu nome'}</h3>
             {card.jobTitle && <p className="text-xs opacity-70">{card.jobTitle}</p>}
