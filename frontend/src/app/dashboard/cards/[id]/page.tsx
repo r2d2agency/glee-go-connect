@@ -102,6 +102,7 @@ export default function EditCardPage() {
         bannerUrl: card.bannerUrl ?? '',
         bannerCtaLabel: card.bannerCtaLabel ?? '',
         bannerCtaUrl: card.bannerCtaUrl ?? '',
+        banners: Array.isArray(card.banners) ? card.banners : [],
         categories: card.categories ?? [],
         products: (card.products ?? []).slice(0, 10),
         gallery: card.gallery ?? [],
