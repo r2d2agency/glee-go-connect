@@ -292,7 +292,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                   <div className={`relative size-36 sm:size-44 ${outer} p-[3px] ge-glow`} style={{ background: `conic-gradient(from 120deg, ${primary}, ${accent}, ${primary})` }}>
                     <div className={`size-full ${inner} overflow-hidden bg-black/40 grid place-items-center`}>
                       {card.avatarUrl
-                        ? <img src={card.avatarUrl} alt={card.fullName} className="size-full object-cover" style={{ objectPosition: 'center' }} />
+                        ? <img src={card.avatarUrl} alt={card.fullName} className="size-full object-contain bg-black/40" style={{ objectPosition: 'center' }} />
                         : <span className="text-4xl font-bold text-white/40">{card.fullName?.[0] ?? '?'}</span>}
                     </div>
                   </div>
