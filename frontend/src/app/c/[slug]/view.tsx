@@ -679,11 +679,6 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
           </section>
         )}
 
-        {/* GALERIA */}
-        {gallery.length > 0 && (
-          <></>
-        )}
-
         {/* VÍDEOS — carrossel YouTube */}
         {videos.length > 0 && (
           <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
