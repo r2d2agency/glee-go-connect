@@ -337,20 +337,16 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* BANNER */}
-        {card.bannerUrl && (
-          <section className="mb-5 rounded-3xl overflow-hidden border border-white/10 relative ge-fade">
-            <img src={card.bannerUrl} alt="Banner" className="w-full h-44 sm:h-64 object-cover" />
-            {(card.bannerCtaLabel && card.bannerCtaUrl) && (
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-5">
-                <a href={card.bannerCtaUrl} target="_blank" rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
-                  style={{ background: primary, color: '#04130a' }}>
-                  {card.bannerCtaLabel} →
-                </a>
-              </div>
-            )}
-          </section>
-        )}
+        <BannerCarousel
+          banners={
+            Array.isArray(card.banners) && card.banners.length > 0
+              ? card.banners
+              : card.bannerUrl
+              ? [{ image: card.bannerUrl, ctaLabel: card.bannerCtaLabel, ctaUrl: card.bannerCtaUrl }]
+              : []
+          }
+          primary={primary}
+        />
 
         {/* Brand header */}
         <header className="flex items-start justify-between gap-4 ge-fade">
