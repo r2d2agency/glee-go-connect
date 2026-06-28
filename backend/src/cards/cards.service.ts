@@ -10,7 +10,10 @@ export class CardsService {
   }
 
   async findOne(companyId: string, id: string) {
-    const card = await this.prisma.card.findFirst({ where: { id, companyId } });
+    const card = await this.prisma.card.findFirst({
+      where: { id, companyId },
+      include: { company: { select: { plan: true } } },
+    });
     if (!card) throw new NotFoundException();
     return card;
   }
