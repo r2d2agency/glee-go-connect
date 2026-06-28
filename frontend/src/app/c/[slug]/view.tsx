@@ -681,6 +681,89 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
 
         {/* GALERIA */}
         {gallery.length > 0 && (
+          <></>
+        )}
+
+        {/* VÍDEOS — carrossel YouTube */}
+        {videos.length > 0 && (
+          <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
+            <div className="flex items-end justify-between gap-3 mb-3">
+              <div>
+                <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold">VÍDEOS</h2>
+                <p className="text-lg font-semibold mt-1">Assista no YouTube</p>
+              </div>
+              {videos.length > 1 && (
+                <div className="hidden sm:flex gap-2">
+                  <button onClick={() => scrollVideos(-1)} aria-label="Anterior"
+                    className="size-9 rounded-full border border-white/15 bg-white/[.05] hover:bg-white/[.1] grid place-items-center">‹</button>
+                  <button onClick={() => scrollVideos(1)} aria-label="Próximo"
+                    className="size-9 rounded-full border border-white/15 bg-white/[.05] hover:bg-white/[.1] grid place-items-center">›</button>
+                </div>
+              )}
+            </div>
+            <div
+              ref={videoTrackRef}
+              className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1"
+              style={{ scrollbarWidth: 'thin' }}
+            >
+              {videos.map((v, i) => {
+                const id = ytId(v.url);
+                const cover = v.cover || (id ? ytThumb(id) : '');
+                return (
+                  <button
+                    key={i}
+                    data-video-card
+                    onClick={() => id && setVideoOpen(id)}
+                    className="ge-rise group snap-start shrink-0 w-[260px] sm:w-[300px] rounded-2xl border border-white/10 bg-white/[.02] overflow-hidden text-left hover:bg-white/[.05] transition"
+                    style={{ animationDelay: `${i * 50}ms` }}
+                  >
+                    <div className="aspect-video relative bg-black/40 overflow-hidden">
+                      {cover && <img src={cover} alt={v.title || 'Vídeo'} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />}
+                      <div className="absolute inset-0 grid place-items-center">
+                        <span
+                          className="size-14 grid place-items-center rounded-full"
+                          style={{
+                            background: `radial-gradient(circle at 30% 30%, ${primary}cc, ${primary}55 70%)`,
+                            boxShadow: `0 0 20px ${primary}aa, 0 0 40px ${primary}66, inset 0 0 14px ${primary}66`,
+                            border: `1.5px solid ${primary}`,
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" className="size-6 text-white drop-shadow"><path fill="currentColor" d="M5 4v16l14-8z" /></svg>
+                        </span>
+                      </div>
+                    </div>
+                    {(v.title || !id) && (
+                      <div className="p-3">
+                        <div className="text-sm font-semibold line-clamp-2">{v.title || 'Vídeo do YouTube'}</div>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* PLAYER MODAL */}
+        {videoOpen && (
+          <div onClick={() => setVideoOpen(null)}
+            className="fixed inset-0 z-50 bg-black/95 grid place-items-center p-4 sm:p-8 ge-fade">
+            <div className="relative w-full max-w-4xl aspect-video" onClick={(e) => e.stopPropagation()}>
+              <iframe
+                src={ytEmbed(videoOpen)}
+                title="YouTube"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full rounded-xl border border-white/10 bg-black"
+              />
+              <button onClick={() => setVideoOpen(null)} aria-label="Fechar"
+                className="absolute -top-3 -right-3 size-10 rounded-full bg-white text-black grid place-items-center text-xl shadow-lg">×</button>
+            </div>
+          </div>
+        )}
+
+        {/* GALERIA (continuação) */}
+        {gallery.length > 0 && (
           <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
             <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold mb-3">GALERIA</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
