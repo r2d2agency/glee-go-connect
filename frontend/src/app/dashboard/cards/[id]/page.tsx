@@ -102,6 +102,7 @@ export default function EditCardPage() {
         services: card.services ?? [],
         servicesCtaLabel: card.servicesCtaLabel ?? '',
         servicesCtaUrl: card.servicesCtaUrl ?? '',
+        catalogLeadGate: !!card.catalogLeadGate,
       };
       await api(`/cards/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
       toast.success('Cartão salvo!');
@@ -121,6 +122,8 @@ export default function EditCardPage() {
   const products: Product[] = Array.isArray(card.products) ? card.products : [];
   const gallery: string[] = Array.isArray(card.gallery) ? card.gallery : [];
   const services: Service[] = Array.isArray(card.services) ? card.services : [];
+  const plan: string = card?.company?.plan || 'FREE';
+  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 1;
 
   const TABS: { id: typeof tab; label: string }[] = [
     { id: 'perfil', label: 'Perfil' },
@@ -390,14 +393,26 @@ export default function EditCardPage() {
               <div className="flex justify-between items-center mb-3">
                 <div>
                   <h2 className="font-semibold">Catálogo de produtos</h2>
-                  <p className="text-xs text-white/50">{products.length}/10 itens — foto, descrição, preço e link.</p>
+                  <p className="text-xs text-white/50">
+                    {products.length}/{productLimit} itens — plano <b>{plan}</b>
+                    {plan === 'FREE' && ' (faça upgrade para Pro: 5 itens)'}
+                  </p>
                 </div>
-                <button disabled={products.length >= 10}
+                <button disabled={products.length >= productLimit}
                   onClick={() => set('products', [...products, { title: '', description: '', price: '', link: '', photo: '', category: '' }])}
                   className="text-sm text-[var(--ge-green)] hover:underline disabled:opacity-40 disabled:no-underline">+ Adicionar produto</button>
               </div>
+              <div className="mb-4 flex items-start gap-3 p-3 rounded-xl border border-white/10 bg-white/[.03]">
+                <input id="leadgate" type="checkbox" className="mt-1 size-4 accent-[var(--ge-green)]"
+                  checked={!!card.catalogLeadGate}
+                  onChange={(e) => set('catalogLeadGate', e.target.checked)} />
+                <label htmlFor="leadgate" className="text-sm">
+                  <div className="font-semibold text-white">Captura de leads no catálogo</div>
+                  <div className="text-xs text-white/60">Quando ativo, o visitante precisa preencher nome, WhatsApp e e-mail para liberar o catálogo. Os contatos aparecem em <b>Leads</b>.</div>
+                </label>
+              </div>
               <div className="grid md:grid-cols-2 gap-4">
-                {products.length === 0 && <p className="text-sm text-white/50 md:col-span-2">Nenhum produto. Adicione até 10 itens.</p>}
+                {products.length === 0 && <p className="text-sm text-white/50 md:col-span-2">Nenhum produto. Adicione até {productLimit} {productLimit === 1 ? 'item' : 'itens'}.</p>}
                 {products.map((p, i) => (
                   <div key={i} className="border border-white/10 rounded-xl p-3 space-y-2 bg-[var(--ge-surface-2)]">
                     <div className="flex items-start justify-between">
