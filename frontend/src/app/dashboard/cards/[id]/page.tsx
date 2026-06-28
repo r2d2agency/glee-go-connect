@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { AvatarUploader } from '@/components/AvatarUploader';
 import { FileUploader } from '@/components/FileUploader';
+import { GalleryMultiUploader } from '@/components/GalleryMultiUploader';
 
 type Link = { label: string; url: string; icon?: string };
 type Product = {
