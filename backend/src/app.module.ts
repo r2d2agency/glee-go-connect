@@ -9,6 +9,7 @@ import { TemplatesModule } from './templates/templates.module';
 import { UpgradesModule } from './upgrades/upgrades.module';
 import { PlansModule } from './plans/plans.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 import { HealthController } from './health.controller';
 import { BrandingController } from './branding.controller';
 
@@ -24,6 +25,7 @@ import { BrandingController } from './branding.controller';
     UpgradesModule,
     PlansModule,
     UploadsModule,
+    WebhooksModule,
   ],
   controllers: [HealthController, BrandingController],
 })

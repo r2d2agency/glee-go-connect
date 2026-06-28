@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import { LeadsController } from './leads.controller';
+import { WebhooksModule } from '../webhooks/webhooks.module';
 
 @Module({
+  imports: [WebhooksModule],
   controllers: [LeadsController],
   providers: [LeadsService],
 })

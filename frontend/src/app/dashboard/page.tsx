@@ -169,6 +169,9 @@ export default function Dashboard() {
             <a href="/dashboard/leads" className="px-3 py-1.5 sm:py-2 text-sm rounded-lg border border-white/10 hover:bg-white/5">
               Leads
             </a>
+            <a href="/dashboard/webhooks" className="px-3 py-1.5 sm:py-2 text-sm rounded-lg border border-white/10 hover:bg-white/5">
+              Webhooks
+            </a>
             {user.role === 'ADMIN_MASTER' && (
               <a href="/admin" className="px-3 py-1.5 sm:py-2 text-sm rounded-lg border border-white/10 hover:bg-white/5">
                 Admin
