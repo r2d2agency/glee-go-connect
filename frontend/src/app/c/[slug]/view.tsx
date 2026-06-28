@@ -249,12 +249,32 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   }, [card, primary, accent]);
 
   return (
-    <main style={{ background: bg }} className="min-h-screen text-white relative overflow-hidden">
+    <main
+      data-theme={isLight ? 'light' : 'dark'}
+      style={{ background: bg, color: fg, ['--fg' as any]: fgRgb }}
+      className="min-h-screen relative overflow-hidden ge-theme"
+    >
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none absolute -top-40 -left-32 w-[480px] h-[480px] rounded-full blur-3xl opacity-30" style={{ background: primary }} />
       <div aria-hidden className="pointer-events-none absolute -top-20 right-0 w-[420px] h-[420px] rounded-full blur-3xl opacity-20" style={{ background: accent }} />
 
       <style>{`
+        .ge-theme { color: rgb(var(--fg)); }
+        .ge-theme .text-white { color: rgb(var(--fg)) !important; }
+        .ge-theme .text-white\\/40 { color: rgba(var(--fg), .4) !important; }
+        .ge-theme .text-white\\/60 { color: rgba(var(--fg), .6) !important; }
+        .ge-theme .text-white\\/70 { color: rgba(var(--fg), .7) !important; }
+        .ge-theme .text-white\\/75 { color: rgba(var(--fg), .75) !important; }
+        .ge-theme .text-white\\/80 { color: rgba(var(--fg), .8) !important; }
+        .ge-theme .border-white\\/10 { border-color: rgba(var(--fg), .12) !important; }
+        .ge-theme .border-white\\/15 { border-color: rgba(var(--fg), .16) !important; }
+        .ge-theme .border-white\\/20 { border-color: rgba(var(--fg), .2) !important; }
+        .ge-theme .bg-white\\/\\[\\.03\\] { background-color: rgba(var(--fg), .04) !important; }
+        .ge-theme .bg-white\\/\\[\\.04\\] { background-color: rgba(var(--fg), .05) !important; }
+        .ge-theme .bg-white\\/\\[\\.06\\] { background-color: rgba(var(--fg), .06) !important; }
+        .ge-theme .bg-white\\/5 { background-color: rgba(var(--fg), .05) !important; }
+        .ge-theme .hover\\:bg-white\\/\\[\\.1\\]:hover { background-color: rgba(var(--fg), .1) !important; }
+        .ge-theme[data-theme="light"] .bg-black\\/40 { background-color: rgba(255,255,255,.5) !important; }
         @keyframes geRise { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform:none; } }
         @keyframes geFade { from { opacity:0; } to { opacity:1; } }
         @keyframes geGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } 50% { box-shadow: 0 0 24px 2px ${primary}55; } }
