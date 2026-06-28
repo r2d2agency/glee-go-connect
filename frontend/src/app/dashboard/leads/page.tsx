@@ -73,24 +73,24 @@ export default function LeadsPage() {
     return `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
   }
 
-  async function exportCsv() {
+  async function downloadExport(format: 'csv' | 'xlsx') {
     if (!isPro) {
       toast.error('Exportação disponível nos planos Pro e Business.');
       return;
     }
     try {
       const token = localStorage.getItem('gleego_token');
-      const res = await fetch(`${API}/api/leads/export.csv`, {
+      const res = await fetch(`${API}/api/leads/export.${format}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) throw new Error(await res.text());
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `leads-${Date.now()}.csv`;
+      a.href = url; a.download = `leads-${Date.now()}.${format}`;
       document.body.appendChild(a); a.click();
       a.remove(); URL.revokeObjectURL(url);
-      toast.success('CSV exportado!');
+      toast.success(`${format.toUpperCase()} exportado!`);
     } catch (e: any) {
       toast.error(e?.message || 'Falha ao exportar');
     }
@@ -125,10 +125,18 @@ export default function LeadsPage() {
           </div>
           <div className="flex gap-2 flex-wrap">
             <button
-              onClick={exportCsv}
+              onClick={() => downloadExport('xlsx')}
+              disabled={!isPro}
+              title={isPro ? 'Exportar leads em Excel (.xlsx)' : 'Disponível nos planos Pro e Business'}
+              className="ge-btn px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ⬇ Exportar Excel {!isPro && '(Pro)'}
+            </button>
+            <button
+              onClick={() => downloadExport('csv')}
               disabled={!isPro}
               title={isPro ? 'Exportar leads em CSV' : 'Disponível nos planos Pro e Business'}
-              className="ge-btn px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm rounded-lg border border-white/10 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               ⬇ Exportar CSV {!isPro && '(Pro)'}
             </button>
