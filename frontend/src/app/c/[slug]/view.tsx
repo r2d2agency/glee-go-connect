@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { BIO_DOMAIN } from '@/lib/bio-url';
 
@@ -103,8 +103,14 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const [activeCat, setActiveCat] = useState<string>('Todos');
   const [lightbox, setLightbox] = useState<{ list: string[]; index: number } | null>(null);
   const [videoOpen, setVideoOpen] = useState<string | null>(null);
-  const [videoIdx, setVideoIdx] = useState(0);
-  const trackRef = useState<{ el: HTMLDivElement | null }>({ el: null })[0];
+  const videoTrackRef = useRef<HTMLDivElement | null>(null);
+  const scrollVideos = (dir: 1 | -1) => {
+    const el = videoTrackRef.current;
+    if (!el) return;
+    const card = el.querySelector('[data-video-card]') as HTMLElement | null;
+    const step = (card?.offsetWidth || 280) + 12;
+    el.scrollBy({ left: step * dir, behavior: 'smooth' });
+  };
   const openLightbox = (list: string[], index: number) => setLightbox({ list, index });
   const closeLightbox = () => setLightbox(null);
   const lightboxPrev = () => setLightbox((s) => s ? { ...s, index: (s.index - 1 + s.list.length) % s.list.length } : s);
