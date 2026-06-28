@@ -159,7 +159,7 @@ export default function Home() {
             <div className="mt-2 text-4xl font-extrabold">Grátis</div>
             <p className="mt-2 text-sm text-white/60">Tudo que você precisa para começar online.</p>
             <ul className="mt-6 space-y-2 text-sm text-white/80">
-              {['1 link bio personalizado', 'Templates, cores e tema claro/escuro', 'Avatar com recorte + galeria de fotos', 'WhatsApp, Instagram e redes', '1 catálogo (produto ou e-book)', 'Vídeos do YouTube', 'QR Code e vCard', 'Estatísticas básicas'].map((i) => (
+              {['1 link bio personalizado', 'Templates, cores e tema claro/escuro', 'Avatar com recorte + galeria de fotos', 'WhatsApp, Instagram e redes', '1 catálogo com até 50 itens', 'Vídeos do YouTube', 'QR Code e vCard', 'Estatísticas básicas'].map((i) => (
                 <li key={i} className="flex gap-2"><span className="text-[var(--ge-green)]">✓</span>{i}</li>
               ))}
             </ul>
