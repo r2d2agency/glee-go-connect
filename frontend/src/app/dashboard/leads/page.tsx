@@ -27,11 +27,14 @@ export default function LeadsPage() {
   const [me, setMe] = useState<any>(null);
   const [query, setQuery] = useState('');
   const [followupTpl, setFollowupTpl] = useState<string>(
-    typeof window !== 'undefined'
-      ? (localStorage.getItem('gleego_followup_tpl') ||
-        'Olá {nome}! Aqui é {empresa}. Vi que você deixou seu contato no nosso link. Posso te ajudar?')
-      : ''
+    'Olá {nome}! Aqui é {empresa}. Vi que você deixou seu contato no nosso link. Posso te ajudar?'
   );
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('gleego_followup_tpl');
+      if (saved) setFollowupTpl(saved);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     (async () => {
