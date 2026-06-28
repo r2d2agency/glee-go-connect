@@ -523,6 +523,55 @@ export default function EditCardPage() {
             </section>
           )}
 
+          {tab === 'galeria' && (
+            <section className="ge-card border-white/10 p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-3">
+                <div>
+                  <h2 className="font-semibold">Vídeos do YouTube</h2>
+                  <p className="text-xs text-white/50">Cole o link do YouTube. A capa é puxada automaticamente; envie uma personalizada se quiser.</p>
+                </div>
+                <button
+                  onClick={() => set('videos', [...videos, { url: '', cover: '', title: '' }])}
+                  className="text-sm text-[var(--ge-green)] hover:underline"
+                >+ Adicionar vídeo</button>
+              </div>
+              <div className="space-y-3">
+                {videos.length === 0 && (
+                  <p className="text-sm text-white/50">Nenhum vídeo adicionado. Aceita youtube.com/watch?v=… , youtu.be/… ou /shorts/…</p>
+                )}
+                {videos.map((v, i) => (
+                  <div key={i} className="border border-white/10 rounded-xl p-3 bg-[var(--ge-surface-2)] grid sm:grid-cols-[120px_1fr_auto] gap-3 items-start">
+                    <AvatarUploader
+                      value={v.cover}
+                      onChange={(url) => { const arr = [...videos]; arr[i] = { ...arr[i], cover: url }; set('videos', arr); }}
+                      label="Capa (opcional)"
+                      size={96}
+                      shape="rounded"
+                    />
+                    <div className="space-y-2">
+                      <input
+                        className="border rounded px-3 py-2 w-full text-sm"
+                        placeholder="Link do YouTube"
+                        value={v.url}
+                        onChange={(e) => { const arr = [...videos]; arr[i] = { ...arr[i], url: e.target.value }; set('videos', arr); }}
+                      />
+                      <input
+                        className="border rounded px-3 py-2 w-full text-sm"
+                        placeholder="Título (opcional)"
+                        value={v.title ?? ''}
+                        onChange={(e) => { const arr = [...videos]; arr[i] = { ...arr[i], title: e.target.value }; set('videos', arr); }}
+                      />
+                    </div>
+                    <button
+                      onClick={() => set('videos', videos.filter((_, j) => j !== i))}
+                      className="text-red-500 text-sm self-start"
+                    >Remover</button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {tab === 'seo' && (
             <section className="ge-card border-white/10 p-4 sm:p-6 space-y-4">
               <div>
