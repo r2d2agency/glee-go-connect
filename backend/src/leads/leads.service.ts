@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import * as ExcelJS from 'exceljs';
 
 @Injectable()
 export class LeadsService {
@@ -57,5 +58,66 @@ export class LeadsService {
       l.utmCampaign,
     ].map(esc).join(','));
     return [header.join(','), ...rows].join('\n');
+  }
+
+  async exportXlsx(companyId: string): Promise<Buffer> {
+    const company = await this.prisma.company.findUnique({
+      where: { id: companyId },
+      select: { plan: true, name: true },
+    });
+    if (!company) throw new NotFoundException('Empresa não encontrada');
+    if (company.plan === 'FREE') {
+      throw new ForbiddenException('Exportação disponível apenas nos planos Pro e Business');
+    }
+    const leads = await this.prisma.lead.findMany({
+      where: { card: { companyId } },
+      orderBy: { createdAt: 'desc' },
+      include: { card: { select: { fullName: true, slug: true } } },
+    });
+
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'Glee-go ID';
+    wb.created = new Date();
+    const ws = wb.addWorksheet('Leads');
+
+    ws.columns = [
+      { header: 'Data', key: 'createdAt', width: 20 },
+      { header: 'Nome', key: 'name', width: 28 },
+      { header: 'WhatsApp', key: 'phone', width: 18 },
+      { header: 'E-mail', key: 'email', width: 30 },
+      { header: 'Mensagem', key: 'message', width: 40 },
+      { header: 'Cartão', key: 'cardName', width: 24 },
+      { header: 'Slug', key: 'slug', width: 18 },
+      { header: 'UTM Source', key: 'utmSource', width: 16 },
+      { header: 'UTM Medium', key: 'utmMedium', width: 16 },
+      { header: 'UTM Campaign', key: 'utmCampaign', width: 18 },
+    ];
+
+    const header = ws.getRow(1);
+    header.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    header.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF22D36A' } };
+    header.alignment = { vertical: 'middle', horizontal: 'left' };
+    header.height = 22;
+
+    leads.forEach((l: any) => {
+      ws.addRow({
+        createdAt: new Date(l.createdAt).toLocaleString('pt-BR'),
+        name: l.name,
+        phone: l.phone,
+        email: l.email,
+        message: l.message,
+        cardName: l.card?.fullName,
+        slug: l.card?.slug,
+        utmSource: l.utmSource,
+        utmMedium: l.utmMedium,
+        utmCampaign: l.utmCampaign,
+      });
+    });
+
+    ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: ws.columns.length } };
+    ws.views = [{ state: 'frozen', ySplit: 1 }];
+
+    const buf = await wb.xlsx.writeBuffer();
+    return Buffer.from(buf as ArrayBuffer);
   }
 }
