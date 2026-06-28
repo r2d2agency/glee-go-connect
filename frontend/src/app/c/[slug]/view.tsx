@@ -109,10 +109,18 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const [unlocked, setUnlocked] = useState(!gateRequired);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', email: '' });
+  const [gateOpen, setGateOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<null | (() => void)>(null);
   useEffect(() => {
     if (typeof window === 'undefined' || !gateRequired) return;
     try { if (localStorage.getItem(storageKey)) setUnlocked(true); } catch {}
   }, [gateRequired, storageKey]);
+
+  function requireUnlock(action: () => void) {
+    if (unlocked || !gateRequired) { action(); return; }
+    setPendingAction(() => action);
+    setGateOpen(true);
+  }
 
   async function submitLead(e: React.FormEvent) {
     e.preventDefault();
@@ -137,8 +145,12 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
       });
       try { localStorage.setItem(storageKey, JSON.stringify({ ...form, at: Date.now() })); } catch {}
       setUnlocked(true);
+      setGateOpen(false);
+      if (pendingAction) { const a = pendingAction; setPendingAction(null); setTimeout(a, 50); }
     } catch {
       setUnlocked(true); // best-effort: não bloquear visitante
+      setGateOpen(false);
+      if (pendingAction) { const a = pendingAction; setPendingAction(null); setTimeout(a, 50); }
     } finally {
       setSubmitting(false);
     }
