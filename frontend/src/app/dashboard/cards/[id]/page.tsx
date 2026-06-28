@@ -102,6 +102,7 @@ export default function EditCardPage() {
         services: card.services ?? [],
         servicesCtaLabel: card.servicesCtaLabel ?? '',
         servicesCtaUrl: card.servicesCtaUrl ?? '',
+        catalogLeadGate: !!card.catalogLeadGate,
       };
       await api(`/cards/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
       toast.success('Cartão salvo!');
