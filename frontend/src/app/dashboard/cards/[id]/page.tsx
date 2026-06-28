@@ -540,15 +540,17 @@ export default function EditCardPage() {
                   <p className="text-sm text-white/50">Nenhum vídeo adicionado. Aceita youtube.com/watch?v=… , youtu.be/… ou /shorts/…</p>
                 )}
                 {videos.map((v, i) => (
-                  <div key={i} className="border border-white/10 rounded-xl p-3 bg-[var(--ge-surface-2)] grid sm:grid-cols-[120px_1fr_auto] gap-3 items-start">
-                    <AvatarUploader
-                      value={v.cover}
-                      onChange={(url) => { const arr = [...videos]; arr[i] = { ...arr[i], cover: url }; set('videos', arr); }}
-                      label="Capa (opcional)"
-                      size={96}
-                      shape="rounded"
-                    />
-                    <div className="space-y-2">
+                  <div key={i} className="border border-white/10 rounded-xl p-3 bg-[var(--ge-surface-2)] flex flex-col sm:flex-row gap-3 items-start">
+                    <div className="shrink-0">
+                      <AvatarUploader
+                        value={v.cover}
+                        onChange={(url) => { const arr = [...videos]; arr[i] = { ...arr[i], cover: url }; set('videos', arr); }}
+                        label="Capa (opcional)"
+                        size={96}
+                        shape="rounded"
+                      />
+                    </div>
+                    <div className="space-y-2 flex-1 min-w-0 w-full">
                       <input
                         className="border rounded px-3 py-2 w-full text-sm"
                         placeholder="Link do YouTube"
@@ -564,7 +566,7 @@ export default function EditCardPage() {
                     </div>
                     <button
                       onClick={() => set('videos', videos.filter((_, j) => j !== i))}
-                      className="text-red-500 text-sm self-start"
+                      className="text-red-500 text-sm self-start shrink-0"
                     >Remover</button>
                   </div>
                 ))}
