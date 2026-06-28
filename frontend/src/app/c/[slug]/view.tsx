@@ -5,6 +5,7 @@ import { BIO_DOMAIN } from '@/lib/bio-url';
 
 type Link = { label: string; url: string; icon?: string };
 type Area = { label: string; icon?: string; description?: string };
+type Video = { url: string; cover?: string; title?: string };
 type Product = {
   photo?: string; title: string; description?: string; price?: string;
   link?: string; category?: string;
@@ -98,8 +99,12 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   const categories: string[] = (Array.isArray(card.categories) ? card.categories : []).filter(Boolean);
   const products: Product[] = (Array.isArray(card.products) ? card.products : []).filter((p: Product) => p && p.title);
   const gallery: string[] = (Array.isArray(card.gallery) ? card.gallery : []).filter(Boolean);
+  const videos: Video[] = (Array.isArray(card.videos) ? card.videos : []).filter((v: Video) => v && v.url);
   const [activeCat, setActiveCat] = useState<string>('Todos');
   const [lightbox, setLightbox] = useState<{ list: string[]; index: number } | null>(null);
+  const [videoOpen, setVideoOpen] = useState<string | null>(null);
+  const [videoIdx, setVideoIdx] = useState(0);
+  const trackRef = useState<{ el: HTMLDivElement | null }>({ el: null })[0];
   const openLightbox = (list: string[], index: number) => setLightbox({ list, index });
   const closeLightbox = () => setLightbox(null);
   const lightboxPrev = () => setLightbox((s) => s ? { ...s, index: (s.index - 1 + s.list.length) % s.list.length } : s);
