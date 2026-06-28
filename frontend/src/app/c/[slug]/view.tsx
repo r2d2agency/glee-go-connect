@@ -549,7 +549,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                 <article key={i} className="ge-rise group rounded-2xl border border-white/10 bg-white/[.02] overflow-hidden hover:bg-white/[.05] transition"
                   style={{ animationDelay: `${i * 50}ms` }}>
                   {p.photo && (
-                    <button onClick={() => requireUnlock(() => openLightbox([p.photo!], 0))} className="block w-full aspect-[16/10] overflow-hidden bg-black/30">
+                    <button onClick={() => requireUnlock(() => openLightbox([p.photo!], 0))} className="block w-full aspect-square overflow-hidden bg-black/30">
                       <img src={p.photo} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                     </button>
                   )}
