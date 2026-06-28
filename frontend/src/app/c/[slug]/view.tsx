@@ -879,3 +879,62 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
 }
 
 const ICON_OPTIONS = ['lightbulb', 'bars', 'users', 'cube', 'target', 'gear', 'briefcase', 'chat'];
+
+type BannerItem = { image?: string; ctaLabel?: string; ctaUrl?: string };
+function BannerCarousel({ banners, primary }: { banners: BannerItem[]; primary: string }) {
+  const items = (banners || []).filter((b) => b && b.image);
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (items.length <= 1) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % items.length), 5000);
+    return () => clearInterval(t);
+  }, [items.length]);
+  if (items.length === 0) return null;
+  const go = (n: number) => setIdx(((n % items.length) + items.length) % items.length);
+  return (
+    <section className="mb-5 rounded-3xl overflow-hidden border border-white/10 relative ge-fade">
+      <div className="relative w-full h-44 sm:h-64">
+        {items.map((b, i) => {
+          const hasButton = !!(b.ctaLabel && b.ctaUrl);
+          const wrap = !hasButton && b.ctaUrl;
+          const Img = (
+            <img src={b.image} alt={`Banner ${i + 1}`} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+              style={{ opacity: i === idx ? 1 : 0 }} />
+          );
+          return (
+            <div key={i} className="absolute inset-0" style={{ pointerEvents: i === idx ? 'auto' : 'none' }}>
+              {wrap ? (
+                <a href={b.ctaUrl} target="_blank" rel="noreferrer" className="block w-full h-full">{Img}</a>
+              ) : Img}
+              {hasButton && (
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-5"
+                  style={{ opacity: i === idx ? 1 : 0, transition: 'opacity .5s' }}>
+                  <a href={b.ctaUrl} target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
+                    style={{ background: primary, color: '#04130a' }}>
+                    {b.ctaLabel} →
+                  </a>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {items.length > 1 && (
+        <>
+          <button onClick={() => go(idx - 1)} aria-label="Anterior"
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full bg-black/40 text-white hover:bg-black/60 backdrop-blur">‹</button>
+          <button onClick={() => go(idx + 1)} aria-label="Próximo"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full bg-black/40 text-white hover:bg-black/60 backdrop-blur">›</button>
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
+            {items.map((_, i) => (
+              <button key={i} onClick={() => setIdx(i)} aria-label={`Ir para ${i + 1}`}
+                className="h-1.5 rounded-full transition-all"
+                style={{ width: i === idx ? 22 : 8, background: i === idx ? primary : 'rgba(255,255,255,.5)' }} />
+            ))}
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
