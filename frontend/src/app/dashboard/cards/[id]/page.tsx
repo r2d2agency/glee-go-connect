@@ -132,7 +132,7 @@ export default function EditCardPage() {
   const videos: { url: string; cover?: string; title?: string }[] =
     Array.isArray(card.videos) ? card.videos : [];
   const plan: string = card?.company?.plan || 'FREE';
-  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 1;
+  const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 50;
 
   const TABS: { id: typeof tab; label: string }[] = [
     { id: 'perfil', label: 'Perfil' },
