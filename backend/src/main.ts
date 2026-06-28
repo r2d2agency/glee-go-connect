@@ -7,6 +7,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // Honra X-Forwarded-* quando atrás de proxy (EasyPanel/Traefik/Nginx)
+  app.set('trust proxy', true);
   const corsEnv = process.env.CORS_ORIGIN
     ?.split(',')
     .map(s => s.trim().replace(/\/+$/, ''))
