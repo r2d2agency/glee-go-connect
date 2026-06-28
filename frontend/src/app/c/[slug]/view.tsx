@@ -347,13 +347,11 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                   }}>
                   <span className="relative size-12 grid place-items-center rounded-full transition group-hover:scale-110"
                     style={{
-                      background: `radial-gradient(circle at 30% 30%, ${q.color}66, ${q.color}10 70%)`,
-                      color: q.color,
-                      boxShadow: `0 0 16px ${q.color}cc, 0 0 32px ${q.color}55, inset 0 0 12px ${q.color}55`,
-                      border: `1px solid ${q.color}99`,
-                      filter: `drop-shadow(0 0 6px ${q.color}aa)`,
+                      background: `radial-gradient(circle at 30% 30%, ${q.color}44, ${q.color}10 70%)`,
+                      boxShadow: `0 0 18px ${q.color}cc, 0 0 36px ${q.color}55, inset 0 0 14px ${q.color}55`,
+                      border: `1.5px solid ${q.color}aa`,
                     }}>
-                    <Icon name={q.icon} className="size-5" />
+                    <Icon name={q.icon} className="size-5" color="#ffffff" />
                   </span>
                   <span className="text-xs font-semibold text-white">{q.label}</span>
                 </a>
