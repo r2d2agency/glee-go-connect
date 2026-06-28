@@ -1,12 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class LeadsService {
   constructor(private prisma: PrismaService) {}
 
-  capture(data: { cardId: string; name: string; email?: string; phone?: string; message?: string; utmSource?: string; utmMedium?: string; utmCampaign?: string }) {
-    return this.prisma.lead.create({ data });
+  async capture(data: { cardId?: string; slug?: string; name: string; email?: string; phone?: string; message?: string; utmSource?: string; utmMedium?: string; utmCampaign?: string }) {
+    let cardId = data.cardId;
+    if (!cardId && data.slug) {
+      const card = await this.prisma.card.findUnique({ where: { slug: data.slug }, select: { id: true } });
+      if (!card) throw new NotFoundException('Cartão não encontrado');
+      cardId = card.id;
+    }
+    if (!cardId) throw new NotFoundException('Cartão não informado');
+    const { slug: _slug, cardId: _c, ...rest } = data as any;
+    return this.prisma.lead.create({ data: { ...rest, cardId } });
   }
 
   listByCompany(companyId: string) {
