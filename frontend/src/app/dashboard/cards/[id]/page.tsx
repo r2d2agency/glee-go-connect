@@ -500,7 +500,7 @@ export default function EditCardPage() {
                 </label>
               </div>
               <div className="grid md:grid-cols-2 gap-4">
-                {products.length === 0 && <p className="text-sm text-white/50 md:col-span-2">Nenhum produto. Adicione até {productLimit} {productLimit === 1 ? 'item' : 'itens'}.</p>}
+                {products.length === 0 && <p className="text-sm text-white/50 md:col-span-2">Nenhum produto. Adicione até {productLimit} itens.</p>}
                 {products.map((p, i) => (
                   <div key={i} className="border border-white/10 rounded-xl p-3 space-y-2 bg-[var(--ge-surface-2)]">
                     <div className="flex items-start justify-between">
