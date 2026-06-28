@@ -1,6 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt.guard';
+import { PrismaService } from '../prisma/prisma.service';
 
 class RegisterDto {
   @IsEmail() email!: string;
@@ -21,7 +23,7 @@ class LoginDto {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private prisma: PrismaService) {}
 
   @Post('register')
   register(@Body() dto: RegisterDto) {
@@ -34,5 +36,17 @@ export class AuthController {
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.auth.login(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async me(@Req() req: any) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: req.user.userId },
+      include: { company: true },
+    });
+    if (!user) return null;
+    const { passwordHash, ...safe } = user as any;
+    return safe;
   }
 }
