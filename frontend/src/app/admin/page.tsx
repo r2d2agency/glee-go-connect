@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { Logo } from '@/components/Logo';
 import { AvatarUploader } from '@/components/AvatarUploader';
+import { CardLinkActions } from '@/components/CardLinkActions';
 
 type Company = { id: string; name: string; email: string; plan: string; active: boolean; _count: { users: number; cards: number } };
 type User = { id: string; email: string; fullName: string; role: string; companyId: string };
