@@ -49,8 +49,18 @@ export class CardsService {
   }
 
   async update(companyId: string, id: string, data: any) {
-    const card = await this.prisma.card.findFirst({ where: { id, companyId } });
+    const card = await this.prisma.card.findFirst({ where: { id, companyId }, include: { company: { select: { plan: true } } } });
     if (!card) throw new NotFoundException();
+
+    if (card.company?.plan === 'FREE') {
+      const products = Array.isArray(data.products) ? data.products : card.products;
+      if (products && products.length > 50) {
+        throw new ForbiddenException(
+          'Plano grátis permite até 50 itens no catálogo. Chama no Whats para fazer upgrade: https://wa.me/5517991308048?text=Olá%21%20Quero%20fazer%20upgrade%20do%20meu%20plano%20Glee-go%20ID.',
+        );
+      }
+    }
+
     return this.prisma.card.update({ where: { id }, data });
   }
 
