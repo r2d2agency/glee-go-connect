@@ -196,14 +196,14 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
     const hidden: string[] = Array.isArray(card.hiddenQuickActions) ? card.hiddenQuickActions : [];
     const wa = String(card.whatsapp || '').replace(/\D/g, '');
     const base = [
-      { key: 'whatsapp', icon: 'whatsapp', label: 'WhatsApp', href: wa ? `https://wa.me/${wa}` : '', color: '#22c55e' },
-      { key: 'phone', icon: 'phone', label: 'Ligar', href: card.phone ? `tel:${card.phone}` : '', color: '#3b82f6' },
-      { key: 'email', icon: 'email', label: 'E-mail', href: card.email ? `mailto:${card.email}` : '', color: '#f59e0b' },
-      { key: 'website', icon: 'website', label: 'Site', href: card.website || '', color: '#a855f7' },
-      { key: 'location', icon: 'location', label: 'Localização', href: card.location ? `https://maps.google.com/?q=${encodeURIComponent(card.location)}` : '', color: '#ef4444' },
+      { key: 'whatsapp', icon: 'whatsapp', label: 'WhatsApp', href: wa ? `https://wa.me/${wa}` : '', color: primary },
+      { key: 'phone',    icon: 'phone',    label: 'Ligar',        href: card.phone ? `tel:${card.phone}` : '', color: accent },
+      { key: 'email',    icon: 'email',    label: 'E-mail',       href: card.email ? `mailto:${card.email}` : '', color: primary },
+      { key: 'website',  icon: 'website',  label: 'Site',         href: card.website || '', color: accent },
+      { key: 'location', icon: 'location', label: 'Localização',  href: card.location ? `https://maps.google.com/?q=${encodeURIComponent(card.location)}` : '', color: primary },
     ];
     return base.filter((b) => !hidden.includes(b.key));
-  }, [card]);
+  }, [card, primary, accent]);
 
   return (
     <main style={{ background: bg }} className="min-h-screen text-white relative overflow-hidden">
