@@ -52,9 +52,7 @@ export class UploadsController {
   )
   upload(@UploadedFile() file: any, @Req() req: any) {
     if (!file) throw new BadRequestException('Arquivo ausente.');
-    const base =
-      process.env.PUBLIC_BACKEND_URL?.replace(/\/+$/, '') ||
-      `${req.protocol}://${req.get('host')}`;
+    const base = resolveBase(req);
     const url = `${base}/uploads/${file.filename}`;
     return { url, filename: file.filename, size: file.size };
   }
@@ -86,9 +84,7 @@ export class UploadsController {
   )
   uploadFile(@UploadedFile() file: any, @Req() req: any) {
     if (!file) throw new BadRequestException('Arquivo ausente.');
-    const base =
-      process.env.PUBLIC_BACKEND_URL?.replace(/\/+$/, '') ||
-      `${req.protocol}://${req.get('host')}`;
+    const base = resolveBase(req);
     const url = `${base}/uploads/${file.filename}`;
     return {
       url,
@@ -98,4 +94,14 @@ export class UploadsController {
       mimeType: file.mimetype,
     };
   }
+}
+
+function resolveBase(req: any): string {
+  const envBase = process.env.PUBLIC_BACKEND_URL?.replace(/\/+$/, '');
+  if (envBase) return envBase;
+  const xfProto = (req.headers['x-forwarded-proto'] || '').toString().split(',')[0].trim();
+  const xfHost = (req.headers['x-forwarded-host'] || '').toString().split(',')[0].trim();
+  const proto = xfProto || req.protocol || 'https';
+  const host = xfHost || req.get('host');
+  return `${proto}://${host}`;
 }
