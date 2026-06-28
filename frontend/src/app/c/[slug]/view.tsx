@@ -262,14 +262,23 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
         .ge-theme { color: rgb(var(--fg)); }
         .ge-theme .text-white { color: rgb(var(--fg)) !important; }
         .ge-theme .text-white\\/40 { color: rgba(var(--fg), .4) !important; }
+        .ge-theme .text-white\\/45 { color: rgba(var(--fg), .5) !important; }
         .ge-theme .text-white\\/50 { color: rgba(var(--fg), .55) !important; }
+        .ge-theme .text-white\\/55 { color: rgba(var(--fg), .6) !important; }
         .ge-theme .text-white\\/60 { color: rgba(var(--fg), .6) !important; }
+        .ge-theme .text-white\\/65 { color: rgba(var(--fg), .7) !important; }
         .ge-theme[data-theme="light"] .text-white\\/40 { color: rgba(var(--fg), .7) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/45 { color: rgba(var(--fg), .72) !important; }
         .ge-theme[data-theme="light"] .text-white\\/50 { color: rgba(var(--fg), .75) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/55 { color: rgba(var(--fg), .78) !important; }
         .ge-theme[data-theme="light"] .text-white\\/60 { color: rgba(var(--fg), .8) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/65 { color: rgba(var(--fg), .82) !important; }
         .ge-theme .text-white\\/70 { color: rgba(var(--fg), .7) !important; }
         .ge-theme .text-white\\/75 { color: rgba(var(--fg), .75) !important; }
         .ge-theme .text-white\\/80 { color: rgba(var(--fg), .8) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/70 { color: rgba(var(--fg), .85) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/75 { color: rgba(var(--fg), .88) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/80 { color: rgba(var(--fg), .9) !important; }
         .ge-theme .border-white\\/10 { border-color: rgba(var(--fg), .12) !important; }
         .ge-theme .border-white\\/15 { border-color: rgba(var(--fg), .16) !important; }
         .ge-theme .border-white\\/20 { border-color: rgba(var(--fg), .2) !important; }
