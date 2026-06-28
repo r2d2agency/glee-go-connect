@@ -326,7 +326,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
         </header>
 
         {/* HERO */}
-        <section className="mt-5 rounded-3xl p-5 sm:p-7 border ge-rise" style={{ borderColor: 'rgba(255,255,255,.08)', background: 'linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01))' }}>
+        <section className="mt-5 rounded-3xl p-5 sm:p-7 border ge-rise" style={{ borderColor: 'rgba(var(--fg-rgb,255,255,255),.08)', background: 'linear-gradient(180deg, rgba(var(--fg-rgb,255,255,255),.04), rgba(var(--fg-rgb,255,255,255),.02))' }}>
           <div className="grid md:grid-cols-[auto_1fr_auto] gap-5 md:gap-7 items-center">
             {/* Avatar */}
             <div className="mx-auto md:mx-0">
@@ -400,7 +400,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                   style={{
                     animationDelay: `${i * 60}ms`,
                     borderColor: `${q.color}44`,
-                    background: `linear-gradient(160deg, ${q.color}1f, rgba(255,255,255,.02) 70%)`,
+                    background: `linear-gradient(160deg, ${q.color}1f, rgba(var(--fg-rgb,255,255,255),.03) 70%)`,
                     boxShadow: `0 0 18px ${q.color}26, inset 0 0 22px ${q.color}14`,
                   }}>
                   <span className="relative size-12 grid place-items-center rounded-full transition group-hover:scale-110"
@@ -441,7 +441,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {areas.map((a, i) => (
                   <div key={i} className="ge-rise rounded-xl border p-3 text-center bg-white/[.02]"
-                       style={{ borderColor: i === 0 ? primary : 'rgba(255,255,255,.1)', animationDelay: `${i * 50}ms` }}>
+                       style={{ borderColor: i === 0 ? primary : 'rgba(var(--fg-rgb,255,255,255),.12)', animationDelay: `${i * 50}ms` }}>
                     <span className="mx-auto mb-2 size-10 grid place-items-center rounded-lg"
                           style={{ background: `${primary}1a`, color: primary }}>
                       <Icon name={a.icon || ICON_OPTIONS[i % ICON_OPTIONS.length]} className="size-5" />
@@ -455,7 +455,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
               <div className="mt-3 flex flex-wrap gap-2">
                 {areas.map((a, i) => (
                   <span key={i} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-sm"
-                        style={{ borderColor: i === 0 ? primary : 'rgba(255,255,255,.1)', background: i === 0 ? `${primary}1a` : 'transparent', color: i === 0 ? primary : '#fff' }}>
+                        style={{ borderColor: i === 0 ? primary : 'rgba(var(--fg-rgb,255,255,255),.12)', background: i === 0 ? `${primary}1a` : 'transparent', color: i === 0 ? primary : '#fff' }}>
                     <Icon name={a.icon || ICON_OPTIONS[i % ICON_OPTIONS.length]} className="size-4" color={ICON_COLORS[i % ICON_COLORS.length]} />
                     {a.label}
                   </span>
@@ -570,7 +570,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                     style={{
                       background: activeCat === c ? primary : 'transparent',
                       color: activeCat === c ? '#04130a' : '#fff',
-                      borderColor: activeCat === c ? primary : 'rgba(255,255,255,.15)',
+                      borderColor: activeCat === c ? primary : 'rgba(var(--fg-rgb,255,255,255),.18)',
                     }}>{c}</button>
                 ))}
               </div>
