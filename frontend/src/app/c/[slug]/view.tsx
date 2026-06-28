@@ -73,6 +73,24 @@ function guessIcon(s: Link): string {
 
 const ICON_COLORS = ['#22ff88', '#38bdf8', '#fbbf24', '#c084fc', '#ff5577', '#22d3ee', '#f472b6', '#fb923c'];
 
+function ytId(url: string): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url.includes('://') ? url : `https://${url}`);
+    const host = u.hostname.replace(/^www\./, '');
+    if (host === 'youtu.be') return u.pathname.slice(1).split('/')[0] || null;
+    if (host.endsWith('youtube.com') || host.endsWith('youtube-nocookie.com')) {
+      if (u.pathname === '/watch') return u.searchParams.get('v');
+      const m = u.pathname.match(/^\/(embed|shorts|v|live)\/([^/?#]+)/);
+      if (m) return m[2];
+    }
+  } catch {}
+  const m = url.match(/[?&]v=([a-zA-Z0-9_-]{6,})/) || url.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
+  return m ? m[1] : null;
+}
+function ytThumb(id: string) { return `https://img.youtube.com/vi/${id}/hqdefault.jpg`; }
+function ytEmbed(id: string) { return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`; }
+
 export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string }) {
   const primary = card.primaryColor || '#22c55e';
   const accent = card.accentColor || '#3b82f6';
