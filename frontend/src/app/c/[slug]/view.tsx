@@ -75,18 +75,19 @@ const ICON_COLORS = ['#22ff88', '#38bdf8', '#fbbf24', '#c084fc', '#ff5577', '#22
 export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string }) {
   const primary = card.primaryColor || '#22c55e';
   const accent = card.accentColor || '#3b82f6';
-  // Força tema escuro: ignora bgColor claro vindo de templates antigos
-  function isDark(hex?: string) {
-    if (!hex) return false;
+  const bg: string = card.bgColor || '#050912';
+  // Detecta luminância do fundo para suportar temas claros e escuros
+  function luminance(hex: string) {
     const h = hex.replace('#', '');
-    if (h.length !== 6) return false;
+    if (h.length !== 6) return 0;
     const r = parseInt(h.slice(0, 2), 16);
     const g = parseInt(h.slice(2, 4), 16);
     const b = parseInt(h.slice(4, 6), 16);
-    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return lum < 0.35;
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   }
-  const bg = isDark(card.bgColor) ? card.bgColor : '#050912';
+  const isLight = luminance(bg) > 0.55;
+  const fg = isLight ? '#0a0f1f' : '#ffffff';
+  const fgRgb = isLight ? '10,15,31' : '255,255,255';
 
   const buttons: Link[] = Array.isArray(card.customButtons) ? card.customButtons : [];
   const socials: Link[] = Array.isArray(card.socialLinks) ? card.socialLinks : [];
@@ -248,12 +249,32 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
   }, [card, primary, accent]);
 
   return (
-    <main style={{ background: bg }} className="min-h-screen text-white relative overflow-hidden">
+    <main
+      data-theme={isLight ? 'light' : 'dark'}
+      style={{ background: bg, color: fg, ['--fg' as any]: fgRgb, ['--fg-rgb' as any]: fgRgb }}
+      className="min-h-screen relative overflow-hidden ge-theme"
+    >
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none absolute -top-40 -left-32 w-[480px] h-[480px] rounded-full blur-3xl opacity-30" style={{ background: primary }} />
       <div aria-hidden className="pointer-events-none absolute -top-20 right-0 w-[420px] h-[420px] rounded-full blur-3xl opacity-20" style={{ background: accent }} />
 
       <style>{`
+        .ge-theme { color: rgb(var(--fg)); }
+        .ge-theme .text-white { color: rgb(var(--fg)) !important; }
+        .ge-theme .text-white\\/40 { color: rgba(var(--fg), .4) !important; }
+        .ge-theme .text-white\\/60 { color: rgba(var(--fg), .6) !important; }
+        .ge-theme .text-white\\/70 { color: rgba(var(--fg), .7) !important; }
+        .ge-theme .text-white\\/75 { color: rgba(var(--fg), .75) !important; }
+        .ge-theme .text-white\\/80 { color: rgba(var(--fg), .8) !important; }
+        .ge-theme .border-white\\/10 { border-color: rgba(var(--fg), .12) !important; }
+        .ge-theme .border-white\\/15 { border-color: rgba(var(--fg), .16) !important; }
+        .ge-theme .border-white\\/20 { border-color: rgba(var(--fg), .2) !important; }
+        .ge-theme .bg-white\\/\\[\\.03\\] { background-color: rgba(var(--fg), .04) !important; }
+        .ge-theme .bg-white\\/\\[\\.04\\] { background-color: rgba(var(--fg), .05) !important; }
+        .ge-theme .bg-white\\/\\[\\.06\\] { background-color: rgba(var(--fg), .06) !important; }
+        .ge-theme .bg-white\\/5 { background-color: rgba(var(--fg), .05) !important; }
+        .ge-theme .hover\\:bg-white\\/\\[\\.1\\]:hover { background-color: rgba(var(--fg), .1) !important; }
+        .ge-theme[data-theme="light"] .bg-black\\/40 { background-color: rgba(255,255,255,.5) !important; }
         @keyframes geRise { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform:none; } }
         @keyframes geFade { from { opacity:0; } to { opacity:1; } }
         @keyframes geGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } 50% { box-shadow: 0 0 24px 2px ${primary}55; } }
@@ -305,7 +326,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
         </header>
 
         {/* HERO */}
-        <section className="mt-5 rounded-3xl p-5 sm:p-7 border ge-rise" style={{ borderColor: 'rgba(255,255,255,.08)', background: 'linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01))' }}>
+        <section className="mt-5 rounded-3xl p-5 sm:p-7 border ge-rise" style={{ borderColor: 'rgba(var(--fg-rgb,255,255,255),.08)', background: 'linear-gradient(180deg, rgba(var(--fg-rgb,255,255,255),.04), rgba(var(--fg-rgb,255,255,255),.02))' }}>
           <div className="grid md:grid-cols-[auto_1fr_auto] gap-5 md:gap-7 items-center">
             {/* Avatar */}
             <div className="mx-auto md:mx-0">
@@ -379,7 +400,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                   style={{
                     animationDelay: `${i * 60}ms`,
                     borderColor: `${q.color}44`,
-                    background: `linear-gradient(160deg, ${q.color}1f, rgba(255,255,255,.02) 70%)`,
+                    background: `linear-gradient(160deg, ${q.color}1f, rgba(var(--fg-rgb,255,255,255),.03) 70%)`,
                     boxShadow: `0 0 18px ${q.color}26, inset 0 0 22px ${q.color}14`,
                   }}>
                   <span className="relative size-12 grid place-items-center rounded-full transition group-hover:scale-110"
@@ -420,7 +441,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {areas.map((a, i) => (
                   <div key={i} className="ge-rise rounded-xl border p-3 text-center bg-white/[.02]"
-                       style={{ borderColor: i === 0 ? primary : 'rgba(255,255,255,.1)', animationDelay: `${i * 50}ms` }}>
+                       style={{ borderColor: i === 0 ? primary : 'rgba(var(--fg-rgb,255,255,255),.12)', animationDelay: `${i * 50}ms` }}>
                     <span className="mx-auto mb-2 size-10 grid place-items-center rounded-lg"
                           style={{ background: `${primary}1a`, color: primary }}>
                       <Icon name={a.icon || ICON_OPTIONS[i % ICON_OPTIONS.length]} className="size-5" />
@@ -434,7 +455,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
               <div className="mt-3 flex flex-wrap gap-2">
                 {areas.map((a, i) => (
                   <span key={i} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-sm"
-                        style={{ borderColor: i === 0 ? primary : 'rgba(255,255,255,.1)', background: i === 0 ? `${primary}1a` : 'transparent', color: i === 0 ? primary : '#fff' }}>
+                        style={{ borderColor: i === 0 ? primary : 'rgba(var(--fg-rgb,255,255,255),.12)', background: i === 0 ? `${primary}1a` : 'transparent', color: i === 0 ? primary : '#fff' }}>
                     <Icon name={a.icon || ICON_OPTIONS[i % ICON_OPTIONS.length]} className="size-4" color={ICON_COLORS[i % ICON_COLORS.length]} />
                     {a.label}
                   </span>
@@ -549,7 +570,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                     style={{
                       background: activeCat === c ? primary : 'transparent',
                       color: activeCat === c ? '#04130a' : '#fff',
-                      borderColor: activeCat === c ? primary : 'rgba(255,255,255,.15)',
+                      borderColor: activeCat === c ? primary : 'rgba(var(--fg-rgb,255,255,255),.18)',
                     }}>{c}</button>
                 ))}
               </div>
