@@ -549,7 +549,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                 <article key={i} className="ge-rise group rounded-2xl border border-white/10 bg-white/[.02] overflow-hidden hover:bg-white/[.05] transition"
                   style={{ animationDelay: `${i * 50}ms` }}>
                   {p.photo && (
-                    <button onClick={() => requireUnlock(() => setLightbox(p.photo!))} className="block w-full aspect-[16/10] overflow-hidden bg-black/30">
+                    <button onClick={() => requireUnlock(() => openLightbox([p.photo!], 0))} className="block w-full aspect-[16/10] overflow-hidden bg-black/30">
                       <img src={p.photo} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                     </button>
                   )}
@@ -611,7 +611,7 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
             <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold mb-3">GALERIA</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
               {gallery.map((url, i) => (
-                <button key={i} onClick={() => setLightbox(url)}
+                <button key={i} onClick={() => openLightbox(gallery, i)}
                   className="ge-rise aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/30 group"
                   style={{ animationDelay: `${i * 40}ms` }}>
                   <img src={url} alt="" className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
@@ -623,11 +623,33 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
 
         {/* LIGHTBOX */}
         {lightbox && (
-          <div onClick={() => setLightbox(null)}
-            className="fixed inset-0 z-50 bg-black/90 grid place-items-center p-4 ge-fade">
-            <img src={lightbox} alt="" className="max-w-full max-h-full rounded-xl object-contain" />
-            <button onClick={() => setLightbox(null)}
+          <div onClick={closeLightbox}
+            className="fixed inset-0 z-50 bg-black/95 grid place-items-center p-4 sm:p-8 ge-fade">
+            <img
+              key={lightbox.index}
+              src={lightbox.list[lightbox.index]}
+              alt=""
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-[95vw] max-h-[90vh] w-auto h-auto object-contain rounded-xl select-none ge-fade"
+              style={{ imageRendering: 'auto' }}
+            />
+            <button onClick={closeLightbox}
               className="absolute top-4 right-4 size-10 rounded-full bg-white/10 hover:bg-white/20 grid place-items-center text-white text-xl">×</button>
+            {lightbox.list.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); lightboxPrev(); }}
+                  aria-label="Anterior"
+                  className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 size-12 rounded-full bg-white/10 hover:bg-white/20 grid place-items-center text-white text-2xl">‹</button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); lightboxNext(); }}
+                  aria-label="Próxima"
+                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 size-12 rounded-full bg-white/10 hover:bg-white/20 grid place-items-center text-white text-2xl">›</button>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-white/10 text-white text-xs">
+                  {lightbox.index + 1} / {lightbox.list.length}
+                </div>
+              </>
+            )}
           </div>
         )}
 
