@@ -9,9 +9,10 @@ type Props = {
   onChange: (url: string) => void;
   label?: string;
   size?: number;
+  shape?: 'circle' | 'rounded';
 };
 
-export function AvatarUploader({ value, onChange, label = 'Foto de perfil', size = 96 }: Props) {
+export function AvatarUploader({ value, onChange, label = 'Foto de perfil', size = 96, shape = 'circle' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
@@ -41,11 +42,11 @@ export function AvatarUploader({ value, onChange, label = 'Foto de perfil', size
       {label && <span className="text-xs font-medium text-slate-600 block">{label}</span>}
       <div className="flex items-center gap-3">
         <div
-          className="rounded-full bg-slate-100 border overflow-hidden shrink-0 grid place-items-center text-slate-400"
+          className={`${shape === 'circle' ? 'rounded-full' : 'rounded-2xl'} bg-slate-100 border overflow-hidden shrink-0 grid place-items-center text-slate-400`}
           style={{ width: size, height: size }}
         >
           {value
-            ? <img src={value} alt="" className="w-full h-full object-cover" />
+            ? <img src={value} alt="" className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
             : <span className="text-xs">Sem foto</span>}
         </div>
         <div className="flex flex-col gap-1.5">

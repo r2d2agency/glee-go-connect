@@ -83,6 +83,7 @@ model Card {
   email        String?
   website      String?
   avatarUrl    String?
+  avatarShape  String?  @default("circle")
   coverUrl     String?
   companyName  String?
   companyLogoUrl String?

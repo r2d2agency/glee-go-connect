@@ -272,13 +272,20 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
           <div className="grid md:grid-cols-[auto_1fr_auto] gap-5 md:gap-7 items-center">
             {/* Avatar */}
             <div className="mx-auto md:mx-0">
-              <div className="relative size-36 sm:size-44 rounded-full p-[3px] ge-glow" style={{ background: `conic-gradient(from 120deg, ${primary}, ${accent}, ${primary})` }}>
-                <div className="size-full rounded-full overflow-hidden bg-black/40 grid place-items-center">
-                  {card.avatarUrl
-                    ? <img src={card.avatarUrl} alt={card.fullName} className="size-full object-cover" />
-                    : <span className="text-4xl font-bold text-white/40">{card.fullName?.[0] ?? '?'}</span>}
-                </div>
-              </div>
+              {(() => {
+                const isRounded = (card as any).avatarShape === 'rounded';
+                const outer = isRounded ? 'rounded-3xl' : 'rounded-full';
+                const inner = isRounded ? 'rounded-[20px]' : 'rounded-full';
+                return (
+                  <div className={`relative size-36 sm:size-44 ${outer} p-[3px] ge-glow`} style={{ background: `conic-gradient(from 120deg, ${primary}, ${accent}, ${primary})` }}>
+                    <div className={`size-full ${inner} overflow-hidden bg-black/40 grid place-items-center`}>
+                      {card.avatarUrl
+                        ? <img src={card.avatarUrl} alt={card.fullName} className="size-full object-cover" style={{ objectPosition: 'center' }} />
+                        : <span className="text-4xl font-bold text-white/40">{card.fullName?.[0] ?? '?'}</span>}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Identity */}
