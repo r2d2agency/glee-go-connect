@@ -262,7 +262,11 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
         .ge-theme { color: rgb(var(--fg)); }
         .ge-theme .text-white { color: rgb(var(--fg)) !important; }
         .ge-theme .text-white\\/40 { color: rgba(var(--fg), .4) !important; }
+        .ge-theme .text-white\\/50 { color: rgba(var(--fg), .55) !important; }
         .ge-theme .text-white\\/60 { color: rgba(var(--fg), .6) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/40 { color: rgba(var(--fg), .7) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/50 { color: rgba(var(--fg), .75) !important; }
+        .ge-theme[data-theme="light"] .text-white\\/60 { color: rgba(var(--fg), .8) !important; }
         .ge-theme .text-white\\/70 { color: rgba(var(--fg), .7) !important; }
         .ge-theme .text-white\\/75 { color: rgba(var(--fg), .75) !important; }
         .ge-theme .text-white\\/80 { color: rgba(var(--fg), .8) !important; }
