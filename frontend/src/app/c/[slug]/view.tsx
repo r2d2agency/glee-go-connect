@@ -324,19 +324,30 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                 : { 'aria-disabled': true, title: 'Não informado' };
               return (
                 <Tag key={q.key} {...props}
-                  className={`ge-rise group flex flex-col items-center justify-center gap-2 py-4 rounded-2xl border transition ${filled ? 'border-white/10 bg-white/[.03] hover:bg-white/[.07] hover:-translate-y-0.5 cursor-pointer' : 'border-dashed border-white/10 bg-white/[.015] opacity-55 cursor-not-allowed'}`}
-                  style={{ animationDelay: `${i * 60}ms` }}>
+                  className={`ge-rise group relative flex flex-col items-center justify-center gap-2 py-4 rounded-2xl border transition overflow-hidden ${filled ? 'hover:-translate-y-0.5 cursor-pointer' : 'cursor-not-allowed'}`}
+                  style={{
+                    animationDelay: `${i * 60}ms`,
+                    borderColor: filled ? `${q.color}44` : `${q.color}22`,
+                    background: filled
+                      ? `linear-gradient(160deg, ${q.color}1f, rgba(255,255,255,.02) 70%)`
+                      : `linear-gradient(160deg, ${q.color}10, rgba(255,255,255,.01) 70%)`,
+                    boxShadow: filled ? `0 0 18px ${q.color}26, inset 0 0 22px ${q.color}14` : 'none',
+                    opacity: filled ? 1 : 0.7,
+                  }}>
                   <span className="relative size-12 grid place-items-center rounded-full transition group-hover:scale-110"
-                    style={filled ? {
-                      background: `radial-gradient(circle at 30% 30%, ${q.color}55, ${q.color}10 70%)`,
+                    style={{
+                      background: `radial-gradient(circle at 30% 30%, ${q.color}${filled ? '66' : '33'}, ${q.color}10 70%)`,
                       color: q.color,
-                      boxShadow: `0 0 12px ${q.color}88, inset 0 0 10px ${q.color}40`,
-                      border: `1px solid ${q.color}66`,
-                    } : { background: 'rgba(255,255,255,.06)', color: 'rgba(255,255,255,.45)' }}>
+                      boxShadow: filled
+                        ? `0 0 16px ${q.color}cc, 0 0 32px ${q.color}55, inset 0 0 12px ${q.color}55`
+                        : `0 0 10px ${q.color}55, inset 0 0 8px ${q.color}33`,
+                      border: `1px solid ${q.color}${filled ? '99' : '55'}`,
+                      filter: filled ? `drop-shadow(0 0 6px ${q.color}aa)` : 'none',
+                    }}>
                     <Icon name={q.icon} className="size-5" />
                   </span>
-                  <span className={`text-xs font-medium ${filled ? 'text-white/85' : 'text-white/40'}`}>{q.label}</span>
-                  {!filled && <span className="text-[10px] text-white/30 -mt-1">não informado</span>}
+                  <span className="text-xs font-semibold" style={{ color: filled ? '#fff' : `${q.color}cc` }}>{q.label}</span>
+                  {!filled && <span className="text-[10px] -mt-1" style={{ color: 'rgba(255,255,255,.4)' }}>não informado</span>}
                 </Tag>
               );
             })}
