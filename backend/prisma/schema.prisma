@@ -107,6 +107,7 @@ model Card {
   services         Json?
   servicesCtaLabel String?
   servicesCtaUrl   String?
+  catalogLeadGate  Boolean  @default(false)
   seoTitle     String?
   seoDescription String?
   metaPixelId  String?
