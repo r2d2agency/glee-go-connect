@@ -102,6 +102,7 @@ export default function EditCardPage() {
         bannerUrl: card.bannerUrl ?? '',
         bannerCtaLabel: card.bannerCtaLabel ?? '',
         bannerCtaUrl: card.bannerCtaUrl ?? '',
+        banners: Array.isArray(card.banners) ? card.banners : [],
         categories: card.categories ?? [],
         products: (card.products ?? []).slice(0, 10),
         gallery: card.gallery ?? [],
@@ -344,16 +345,62 @@ export default function EditCardPage() {
           {tab === 'banner' && (
             <section className="ge-card border-white/10 p-4 sm:p-6 space-y-4">
               <div>
-                <h2 className="font-semibold">Banner do topo</h2>
-                <p className="text-sm text-white/50">Imagem grande no topo da sua página com botão de ação.</p>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="font-semibold">Banners do topo (carrossel)</h2>
+                    <p className="text-sm text-white/50">Até 3 banners. Cada um pode ter botão opcional com link externo. Recomendado 1600×600.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const cur = Array.isArray(card.banners) ? card.banners : [];
+                      if (cur.length >= 3) { toast.error('Máximo de 3 banners.'); return; }
+                      set('banners', [...cur, { image: '', ctaLabel: '', ctaUrl: '' }]);
+                    }}
+                    className="text-sm text-[var(--ge-green)] hover:underline">+ Adicionar banner</button>
+                </div>
               </div>
-              <AvatarUploader value={card.bannerUrl} onChange={(url) => set('bannerUrl', url)} label="Imagem do banner (1600×600 recomendado)" size={120} />
-              <div className="grid sm:grid-cols-2 gap-3">
-                <input className="border rounded px-3 py-2" placeholder="Texto do botão (ex: Fale comigo)" value={card.bannerCtaLabel ?? ''} onChange={(e) => set('bannerCtaLabel', e.target.value)} />
-                <input className="border rounded px-3 py-2" placeholder="Link do botão (https://...)" value={card.bannerCtaUrl ?? ''} onChange={(e) => set('bannerCtaUrl', e.target.value)} />
+              <div className="space-y-4">
+                {(card.banners ?? []).length === 0 && (
+                  <p className="text-sm text-white/50">Nenhum banner. Clique em "+ Adicionar banner".</p>
+                )}
+                {(card.banners ?? []).map((b: any, i: number) => (
+                  <div key={i} className="border border-white/10 rounded-xl p-3 space-y-3 bg-[var(--ge-surface-2)]">
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs font-semibold text-white/50">Banner #{i + 1}</span>
+                      <button
+                        onClick={() => set('banners', (card.banners ?? []).filter((_: any, j: number) => j !== i))}
+                        className="text-red-500 text-sm">Remover</button>
+                    </div>
+                    <AvatarUploader
+                      value={b.image}
+                      onChange={(url) => {
+                        const arr = [...(card.banners ?? [])];
+                        arr[i] = { ...arr[i], image: url };
+                        set('banners', arr);
+                      }}
+                      label="Imagem do banner"
+                      size={120}
+                    />
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <input className="border rounded px-3 py-2" placeholder="Texto do botão (vazio = sem botão)" value={b.ctaLabel ?? ''}
+                        onChange={(e) => { const arr = [...(card.banners ?? [])]; arr[i] = { ...arr[i], ctaLabel: e.target.value }; set('banners', arr); }} />
+                      <input className="border rounded px-3 py-2" placeholder="Link externo (https://...)" value={b.ctaUrl ?? ''}
+                        onChange={(e) => { const arr = [...(card.banners ?? [])]; arr[i] = { ...arr[i], ctaUrl: e.target.value }; set('banners', arr); }} />
+                    </div>
+                    <p className="text-xs text-white/40">Se não preencher o texto do botão, o banner inteiro vira o link de destino.</p>
+                  </div>
+                ))}
               </div>
-              {card.bannerUrl && (
-                <button onClick={() => { set('bannerUrl', ''); set('bannerCtaLabel', ''); set('bannerCtaUrl', ''); }} className="text-sm text-red-600 hover:underline">Remover banner</button>
+              {card.bannerUrl && (card.banners ?? []).length === 0 && (
+                <div className="text-xs text-white/50 border-t border-white/10 pt-3">
+                  Banner antigo detectado.
+                  <button
+                    className="ml-2 text-[var(--ge-green)] hover:underline"
+                    onClick={() => {
+                      set('banners', [{ image: card.bannerUrl, ctaLabel: card.bannerCtaLabel || '', ctaUrl: card.bannerCtaUrl || '' }]);
+                      set('bannerUrl', ''); set('bannerCtaLabel', ''); set('bannerCtaUrl', '');
+                    }}>Migrar para carrossel</button>
+                </div>
               )}
             </section>
           )}
