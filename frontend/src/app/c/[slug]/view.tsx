@@ -477,14 +477,14 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
         )}
 
         {/* CATÁLOGO */}
-        {products.length > 0 && (
+        {limitedProducts.length > 0 && (
           <section className="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
             <div className="flex items-end justify-between gap-3 mb-4">
               <div>
                 <h2 className="text-[11px] tracking-[0.18em] text-white/50 font-semibold">CATÁLOGO</h2>
                 <p className="text-lg font-semibold mt-1">Meus produtos e serviços</p>
               </div>
-              <span className="text-xs text-white/50">{filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'itens'}</span>
+              <span className="text-xs text-white/50">{limitedFiltered.length} {limitedFiltered.length === 1 ? 'item' : 'itens'}</span>
             </div>
 
             {categories.length > 0 && (
@@ -501,8 +501,8 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
               </div>
             )}
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              {filteredProducts.map((p, i) => (
+            <div className={`grid sm:grid-cols-2 gap-4 relative ${!unlocked ? 'min-h-[320px]' : ''}`}>
+              {unlocked ? limitedFiltered.map((p, i) => (
                 <article key={i} className="ge-rise group rounded-2xl border border-white/10 bg-white/[.02] overflow-hidden hover:bg-white/[.05] transition"
                   style={{ animationDelay: `${i * 50}ms` }}>
                   {p.photo && (
@@ -526,7 +526,36 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                     )}
                   </div>
                 </article>
-              ))}
+              )) : (
+                <form onSubmit={submitLead}
+                  className="sm:col-span-2 rounded-2xl border border-white/10 p-6 sm:p-8 text-center ge-rise"
+                  style={{ background: `linear-gradient(180deg, ${primary}14, rgba(255,255,255,.02))` }}>
+                  <div className="mx-auto size-12 grid place-items-center rounded-full mb-3"
+                       style={{ background: `${primary}22`, color: primary, boxShadow: `0 0 24px ${primary}55` }}>
+                    <Icon name="cube" className="size-6" />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold">Acesse o catálogo completo</h3>
+                  <p className="text-sm text-white/65 mt-1">Preencha seus dados para liberar os {limitedProducts.length} {limitedProducts.length === 1 ? 'item' : 'itens'} do catálogo.</p>
+                  <div className="mt-5 grid gap-3 max-w-md mx-auto text-left">
+                    <input required placeholder="Seu nome" value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="w-full rounded-xl bg-white/[.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-white/30" />
+                    <input required placeholder="WhatsApp (com DDD)" value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      inputMode="tel"
+                      className="w-full rounded-xl bg-white/[.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-white/30" />
+                    <input type="email" placeholder="E-mail (opcional)" value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="w-full rounded-xl bg-white/[.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-white/30" />
+                    <button type="submit" disabled={submitting}
+                      className="mt-1 w-full rounded-xl px-4 py-3 font-semibold text-sm disabled:opacity-60"
+                      style={{ background: primary, color: '#04130a', boxShadow: `0 0 24px ${primary}66` }}>
+                      {submitting ? 'Enviando...' : 'Liberar catálogo →'}
+                    </button>
+                    <p className="text-[11px] text-white/40 text-center">Seus dados são enviados apenas para o autor deste perfil.</p>
+                  </div>
+                </form>
+              )}
             </div>
           </section>
         )}
