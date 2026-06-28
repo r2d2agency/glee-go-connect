@@ -106,6 +106,7 @@ export default function EditCardPage() {
         products: (card.products ?? []).slice(0, 10),
         gallery: card.gallery ?? [],
         services: card.services ?? [],
+        videos: card.videos ?? [],
         servicesCtaLabel: card.servicesCtaLabel ?? '',
         servicesCtaUrl: card.servicesCtaUrl ?? '',
         catalogLeadGate: !!card.catalogLeadGate,
@@ -128,6 +129,8 @@ export default function EditCardPage() {
   const products: Product[] = Array.isArray(card.products) ? card.products : [];
   const gallery: string[] = Array.isArray(card.gallery) ? card.gallery : [];
   const services: Service[] = Array.isArray(card.services) ? card.services : [];
+  const videos: { url: string; cover?: string; title?: string }[] =
+    Array.isArray(card.videos) ? card.videos : [];
   const plan: string = card?.company?.plan || 'FREE';
   const productLimit = plan === 'BUSINESS' ? 10 : plan === 'PRO' ? 5 : 1;
 
