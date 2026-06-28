@@ -34,7 +34,7 @@ export class CardsService {
       const count = await this.prisma.card.count({ where: { companyId, type: 'BIO_LINK' } });
       if (count >= 1) {
         throw new ForbiddenException(
-          'Plano grátis permite apenas 1 link bio. Faça upgrade para criar mais.',
+          'Plano grátis permite apenas 1 link bio. Chama no Whats para fazer upgrade: https://wa.me/5517991308048?text=Olá%21%20Quero%20fazer%20upgrade%20do%20meu%20plano%20Glee-go%20ID.',
         );
       }
     }
