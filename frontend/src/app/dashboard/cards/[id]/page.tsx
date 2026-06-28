@@ -504,7 +504,7 @@ export default function EditCardPage() {
                 </div>
               </div>
               <div className="mb-4">
-                <AvatarUploader value={undefined} onChange={(url) => url && set('gallery', [...gallery, url])} label="Adicionar foto" size={80} />
+                <GalleryMultiUploader onUploaded={(urls) => set('gallery', [...gallery, ...urls])} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {gallery.length === 0 && <p className="text-sm text-white/50 col-span-full">Nenhuma foto enviada.</p>}
