@@ -1,10 +1,11 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as ExcelJS from 'exceljs';
+import { WebhooksService } from '../webhooks/webhooks.service';
 
 @Injectable()
 export class LeadsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private webhooks: WebhooksService) {}
 
   async capture(data: { cardId?: string; slug?: string; name: string; email?: string; phone?: string; message?: string; utmSource?: string; utmMedium?: string; utmCampaign?: string }) {
     let cardId = data.cardId;
@@ -15,7 +16,32 @@ export class LeadsService {
     }
     if (!cardId) throw new NotFoundException('Cartão não informado');
     const { slug: _slug, cardId: _c, ...rest } = data as any;
-    return this.prisma.lead.create({ data: { ...rest, cardId } });
+    const lead = await this.prisma.lead.create({
+      data: { ...rest, cardId },
+      include: { card: { select: { slug: true, fullName: true, companyId: true } } },
+    });
+    if (lead.card?.companyId) {
+      this.webhooks.dispatch(
+        lead.card.companyId,
+        'lead.created',
+        {
+          lead: {
+            id: lead.id,
+            name: lead.name,
+            phone: lead.phone,
+            email: lead.email,
+            message: lead.message,
+            utm_source: lead.utmSource,
+            utm_medium: lead.utmMedium,
+            utm_campaign: lead.utmCampaign,
+            created_at: lead.createdAt,
+          },
+          card: { slug: lead.card.slug, name: lead.card.fullName },
+        },
+        { cardSlug: lead.card.slug },
+      );
+    }
+    return lead;
   }
 
   listByCompany(companyId: string) {
