@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
-import Logo from '@/components/Logo';
+import { Logo } from '@/components/Logo';
 
 type Hook = {
   id: string;
