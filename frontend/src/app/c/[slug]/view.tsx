@@ -65,7 +65,7 @@ function guessIcon(s: Link): string {
   return 'website';
 }
 
-const ICON_COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#a855f7', '#ef4444', '#06b6d4', '#ec4899', '#f97316'];
+const ICON_COLORS = ['#22ff88', '#38bdf8', '#fbbf24', '#c084fc', '#ff5577', '#22d3ee', '#f472b6', '#fb923c'];
 
 export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string }) {
   const primary = card.primaryColor || '#22c55e';
@@ -167,9 +167,19 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
         @keyframes geRise { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform:none; } }
         @keyframes geFade { from { opacity:0; } to { opacity:1; } }
         @keyframes geGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } 50% { box-shadow: 0 0 24px 2px ${primary}55; } }
+        @keyframes geNeon { 0%,100% { box-shadow: 0 0 12px var(--neon), 0 0 24px var(--neon); } 50% { box-shadow: 0 0 22px var(--neon), 0 0 44px var(--neon); } }
+        @keyframes geFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        @keyframes geSpinSlow { to { transform: rotate(360deg); } }
         .ge-rise { animation: geRise .7s cubic-bezier(.2,.7,.2,1) both; }
         .ge-fade { animation: geFade .8s ease both; }
         .ge-glow { animation: geGlow 2.6s ease-in-out infinite; }
+        .ge-neon { animation: geNeon 2.4s ease-in-out infinite; }
+        .ge-float { animation: geFloat 4s ease-in-out infinite; }
+        .ge-ring-spin::before {
+          content:''; position:absolute; inset:-2px; border-radius:9999px;
+          background: conic-gradient(from 0deg, transparent, ${primary}, transparent 60%);
+          animation: geSpinSlow 4s linear infinite; z-index:0;
+        }
       `}</style>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -266,13 +276,18 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
                 : { 'aria-disabled': true, title: 'Não informado' };
               return (
                 <Tag key={q.key} {...props}
-                  className={`ge-rise group flex flex-col items-center justify-center gap-2 py-4 rounded-2xl border transition ${filled ? 'border-white/10 bg-white/[.03] hover:bg-white/[.07] cursor-pointer' : 'border-dashed border-white/10 bg-white/[.015] opacity-55 cursor-not-allowed'}`}
+                  className={`ge-rise group flex flex-col items-center justify-center gap-2 py-4 rounded-2xl border transition ${filled ? 'border-white/10 bg-white/[.03] hover:bg-white/[.07] hover:-translate-y-0.5 cursor-pointer' : 'border-dashed border-white/10 bg-white/[.015] opacity-55 cursor-not-allowed'}`}
                   style={{ animationDelay: `${i * 60}ms` }}>
-                  <span className="size-10 grid place-items-center rounded-full transition group-hover:scale-110"
-                    style={{ background: filled ? `${q.color}22` : 'rgba(255,255,255,.06)', color: filled ? q.color : 'rgba(255,255,255,.45)' }}>
+                  <span className="relative size-12 grid place-items-center rounded-full transition group-hover:scale-110"
+                    style={filled ? {
+                      background: `radial-gradient(circle at 30% 30%, ${q.color}55, ${q.color}10 70%)`,
+                      color: q.color,
+                      boxShadow: `0 0 12px ${q.color}88, inset 0 0 10px ${q.color}40`,
+                      border: `1px solid ${q.color}66`,
+                    } : { background: 'rgba(255,255,255,.06)', color: 'rgba(255,255,255,.45)' }}>
                     <Icon name={q.icon} className="size-5" />
                   </span>
-                  <span className={`text-xs font-medium ${filled ? 'text-white/80' : 'text-white/40'}`}>{q.label}</span>
+                  <span className={`text-xs font-medium ${filled ? 'text-white/85' : 'text-white/40'}`}>{q.label}</span>
                   {!filled && <span className="text-[10px] text-white/30 -mt-1">não informado</span>}
                 </Tag>
               );
@@ -387,17 +402,26 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
           </section>
         )}
 
-        {/* SOCIALS row */}
+        {/* SOCIALS row — neon glow */}
         {socials.length > 0 && (
-          <section className="mt-5 flex flex-wrap items-center justify-center gap-3">
+          <section className="mt-6 flex flex-wrap items-center justify-center gap-4">
             {socials.filter((s) => s.url).map((s, i) => {
               const icon = guessIcon(s);
               const color = ICON_COLORS[i % ICON_COLORS.length];
               return (
                 <a key={i} href={s.url} target="_blank" rel="noreferrer"
-                   className="size-11 grid place-items-center rounded-full border border-white/10 bg-white/[.04] hover:scale-110 transition"
-                   style={{ color }} aria-label={s.label || icon}>
-                  <Icon name={icon} className="size-5" />
+                   aria-label={s.label || icon}
+                   className="ge-rise group relative size-14 grid place-items-center rounded-full transition hover:scale-110 hover:-translate-y-1"
+                   style={{
+                     animationDelay: `${i * 70}ms`,
+                     color,
+                     background: `radial-gradient(circle at 30% 25%, ${color}66, ${color}10 70%, transparent)`,
+                     boxShadow: `0 0 14px ${color}99, 0 0 32px ${color}55, inset 0 0 12px ${color}55`,
+                     border: `1.5px solid ${color}aa`,
+                   }}>
+                  <Icon name={icon} className="size-6 drop-shadow-[0_0_8px_currentColor]" />
+                  <span aria-hidden className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition"
+                        style={{ boxShadow: `0 0 28px ${color}, 0 0 56px ${color}88` }} />
                 </a>
               );
             })}
@@ -513,8 +537,9 @@ export function PublicCardView({ card, vcardUrl }: { card: any; vcardUrl: string
             <p className="text-xs text-white/50">Sua identidade. Seu link.<br/>Seu jeito de se conectar.</p>
           </div>
           <p className="text-xs text-white/40">© {new Date().getFullYear()} Glee-go ID. Todos os direitos reservados.</p>
-          <a href="/" className="text-sm font-semibold inline-flex items-center gap-2 px-3 py-2 rounded-lg border" style={{ borderColor: primary, color: primary }}>
-            glee.go/criar →
+          <a href={`https://${BIO_DOMAIN}`} className="text-sm font-semibold inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition hover:-translate-y-0.5"
+             style={{ borderColor: primary, color: primary, boxShadow: `0 0 14px ${primary}66` }}>
+            {BIO_DOMAIN}/criar →
           </a>
         </footer>
       </div>
