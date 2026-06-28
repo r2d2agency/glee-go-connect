@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { humanizeError } from '@/lib/errors';
 import { AvatarUploader } from '@/components/AvatarUploader';
+import { BannerUploader } from '@/components/BannerUploader';
 import { FileUploader } from '@/components/FileUploader';
 import { GalleryMultiUploader } from '@/components/GalleryMultiUploader';
 
@@ -371,7 +372,7 @@ export default function EditCardPage() {
                         onClick={() => set('banners', (card.banners ?? []).filter((_: any, j: number) => j !== i))}
                         className="text-red-500 text-sm">Remover</button>
                     </div>
-                    <AvatarUploader
+                    <BannerUploader
                       value={b.image}
                       onChange={(url) => {
                         const arr = [...(card.banners ?? [])];
@@ -379,7 +380,6 @@ export default function EditCardPage() {
                         set('banners', arr);
                       }}
                       label="Imagem do banner"
-                      size={120}
                     />
                     <div className="grid sm:grid-cols-2 gap-3">
                       <input className="border rounded px-3 py-2" placeholder="Texto do botão (vazio = sem botão)" value={b.ctaLabel ?? ''}
